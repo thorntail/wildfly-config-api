@@ -22,6 +22,7 @@
 package org.wildfly.apigen.model;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
 
 import java.util.List;
@@ -49,6 +50,10 @@ public class ResourceDescription extends ModelNode {
 
     public boolean hasAttributes() {
         return hasDefined(ATTRIBUTES);
+    }
+
+    public List<Property> getAttributes() {
+        return get(ATTRIBUTES).asPropertyList();
     }
 
     public boolean hasAccessControl() {
@@ -97,5 +102,21 @@ public class ResourceDescription extends ModelNode {
             }
         }
         return EMPTY;
+    }
+
+    public static ResourceDescription from(ModelNode response) {
+        assert response.get(OUTCOME).equals(SUCCESS);
+        ModelNode result = response.get(RESULT);
+        if(ModelType.LIST == result.getType())
+        {
+            // wildcard addressing
+            return new ResourceDescription(result.asList().get(0).get(RESULT));
+
+        }
+        else
+        {
+            // specific addressing
+            return new ResourceDescription(result.get(RESULT));
+        }
     }
 }

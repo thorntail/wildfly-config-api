@@ -2,6 +2,10 @@ package org.wildfly.apigen;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
+import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.apigen.model.ResourceDescription;
+import org.wildfly.apigen.operations.DefaultStatementContext;
+import org.wildfly.apigen.operations.ReadDescription;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 
@@ -19,14 +23,18 @@ public class Main {
 
         ModelControllerClient client = ModelControllerClient.Factory.create(host, port, new AuthCallback(args));
 
-        ModelNode op = new ModelNode();
-        op.get(OP).set(READ_ATTRIBUTE_OPERATION);
-        op.get(ADDRESS).setEmptyList();
-        op.get(NAME).set("release-version");
 
-        ModelNode response = client.execute(op);
-        System.out.println("Server version: "+ response.get(RESULT).asString());
+        AddressTemplate address = AddressTemplate.of("/subsystem=datasources/data-source=*");
+        ReadDescription op = new ReadDescription(address);
 
+        ModelNode response = client.execute(op.resolve(new DefaultStatementContext()));
+        ResourceDescription description = ResourceDescription.from(response);
+
+        description.getAttributes().forEach(
+                att -> {
+                    System.out.println(att.getName()+" :: "+att.getValue().get(TYPE).toString());
+                }
+        );
 
     }
 }
