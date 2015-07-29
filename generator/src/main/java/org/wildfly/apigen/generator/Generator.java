@@ -11,16 +11,18 @@ import org.jboss.forge.roaster.model.source.PropertySource;
 import org.wildfly.apigen.invocation.AuthCallback;
 import org.wildfly.apigen.invocation.Binding;
 import org.wildfly.apigen.invocation.Types;
-import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.operations.DefaultStatementContext;
 import org.wildfly.apigen.operations.ReadDescription;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
@@ -29,40 +31,71 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYP
  * @author Heiko Braun
  * @since 29/07/15
  */
-public class Main {
+public class Generator {
 
     private static ModelControllerClient client;
 
-    public static void main(String[] args) throws Exception {
-        System.out.println("Config: "+args[0]);
-        System.out.println("Output: "+args[1]);
+    private static final Logger log = Logger.getLogger(Generator.class.getName());
+
+    private final String targetDir;
+    private final Config config;
+
+    public Generator(String targetDir, Config config) {
+        this.targetDir = targetDir;
+        this.config = config;
 
         String[] userArgs = {"admin", "passWord123"};
-        client = ModelControllerClient.Factory.create("localhost", 9990, new AuthCallback(userArgs));
+        try {
+            client = ModelControllerClient.Factory.create("localhost", 9990, new AuthCallback(userArgs));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
 
-        Config config = Config.fromJson(args[0]);
+    }
 
+    public static void main(String[] args) throws Exception {
+        log.info("Config: " + args[0]);
+        log.info("Output: " + args[1]);
+
+        Generator generator = new Generator(args[1], Config.fromJson(args[0]));
+        generator.generate();
+        generator.shutdown();
+    }
+
+    private void shutdown() {
+        try {
+            client.close();
+        } catch (IOException e) {
+            log.severe(e.getMessage());
+        }
+    }
+
+    public void generate() throws Exception {
         config.getReferences().forEach(
                 ref -> {
                     try {
-                        generate(ref, args[1]);
+                        ResourceDescription resourceDescription = readDescription(ref);
+                        generate(ref, resourceDescription, targetDir);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.severe(e.getMessage());
                     }
                 }
         );
-
-        client.close();
     }
 
-    private static void generate(ResourceRef ref, String targetDir) throws Exception {
-        AddressTemplate address = AddressTemplate.of(ref.getSourceAddress());
-        ReadDescription op = new ReadDescription(address);
-
+    private static ResourceDescription readDescription(ResourceRef ref) throws Exception{
+        ReadDescription op = new ReadDescription(ref.getSourceAddress());
         ModelNode response = client.execute(op.resolve(new DefaultStatementContext()));
-        ResourceDescription description = ResourceDescription.from(response);
+        return ResourceDescription.from(response);
+    }
 
-        String className = Types.javaClassName(address.getResourceType());
+    private static void generate(
+            ResourceRef ref,
+            ResourceDescription description,
+            String targetDir) throws Exception {
+
+
+        String className = Types.javaClassName(ref.getSourceAddress().getResourceType());
 
         // base class
         JavaClassSource javaClass =  Roaster.parse(
@@ -107,7 +140,7 @@ public class Main {
         Files.createDirectories(Paths.get(targetDir));
 
         Path fileName = Paths.get(targetDir + File.separator + className+".java");
-        System.out.println(">> Writing "+ fileName);
+        log.info(fileName.toString());
         Files.write(fileName, javaClass.toString().getBytes());
 
     }
