@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.wildfly.apigen.generator.Config;
-import org.wildfly.apigen.generator.ResourceRef;
 
 import java.util.List;
 
@@ -25,12 +24,12 @@ public class ConfigurationTestCase {
 
     @Test
     public void testXmlConfigParser() {
-        List<ResourceRef> references = config.getReferences();
+        List<Config.ResourceRef> references = config.getReferences();
 
         Assert.assertFalse("Config should not be empty", references.isEmpty());
         Assert.assertEquals(1, references.size());
 
-        ResourceRef resourceRef = references.get(0);
+        Config.ResourceRef resourceRef = references.get(0);
         Assert.assertEquals("/subsystem=datasources/data-source=*", resourceRef.getSourceAddress().getTemplate());
         Assert.assertEquals("org.wildfly.swarm.config.datasources", resourceRef.getTargetPackage());
     }

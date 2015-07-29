@@ -53,7 +53,7 @@ public class Generator {
                     })
             );
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            log.severe("Failed to create model controller client: "+e.getMessage());
         }
 
     }
@@ -62,7 +62,8 @@ public class Generator {
         log.info("Config: " + args[0]);
         log.info("Output: " + args[1]);
 
-        Generator generator = new Generator(args[1], Config.fromJson(args[0]));
+        Config config = Config.fromJson(args[0]);
+        Generator generator = new Generator(args[1], config);
         generator.generate();
         generator.shutdown();
     }
@@ -75,7 +76,7 @@ public class Generator {
         }
     }
 
-    public void generate() throws Exception {
+    public void generate() {
         config.getReferences().forEach(
                 ref -> {
                     try {
@@ -88,17 +89,16 @@ public class Generator {
         );
     }
 
-    private static ResourceDescription readDescription(ResourceRef ref) throws Exception{
+    private static ResourceDescription readDescription(Config.ResourceRef ref) throws Exception{
         ReadDescription op = new ReadDescription(ref.getSourceAddress());
         ModelNode response = client.execute(op.resolve(new DefaultStatementContext()));
         return ResourceDescription.from(response);
     }
 
     private static void generate(
-            ResourceRef ref,
+            Config.ResourceRef ref,
             ResourceDescription description,
             String targetDir) throws Exception {
-
 
         String className = Types.javaClassName(ref.getSourceAddress().getResourceType());
 
