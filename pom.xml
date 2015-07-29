@@ -13,6 +13,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
+    <version.roaster>2.15.0.Final</version.roaster>
+    <version.guava>18.0</version.guava>
+    <version.junit>4.12</version.junit>
   </properties>
 
   <dependencies>
@@ -21,18 +24,42 @@
       <groupId>org.wildfly.core</groupId>
       <artifactId>wildfly-controller</artifactId>
       <version>${version.wildfly.core}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.wildfly.core</groupId>
       <artifactId>wildfly-server</artifactId>
       <version>${version.wildfly.core}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>18.0</version>
+      <version>${version.guava}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${version.junit}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.forge.roaster</groupId>
+      <artifactId>roaster-api</artifactId>
+      <version>${version.roaster}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.forge.roaster</groupId>
+      <artifactId>roaster-jdt</artifactId>
+      <version>${version.roaster}</version>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>

@@ -105,7 +105,9 @@ public class ResourceDescription extends ModelNode {
     }
 
     public static ResourceDescription from(ModelNode response) {
-        assert response.get(OUTCOME).equals(SUCCESS);
+
+        assert response.get(OUTCOME).asString().equals(SUCCESS);
+
         ModelNode result = response.get(RESULT);
         if(ModelType.LIST == result.getType())
         {
@@ -118,5 +120,9 @@ public class ResourceDescription extends ModelNode {
             // specific addressing
             return new ResourceDescription(result.get(RESULT));
         }
+    }
+
+    public String getText() {
+        return get(DESCRIPTION).asString();
     }
 }
