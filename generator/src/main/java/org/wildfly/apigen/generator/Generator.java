@@ -8,6 +8,7 @@ import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaDocSource;
 import org.jboss.forge.roaster.model.source.PropertySource;
+import org.jboss.logmanager.Level;
 import org.wildfly.apigen.invocation.Binding;
 import org.wildfly.apigen.invocation.ClientFactory;
 import org.wildfly.apigen.invocation.Types;
@@ -46,7 +47,7 @@ public class Generator {
         try {
             client = ClientFactory.createClient(config);
         } catch (Exception e) {
-            log.severe("Failed to create model controller client: "+e.getMessage());
+            log.log(Level.ERROR, "Failed to create model controller client", e);
         }
 
     }
@@ -88,11 +89,32 @@ public class Generator {
         return ResourceDescription.from(response);
     }
 
-    private static void generate(
+    private void generate(
             Config.ResourceRef ref,
             ResourceDescription description,
             String targetDir) throws Exception {
 
+        JavaClassSource javaClass = generateClass(ref, description);
+
+        writeClass(targetDir, javaClass);
+    }
+
+    private void writeClass(String targetDir, JavaClassSource javaClass) {
+
+        try {
+            targetDir = targetDir + File.separator + javaClass.getPackage().replace(".", File.separator);
+            Files.createDirectories(Paths.get(targetDir));
+
+            Path fileName = Paths.get(targetDir + File.separator + javaClass.getName() + ".java");
+            log.info(fileName.toString());
+            Files.write(fileName, javaClass.toString().getBytes());
+        } catch (IOException e) {
+            log.log(Level.ERROR, "Failed to persist class", e);
+        }
+
+    }
+
+    private JavaClassSource generateClass(Config.ResourceRef ref, ResourceDescription description) {
         String className = Types.javaClassName(ref.getSourceAddress().getResourceType());
 
         // base class
@@ -133,13 +155,6 @@ public class Generator {
                 }
         );
 
-        // write results
-        targetDir = targetDir + File.separator + javaClass.getPackage().replace(".", File.separator);
-        Files.createDirectories(Paths.get(targetDir));
-
-        Path fileName = Paths.get(targetDir + File.separator + className+".java");
-        log.info(fileName.toString());
-        Files.write(fileName, javaClass.toString().getBytes());
-
+        return javaClass;
     }
 }
