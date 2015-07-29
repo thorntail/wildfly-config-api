@@ -1,0 +1,8 @@
+{
+    "modelReferences" : [
+        {
+            "sourceAddress": "/subsystem=datasources/data-source=*",
+            "targetPackage": "org.wildfly.swarm.config.datasources"
+        }
+    ]
+}

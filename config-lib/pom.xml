@@ -2,25 +2,51 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>config-lib</artifactId>
-  <packaging>jar</packaging>
+    <artifactId>config-lib</artifactId>
+    <packaging>jar</packaging>
 
-  <parent>
-    <groupId>org.wildfly</groupId>
-    <artifactId>api-gen-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <relativePath>../</relativePath>
-  </parent>
+    <parent>
+        <groupId>org.wildfly</groupId>
+        <artifactId>api-gen-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
 
-  <dependencies>
+    <dependencies>
 
-    <dependency>
-      <groupId>org.wildfly</groupId>
-      <artifactId>api-gen</artifactId>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>api-gen</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-  </dependencies>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
+
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>org.wildfly.apigen.generator.Main</mainClass>
+                            <arguments>
+                                <argument>${project.basedir}/src/main/resources/generator-config.json</argument>
+                                <argument>${project.build.sourceDirectory}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
