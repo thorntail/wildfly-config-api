@@ -17,32 +17,52 @@ import java.util.List;
  */
 public class Config {
 
-    private JsonArray json;
+    private JsonObject json;
 
-    public Config(JsonArray json) {
+    public Config(JsonObject json) {
         this.json = json;
     }
 
     public List<ResourceRef> getReferences() {
 
         List<ResourceRef> references = new ArrayList<>();
-        json.forEach(ref -> {
+        json.get("modelReferences").asArray().forEach(ref -> {
             JsonObject atts = ref.asObject();
             references.add(
                     new ResourceRef(
                             atts.get("sourceAddress").asString(),
                             atts.get("targetPackage").asString()
-                            )
+                    )
             );
         });
         return references;
+    }
+
+    public String getUser() {
+        JsonObject server = json.get("server").asObject();
+        return server.get("user").asString();
+    }
+
+    public String getPass() {
+        JsonObject server = json.get("server").asObject();
+                return server.get("pass").asString();
+    }
+
+    public int getPort() {
+        JsonObject server = json.get("server").asObject();
+        return server.get("port").asInt();
+    }
+
+    public String getHost() {
+        JsonObject server = json.get("server").asObject();
+        return server.get("host").asString();
     }
 
     public static Config fromJson(String filename) throws Exception {
         return new Config(
                 Json.parse(
                         new FileReader(filename)
-                ).asObject().get("modelReferences").asArray()
+                ).asObject()
         );
     }
 }

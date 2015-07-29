@@ -31,7 +31,7 @@ public class ConfigurationTestCase {
         Assert.assertEquals(1, references.size());
 
         ResourceRef resourceRef = references.get(0);
-        Assert.assertEquals("/subsystem=datasources/data-source=*", resourceRef.getSourceAddress());
+        Assert.assertEquals("/subsystem=datasources/data-source=*", resourceRef.getSourceAddress().getTemplate());
         Assert.assertEquals("org.wildfly.swarm.config.datasources", resourceRef.getTargetPackage());
     }
 }

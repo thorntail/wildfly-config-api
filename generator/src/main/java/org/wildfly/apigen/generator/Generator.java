@@ -44,9 +44,14 @@ public class Generator {
         this.targetDir = targetDir;
         this.config = config;
 
-        String[] userArgs = {"admin", "passWord123"};
+
         try {
-            client = ModelControllerClient.Factory.create("localhost", 9990, new AuthCallback(userArgs));
+            client = ModelControllerClient.Factory.create(
+                    config.getHost(), config.getPort(),
+                    new AuthCallback(new String[] {
+                            config.getUser(), config.getPass()
+                    })
+            );
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

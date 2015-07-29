@@ -109,7 +109,7 @@ public class AddressTemplate {
     }
 
     private String join(boolean optional, LinkedList<Token> tokens) {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder("/");
         if (optional) {
             builder.append(OPT);
         }

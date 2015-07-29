@@ -1,4 +1,10 @@
 {
+    "server" : {
+        "host" : "localhost",
+        "port" : 9990,
+        "user" : "admin",
+        "pass" : "passWord123"
+    },
     "modelReferences" : [
         {
             "sourceAddress": "/subsystem=datasources/data-source=*",
