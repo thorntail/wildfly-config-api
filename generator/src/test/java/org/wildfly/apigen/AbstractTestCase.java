@@ -3,6 +3,7 @@ package org.wildfly.apigen;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.wildfly.apigen.invocation.AuthCallback;
 
 /**
  * @author Heiko Braun
