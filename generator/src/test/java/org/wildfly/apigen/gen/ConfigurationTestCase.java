@@ -28,6 +28,7 @@ public class ConfigurationTestCase {
         List<ResourceRef> references = config.getReferences();
 
         Assert.assertFalse("Config should not be empty", references.isEmpty());
+        Assert.assertEquals(1, references.size());
 
         ResourceRef resourceRef = references.get(0);
         Assert.assertEquals("/subsystem=datasources/data-source=*", resourceRef.getSourceAddress());
