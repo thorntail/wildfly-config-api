@@ -1,5 +1,6 @@
 package org.wildfly.apigen.invocation;
 
+import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -118,5 +119,13 @@ public class Types<T> {
         }
 
         return result;
+    }
+
+    public final static String javaClassName(String dmr) {
+        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL,  dmr.replace("-", "_"));
+    }
+
+    public final static String javaAttributeName(String dmr) {
+        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL,  dmr.replace("-", "_"));
     }
 }
