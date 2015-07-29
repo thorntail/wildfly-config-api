@@ -4,7 +4,6 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.wildfly.apigen.AbstractTestCase;
-import org.wildfly.apigen.operations.DefaultStatementContext;
 import org.wildfly.apigen.operations.ReadDescription;
 
 

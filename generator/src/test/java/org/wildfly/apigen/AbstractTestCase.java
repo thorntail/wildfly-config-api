@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.wildfly.apigen.generator.Config;
 import org.wildfly.apigen.invocation.AuthCallback;
+import org.wildfly.apigen.invocation.ClientFactory;
 
 /**
  * @author Heiko Braun
@@ -22,13 +23,7 @@ public class AbstractTestCase  {
         String testResourceDir = System.getProperty("testResourceDir");
         Assert.assertNotNull(testResourceDir, "No configuration given");
         config = Config.fromJson(testResourceDir + "/example-config.json");
-
-        client = ModelControllerClient.Factory.create(
-                config.getHost(), config.getPort(),
-                new AuthCallback(new String[] {
-                        config.getUser(), config.getPass()
-                })
-        );
+        client = ClientFactory.createClient(config);
     }
 
     @AfterClass

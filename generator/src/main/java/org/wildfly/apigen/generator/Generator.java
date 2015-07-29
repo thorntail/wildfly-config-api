@@ -8,16 +8,15 @@ import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaDocSource;
 import org.jboss.forge.roaster.model.source.PropertySource;
-import org.wildfly.apigen.invocation.AuthCallback;
 import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ClientFactory;
 import org.wildfly.apigen.invocation.Types;
 import org.wildfly.apigen.model.ResourceDescription;
-import org.wildfly.apigen.operations.DefaultStatementContext;
+import org.wildfly.apigen.model.DefaultStatementContext;
 import org.wildfly.apigen.operations.ReadDescription;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,15 +43,9 @@ public class Generator {
         this.targetDir = targetDir;
         this.config = config;
 
-
         try {
-            client = ModelControllerClient.Factory.create(
-                    config.getHost(), config.getPort(),
-                    new AuthCallback(new String[] {
-                            config.getUser(), config.getPass()
-                    })
-            );
-        } catch (UnknownHostException e) {
+            client = ClientFactory.createClient(config);
+        } catch (Exception e) {
             log.severe("Failed to create model controller client: "+e.getMessage());
         }
 

@@ -15,7 +15,7 @@ import org.wildfly.apigen.invocation.Binding;
 import org.wildfly.apigen.invocation.Types;
 import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
-import org.wildfly.apigen.operations.DefaultStatementContext;
+import org.wildfly.apigen.model.DefaultStatementContext;
 import org.wildfly.apigen.operations.ReadDescription;
 
 import java.util.Optional;

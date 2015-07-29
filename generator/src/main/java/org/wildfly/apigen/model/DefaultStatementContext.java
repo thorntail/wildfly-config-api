@@ -1,4 +1,4 @@
-package org.wildfly.apigen.operations;
+package org.wildfly.apigen.model;
 
 import org.wildfly.apigen.model.StatementContext;
 
