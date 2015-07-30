@@ -1,19 +1,14 @@
 package org.wildfly.apigen.gen;
 
-import org.jboss.dmr.ModelNode;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
 import org.wildfly.apigen.AbstractTestCase;
 import org.wildfly.apigen.generator.MetaDataIterator;
 import org.wildfly.apigen.generator.ResourceMetaData;
-import org.wildfly.apigen.generator.GeneratorTarget;
 import org.wildfly.apigen.generator.SourceFactory;
 import org.wildfly.apigen.model.AddressTemplate;
-import org.wildfly.apigen.model.DefaultStatementContext;
-import org.wildfly.apigen.model.ResourceDescription;
-import org.wildfly.apigen.operations.ReadDescription;
 
 import java.util.Iterator;
 
@@ -28,12 +23,7 @@ public class GeneratorTestCase extends AbstractTestCase {
     @Before
     public void fixture() throws Exception {
         AddressTemplate address = AddressTemplate.of("/subsystem=datasources");
-        ReadDescription op = new ReadDescription(address);
-
-        ModelNode response = client.execute(op.resolve(new DefaultStatementContext()));
-        ResourceDescription description = ResourceDescription.from(response);
-
-        this.metaData = new ResourceMetaData(address, description);
+        this.metaData = getResourceMetaData(address);
     }
 
     @Test
@@ -72,6 +62,22 @@ public class GeneratorTestCase extends AbstractTestCase {
 
             previous = child.getAddress().tokenLength();
         }
+
+    }
+
+    @Test
+    public void testAttributeEdgeCase() {
+        ResourceMetaData metaData = getResourceMetaData(
+                AddressTemplate.of("/subsystem=logging/custom-handler=*")
+        );
+        metaData.set(ResourceMetaData.PKG, "foo.bar");
+
+        metaData.getDescription().getAttributes().forEach(
+                att -> System.out.println(att.getName())
+        );
+
+        JavaClassSource javaClass = SourceFactory.createResourceAsClass(metaData);
+        System.out.println(javaClass.toString());
 
     }
 

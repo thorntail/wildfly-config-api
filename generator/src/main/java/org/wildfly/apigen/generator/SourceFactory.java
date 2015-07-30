@@ -48,6 +48,7 @@ public class SourceFactory {
                 JavaClassSource.class,
                 "public class " + className + " {}"
         );
+
         javaClass.setPackage(metaData.get(ResourceMetaData.PKG));
 
         // javadoc
@@ -85,8 +86,11 @@ public class SourceFactory {
                             AnnotationSource<JavaClassSource> bindingMeta = prop.getAccessor().addAnnotation();
                             bindingMeta.setName("Binding");
                             bindingMeta.setStringValue("detypedName", att.getName());
-                        } catch (Exception e) {
-                            log.log(Level.ERROR, "Failed to process "+metaData.getAddress()+", attribute "+ att.getName(), e);
+
+                        }
+                        catch (Exception e)
+                        {
+                            log.log(Level.ERROR, "Failed to process " + metaData.getAddress() + ", attribute " + att.getName(), e);
                         }
                     }
                 }
@@ -118,7 +122,10 @@ public class SourceFactory {
                 JavaClassSource childClass = scope.getGenerated(childAddress);
                 javaClass.addImport(childClass);
 
-                String propName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL,childClass.getName()) + "s";
+                String propName = CaseFormat.UPPER_CAMEL.to(
+                        CaseFormat.LOWER_CAMEL,
+                        Keywords.escape(childClass.getName())
+                ) + "s";
                 String propType = "java.util.List<" + childClass.getName() + ">";
 
                 PropertySource<JavaClassSource> prop = javaClass.addProperty(

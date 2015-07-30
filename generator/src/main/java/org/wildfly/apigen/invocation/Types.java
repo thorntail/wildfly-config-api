@@ -3,6 +3,7 @@ package org.wildfly.apigen.invocation;
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
+import org.wildfly.apigen.generator.Keywords;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,6 +127,6 @@ public class Types<T> {
     }
 
     public final static String javaAttributeName(String dmr) {
-        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL,  dmr.replace("-", "_"));
+        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, Keywords.escape(dmr.replace("-", "_")));
     }
 }
