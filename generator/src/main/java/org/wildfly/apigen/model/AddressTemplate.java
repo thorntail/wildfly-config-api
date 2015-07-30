@@ -62,7 +62,7 @@ import java.util.NoSuchElementException;
  *
  * @author Harald Pehl
  */
-public class AddressTemplate {
+public class AddressTemplate implements Comparable<AddressTemplate> {
 
     // ------------------------------------------------------ factory
 
@@ -84,6 +84,10 @@ public class AddressTemplate {
         this.tokens = parse(template);
         this.optional = template.startsWith(OPT);
         this.template = join(optional, tokens);
+    }
+
+    public Integer tokenLength() {
+        return tokens.size();
     }
 
     private LinkedList<Token> parse(String template) {
@@ -405,5 +409,10 @@ public class AddressTemplate {
             }
             return result;
         }
+    }
+
+    @Override
+    public int compareTo(AddressTemplate o) {
+        return o.tokenLength().compareTo(this.tokenLength());
     }
 }

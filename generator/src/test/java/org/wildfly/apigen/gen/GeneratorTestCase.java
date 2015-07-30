@@ -2,16 +2,20 @@ package org.wildfly.apigen.gen;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.util.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
 import org.wildfly.apigen.AbstractTestCase;
-import org.wildfly.apigen.generator.ResourceRef;
+import org.wildfly.apigen.generator.MetaDataIterator;
+import org.wildfly.apigen.generator.ResourceMetaData;
+import org.wildfly.apigen.generator.ModelSegment;
 import org.wildfly.apigen.generator.SourceFactory;
 import org.wildfly.apigen.model.AddressTemplate;
-import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.model.DefaultStatementContext;
+import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.operations.ReadDescription;
+
+import java.util.Iterator;
 
 /**
  * @author Heiko Braun
@@ -19,26 +23,27 @@ import org.wildfly.apigen.operations.ReadDescription;
  */
 public class GeneratorTestCase extends AbstractTestCase {
 
-    private AddressTemplate address;
-    private ResourceDescription description;
+    private ResourceMetaData metaData;
 
     @Before
     public void fixture() throws Exception {
-        address = AddressTemplate.of("/subsystem=datasources/data-source=*");
+        AddressTemplate address = AddressTemplate.of("/subsystem=datasources");
         ReadDescription op = new ReadDescription(address);
 
         ModelNode response = client.execute(op.resolve(new DefaultStatementContext()));
-        description = ResourceDescription.from(response);
+        ResourceDescription description = ResourceDescription.from(response);
+
+        this.metaData = new ResourceMetaData(address, description);
     }
 
     @Test
     public void testSourceFactory() {
 
-        Assert.notNull(description, "Invalid fixture");
+        Assert.assertNotNull("Invalid fixture", metaData);
 
         JavaClassSource javaClass = SourceFactory.createResourceAsClass(
-                new ResourceRef(address, "foo.bar.test"),
-                description
+                new ModelSegment(metaData.getAddress().append("data-source=*"), "foo.bar.test"),
+                metaData.getDescription().getChildDescription("data-source")
         );
 
         System.out.println(javaClass);
@@ -46,6 +51,23 @@ public class GeneratorTestCase extends AbstractTestCase {
 
     @Test
     public void testChildResourceTraversal() {
+        System.out.println(metaData.getDescription().getChildrenNames());
+
+        Iterator<ResourceMetaData> iterator = new MetaDataIterator(metaData).createInstance();
+
+        // verify that the order reflects the nesting structure
+        Integer previous = Integer.MAX_VALUE;
+        while(iterator.hasNext())
+        {
+            ResourceMetaData child = iterator.next();
+            System.out.println(child.getAddress());
+            Assert.assertTrue(
+                    "Wrong order of elements",
+                    child.getAddress().tokenLength() <= previous
+            );
+
+            previous = child.getAddress().tokenLength();
+        }
 
     }
 

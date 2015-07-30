@@ -6,16 +6,16 @@ import org.wildfly.apigen.model.AddressTemplate;
  * @author Heiko Braun
  * @since 29/07/15
  */
-public class ResourceRef {
+public class ModelSegment {
 
     private AddressTemplate sourceAddress;
     private String targetPackage;
 
-    public ResourceRef(String address, String targetPackage) {
+    public ModelSegment(String address, String targetPackage) {
         this(AddressTemplate.of(address), targetPackage);
     }
 
-    public ResourceRef(AddressTemplate address, String targetPackage) {
+    public ModelSegment(AddressTemplate address, String targetPackage) {
         this.sourceAddress = address;
         this.targetPackage = targetPackage;
     }
@@ -33,7 +33,7 @@ public class ResourceRef {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ResourceRef that = (ResourceRef) o;
+        ModelSegment that = (ModelSegment) o;
 
         return sourceAddress.equals(that.sourceAddress);
 

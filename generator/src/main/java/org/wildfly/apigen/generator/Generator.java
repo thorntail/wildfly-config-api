@@ -61,10 +61,10 @@ public class Generator {
 
     public void generate() {
         config.getReferences().forEach(
-                ref -> {
+                modelSegment -> {
                     try {
-                        ResourceDescription resourceDescription = readDescription(ref);
-                        generate(ref, resourceDescription, targetDir);
+                        ResourceDescription resourceDescription = readDescription(modelSegment);
+                        generate(modelSegment, resourceDescription, targetDir);
                     } catch (Exception e) {
                         log.severe(e.getMessage());
                     }
@@ -72,18 +72,18 @@ public class Generator {
         );
     }
 
-    private static ResourceDescription readDescription(ResourceRef ref) throws Exception{
-        ReadDescription op = new ReadDescription(ref.getSourceAddress());
+    private static ResourceDescription readDescription(ModelSegment modelSegment) throws Exception{
+        ReadDescription op = new ReadDescription(modelSegment.getSourceAddress());
         ModelNode response = client.execute(op.resolve(new DefaultStatementContext()));
         return ResourceDescription.from(response);
     }
 
     private void generate(
-            ResourceRef ref,
+            ModelSegment modelSegment,
             ResourceDescription description,
             String targetDir) throws Exception {
 
-        JavaClassSource javaClass = SourceFactory.createResourceAsClass(ref, description);
+        JavaClassSource javaClass = SourceFactory.createResourceAsClass(modelSegment, description);
 
         writeClass(targetDir, javaClass);
     }

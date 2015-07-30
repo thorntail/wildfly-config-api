@@ -26,6 +26,7 @@ import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 
@@ -72,6 +73,10 @@ public class ResourceDescription extends ModelNode {
         return hasDefined(NOTIFICATIONS);
     }
 
+    public Set<String> getChildrenNames() {
+        assert hasChildren();
+        return get(CHILDREN).keys();
+    }
     /**
      * Looks for the description of a child resource.
      * @param resourceName The name of the child resource
@@ -83,18 +88,18 @@ public class ResourceDescription extends ModelNode {
 
     /**
      * Looks for the description of a specific child resource.
-     * @param resourceName The name of the child resource
-     * @param instanceName The name of the instance
+     * @param type The type of the child resource
+     * @param name The name of the instance
      * @return the description of the specific child resource or {@link #EMPTY} if no such resource exists.
      */
-    public ResourceDescription getChildDescription(String resourceName, String instanceName) {
+    public ResourceDescription getChildDescription(String type, String name) {
         if (hasChildren()) {
             List<Property> children = get("children").asPropertyList();
             for (Property child : children) {
-                if (resourceName.equals(child.getName()) && child.getValue().hasDefined(MODEL_DESCRIPTION)) {
+                if (type.equals(child.getName()) && child.getValue().hasDefined(MODEL_DESCRIPTION)) {
                     List<Property> modelDescriptions = child.getValue().get(MODEL_DESCRIPTION).asPropertyList();
                     for (Property modelDescription : modelDescriptions) {
-                        if (instanceName.equals(modelDescription.getName())) {
+                        if (name.equals(modelDescription.getName())) {
                             return new ResourceDescription(modelDescription.getValue());
                         }
                     }
@@ -118,7 +123,7 @@ public class ResourceDescription extends ModelNode {
         else
         {
             // specific addressing
-            return new ResourceDescription(result.get(RESULT));
+            return new ResourceDescription(result);
         }
     }
 

@@ -24,7 +24,7 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYP
  */
 public class SourceFactory {
 
-    public static JavaClassSource createResourceAsClass(ResourceRef ref, ResourceDescription desc) {
+    public static JavaClassSource createResourceAsClass(ModelSegment ref, ResourceDescription desc) {
 
         String className = Types.javaClassName(ref.getSourceAddress().getResourceType());
 
