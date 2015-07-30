@@ -39,7 +39,7 @@ public class MetaDataIterator {
 
         applicable.apply(addresss, root);
 
-        if(root.hasChildren())
+        if(root.hasChildrenDefined())
         {
             Set<String> childrenNames = root.getChildrenNames();
             for (String childrenName : childrenNames) {

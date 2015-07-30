@@ -7,6 +7,7 @@ import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaDocSource;
 import org.jboss.forge.roaster.model.source.PropertySource;
+import org.jboss.logmanager.Level;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
 import org.wildfly.apigen.invocation.Subresource;
@@ -15,6 +16,8 @@ import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
@@ -26,6 +29,8 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYP
  * @since 30/07/15
  */
 public class SourceFactory {
+
+    private static final Logger log = Logger.getLogger(SourceFactory.class.getName());
 
     /**
      * Base template for a resource representation.
@@ -68,17 +73,21 @@ public class SourceFactory {
 
                         // attributes
 
-                        PropertySource<JavaClassSource> prop = javaClass.addProperty(
-                                resolvedType.get(),
-                                Types.javaAttributeName(att.getName())
-                        );
-                        String attributeDescription = att.getValue().get(DESCRIPTION).asString();
-                        prop.getMutator().getJavaDoc().setText(attributeDescription);
-                        prop.getAccessor().getJavaDoc().setText(attributeDescription);
+                        try {
+                            PropertySource<JavaClassSource> prop = javaClass.addProperty(
+                                    resolvedType.get(),
+                                    Types.javaAttributeName(att.getName())
+                            );
+                            String attributeDescription = att.getValue().get(DESCRIPTION).asString();
+                            prop.getMutator().getJavaDoc().setText(attributeDescription);
+                            prop.getAccessor().getJavaDoc().setText(attributeDescription);
 
-                        AnnotationSource<JavaClassSource> bindingMeta = prop.getAccessor().addAnnotation();
-                        bindingMeta.setName("Binding");
-                        bindingMeta.setStringValue("detypedName", att.getName());
+                            AnnotationSource<JavaClassSource> bindingMeta = prop.getAccessor().addAnnotation();
+                            bindingMeta.setName("Binding");
+                            bindingMeta.setStringValue("detypedName", att.getName());
+                        } catch (Exception e) {
+                            log.log(Level.ERROR, "Failed to process "+metaData.getAddress()+", attribute "+ att.getName(), e);
+                        }
                     }
                 }
         );
@@ -96,15 +105,15 @@ public class SourceFactory {
     public static void createChildAccessors(GeneratorScope scope, ResourceMetaData resourceMetaData, JavaClassSource javaClass) {
 
         ResourceDescription desc = resourceMetaData.getDescription();
-        if(desc.hasChildren())
+        Set<String> childrenNames = desc.getChildrenNames();
+        if(!childrenNames.isEmpty())
         {
-
             javaClass.addImport("java.util.List");
             javaClass.addImport(Subresource.class);
 
             StringBuffer ctor = new StringBuffer();
 
-            for (String childName : desc.getChildrenNames()) {
+            for (String childName : childrenNames) {
                 AddressTemplate childAddress = resourceMetaData.getAddress().append(childName + "=*");
                 JavaClassSource childClass = scope.getGenerated(childAddress);
                 javaClass.addImport(childClass);

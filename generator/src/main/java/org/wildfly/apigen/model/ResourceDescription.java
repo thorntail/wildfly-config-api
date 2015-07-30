@@ -25,6 +25,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -54,14 +55,14 @@ public class ResourceDescription extends ModelNode {
     }
 
     public List<Property> getAttributes() {
-        return get(ATTRIBUTES).asPropertyList();
+        return hasAttributes() ? get(ATTRIBUTES).asPropertyList() : Collections.EMPTY_LIST;
     }
 
     public boolean hasAccessControl() {
         return hasDefined(ACCESS_CONTROL);
     }
 
-    public boolean hasChildren() {
+    public boolean hasChildrenDefined() {
         return hasDefined(CHILDREN);
     }
 
@@ -74,8 +75,7 @@ public class ResourceDescription extends ModelNode {
     }
 
     public Set<String> getChildrenNames() {
-        assert hasChildren();
-        return get(CHILDREN).keys();
+        return hasChildrenDefined() ? get(CHILDREN).keys() : Collections.EMPTY_SET;
     }
     /**
      * Looks for the description of a child resource.
@@ -93,7 +93,7 @@ public class ResourceDescription extends ModelNode {
      * @return the description of the specific child resource or {@link #EMPTY} if no such resource exists.
      */
     public ResourceDescription getChildDescription(String type, String name) {
-        if (hasChildren()) {
+        if (hasChildrenDefined()) {
             List<Property> children = get("children").asPropertyList();
             for (Property child : children) {
                 if (type.equals(child.getName()) && child.getValue().hasDefined(MODEL_DESCRIPTION)) {

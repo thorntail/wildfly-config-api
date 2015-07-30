@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
 import org.wildfly.apigen.invocation.Subresource;
+import org.wildfly.swarm.config.datasources.ConnectionProperties;
 import org.wildfly.swarm.config.datasources.DataSource;
 
 import java.io.InputStream;
@@ -25,9 +26,16 @@ public class APITestCase {
      */
     @Test
     public void testClassInstances() {
+
+        // attributes
         DataSource dataSource = new DataSource();
         dataSource.setUserName("john_doe");
         dataSource.setPassword("password");
+
+        // subresources
+        ConnectionProperties prop = new ConnectionProperties();
+        prop.setValue("foo-bar");
+        dataSource.getConnectionPropertiess().add(prop);
     }
 
     /**

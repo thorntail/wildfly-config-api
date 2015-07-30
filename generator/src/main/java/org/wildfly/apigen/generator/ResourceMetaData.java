@@ -53,4 +53,9 @@ public class ResourceMetaData implements Comparable<ResourceMetaData> {
     public void setAll(Map<String, String> values) {
         cfg.putAll(values);
     }
+
+    @Override
+    public String toString() {
+        return address.getTemplate();
+    }
 }

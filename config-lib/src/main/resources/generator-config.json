@@ -9,6 +9,14 @@
         {
             "sourceAddress": "/subsystem=datasources",
             "targetPackage": "org.wildfly.swarm.config.datasources"
+        },
+        {
+            "sourceAddress": "/subsystem=logging",
+            "targetPackage": "org.wildfly.swarm.config.logging"
+        },
+        {
+            "sourceAddress": "/subsystem=mail",
+            "targetPackage": "org.wildfly.swarm.config.mail"
         }
     ]
 }

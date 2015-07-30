@@ -2,13 +2,9 @@ package org.wildfly.apigen.generator;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
-import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.PropertySource;
 import org.jboss.logmanager.Level;
 import org.wildfly.apigen.invocation.ClientFactory;
-import org.wildfly.apigen.invocation.Subresource;
-import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.DefaultStatementContext;
 import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.operations.ReadDescription;
@@ -79,13 +75,13 @@ public class Generator {
 
 
                     } catch (Exception e) {
-                        log.severe(e.getMessage());
+                        log.log(Level.ERROR, "Failed to process targets", e);
                     }
                 }
         );
     }
 
-    private static ResourceMetaData fetchMetaData(GeneratorTarget generatorTarget) throws Exception{
+    private static ResourceMetaData fetchMetaData(GeneratorTarget generatorTarget) throws Exception {
         ReadDescription op = new ReadDescription(generatorTarget.getSourceAddress());
         ModelNode response = client.execute(op.resolve(new DefaultStatementContext()));
         return new ResourceMetaData(generatorTarget.getSourceAddress(), ResourceDescription.from(response));
@@ -111,7 +107,7 @@ public class Generator {
             Files.createDirectories(Paths.get(targetDir));
 
             Path fileName = Paths.get(targetDir + File.separator + javaClass.getName() + ".java");
-            log.info(fileName.toString());
+            log.info(javaClass.getCanonicalName());
             Files.write(fileName, javaClass.toString().getBytes());
         } catch (IOException e) {
             log.log(Level.ERROR, "Failed to persist class", e);
