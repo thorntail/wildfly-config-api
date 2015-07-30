@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.wildfly.apigen.AbstractTestCase;
 import org.wildfly.apigen.generator.MetaDataIterator;
 import org.wildfly.apigen.generator.ResourceMetaData;
-import org.wildfly.apigen.generator.ModelSegment;
+import org.wildfly.apigen.generator.GeneratorTarget;
 import org.wildfly.apigen.generator.SourceFactory;
 import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.DefaultStatementContext;
@@ -41,10 +41,14 @@ public class GeneratorTestCase extends AbstractTestCase {
 
         Assert.assertNotNull("Invalid fixture", metaData);
 
-        JavaClassSource javaClass = SourceFactory.createResourceAsClass(
-                new ModelSegment(metaData.getAddress().append("data-source=*"), "foo.bar.test"),
+        AddressTemplate childAddress = metaData.getAddress().append("data-source=*");
+        ResourceMetaData subresource = new ResourceMetaData(
+                childAddress,
                 metaData.getDescription().getChildDescription("data-source")
         );
+        subresource.set(ResourceMetaData.PKG, "foo.bar.test");
+
+        JavaClassSource javaClass = SourceFactory.createResourceAsClass(subresource);
 
         System.out.println(javaClass);
     }

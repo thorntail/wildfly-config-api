@@ -6,16 +6,16 @@ import org.wildfly.apigen.model.AddressTemplate;
  * @author Heiko Braun
  * @since 29/07/15
  */
-public class ModelSegment {
+public class GeneratorTarget {
 
     private AddressTemplate sourceAddress;
     private String targetPackage;
 
-    public ModelSegment(String address, String targetPackage) {
+    public GeneratorTarget(String address, String targetPackage) {
         this(AddressTemplate.of(address), targetPackage);
     }
 
-    public ModelSegment(AddressTemplate address, String targetPackage) {
+    public GeneratorTarget(AddressTemplate address, String targetPackage) {
         this.sourceAddress = address;
         this.targetPackage = targetPackage;
     }
@@ -33,7 +33,7 @@ public class ModelSegment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ModelSegment that = (ModelSegment) o;
+        GeneratorTarget that = (GeneratorTarget) o;
 
         return sourceAddress.equals(that.sourceAddress);
 

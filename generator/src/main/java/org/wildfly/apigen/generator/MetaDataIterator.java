@@ -14,20 +14,20 @@ import java.util.Set;
  */
 public class MetaDataIterator {
 
-    private final AddressTemplate address;
-    private final ResourceDescription desc;
     private final LinkedList<ResourceMetaData> children;
+    private final ResourceMetaData rootMetaData;
 
     public MetaDataIterator(ResourceMetaData rootMetaData) {
-        this.address = rootMetaData.getAddress();
-        this.desc = rootMetaData.getDescription();
+        this.rootMetaData = rootMetaData;
 
         children = new LinkedList<>();
 
-        dfs(address, desc, new Applicable() {
+        dfs(rootMetaData.getAddress(), rootMetaData.getDescription(), new Applicable() {
             @Override
             public void apply(AddressTemplate address, ResourceDescription desc) {
-                children.add(new ResourceMetaData(address, desc));
+                ResourceMetaData child = new ResourceMetaData(address, desc);
+                child.setAll(rootMetaData.getAll()); // merge the assorted configuration values
+                children.add(child);
             }
         });
 

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**
@@ -47,7 +48,7 @@ public class Generator {
 
         Config config = Config.fromJson(args[0]);
         Generator generator = new Generator(args[1], config);
-        generator.generate();
+        generator.processGeneratorTargets();
         generator.shutdown();
     }
 
@@ -59,12 +60,19 @@ public class Generator {
         }
     }
 
-    public void generate() {
-        config.getReferences().forEach(
-                modelSegment -> {
+    public void processGeneratorTargets() {
+        config.getGeneratorTargets().forEach(
+                target -> {
                     try {
-                        ResourceDescription resourceDescription = readDescription(modelSegment);
-                        generate(modelSegment, resourceDescription, targetDir);
+
+                        ResourceMetaData resourceMetaData = fetchMetaData(target);
+                        resourceMetaData.set(ResourceMetaData.PKG, target.getTargetPackage());
+
+                        Iterator<ResourceMetaData> iterator = new MetaDataIterator(resourceMetaData).createInstance();
+                        iterator.forEachRemaining(metaData -> {
+                            generate(metaData, targetDir);
+                        });
+
                     } catch (Exception e) {
                         log.severe(e.getMessage());
                     }
@@ -72,18 +80,17 @@ public class Generator {
         );
     }
 
-    private static ResourceDescription readDescription(ModelSegment modelSegment) throws Exception{
-        ReadDescription op = new ReadDescription(modelSegment.getSourceAddress());
+    private static ResourceMetaData fetchMetaData(GeneratorTarget generatorTarget) throws Exception{
+        ReadDescription op = new ReadDescription(generatorTarget.getSourceAddress());
         ModelNode response = client.execute(op.resolve(new DefaultStatementContext()));
-        return ResourceDescription.from(response);
+        return new ResourceMetaData(generatorTarget.getSourceAddress(), ResourceDescription.from(response));
     }
 
     private void generate(
-            ModelSegment modelSegment,
-            ResourceDescription description,
-            String targetDir) throws Exception {
+            ResourceMetaData resourceMetaData,
+            String targetDir){
 
-        JavaClassSource javaClass = SourceFactory.createResourceAsClass(modelSegment, description);
+        JavaClassSource javaClass = SourceFactory.createResourceAsClass(resourceMetaData);
 
         writeClass(targetDir, javaClass);
     }

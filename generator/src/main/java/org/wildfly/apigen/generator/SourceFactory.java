@@ -24,19 +24,20 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYP
  */
 public class SourceFactory {
 
-    public static JavaClassSource createResourceAsClass(ModelSegment ref, ResourceDescription desc) {
+    public static JavaClassSource createResourceAsClass(ResourceMetaData metaData) {
 
-        String className = Types.javaClassName(ref.getSourceAddress().getResourceType());
+        String className = Types.javaClassName(metaData.getAddress().getResourceType());
 
         // base class
         JavaClassSource javaClass =  Roaster.parse(
                 JavaClassSource.class,
                 "public class " + className + " {}"
         );
-        javaClass.setPackage(ref.getTargetPackage());
+        javaClass.setPackage(metaData.get(ResourceMetaData.PKG));
 
         // javadoc
         JavaDocSource javaDoc = javaClass.getJavaDoc();
+        ResourceDescription desc = metaData.getDescription();
         javaDoc.setText(desc.getText());
 
         // imports
@@ -46,7 +47,7 @@ public class SourceFactory {
 
         AnnotationSource<JavaClassSource> addressMeta = javaClass.addAnnotation();
         addressMeta.setName("Address");
-        addressMeta.setStringValue(ref.getSourceAddress().getTemplate());
+        addressMeta.setStringValue(metaData.getAddress().getTemplate());
 
         desc.getAttributes().forEach(
                 att -> {

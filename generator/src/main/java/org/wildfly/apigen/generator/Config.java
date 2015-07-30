@@ -22,13 +22,13 @@ public class Config {
         this.json = json;
     }
 
-    public List<ModelSegment> getReferences() {
+    public List<GeneratorTarget> getGeneratorTargets() {
 
-        List<ModelSegment> references = new ArrayList<>();
-        json.get("modelReferences").asArray().forEach(ref -> {
+        List<GeneratorTarget> references = new ArrayList<>();
+        json.get("generatorTargets").asArray().forEach(ref -> {
             JsonObject atts = ref.asObject();
             references.add(
-                    new ModelSegment(
+                    new GeneratorTarget(
                             atts.get("sourceAddress").asString(),
                             atts.get("targetPackage").asString()
                     )

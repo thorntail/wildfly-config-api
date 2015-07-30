@@ -17,7 +17,7 @@ import java.io.InputStream;
  * @author Heiko Braun
  * @since 29/07/15
  */
-public class ConfigurationAPITestCase {
+public class APITestCase {
 
     /**
      * This test just makes sure the generated classes can be instantiated.

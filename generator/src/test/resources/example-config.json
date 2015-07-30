@@ -5,7 +5,7 @@
         "user" : "admin",
         "pass" : "passWord123"
     },
-    "modelReferences" : [
+    "generatorTargets" : [
         {
             "sourceAddress": "/subsystem=datasources/data-source=*",
             "targetPackage": "org.wildfly.swarm.config.datasources"
