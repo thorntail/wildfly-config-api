@@ -1,10 +1,10 @@
-package org.wildfly.apigen.gen;
+package org.wildfly.apigen.test.gen;
 
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.wildfly.apigen.AbstractTestCase;
+import org.wildfly.apigen.test.AbstractTestCase;
 import org.wildfly.apigen.generator.MetaDataIterator;
 import org.wildfly.apigen.generator.ResourceMetaData;
 import org.wildfly.apigen.generator.SourceFactory;

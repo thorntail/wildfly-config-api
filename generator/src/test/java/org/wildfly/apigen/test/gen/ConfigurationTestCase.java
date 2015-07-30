@@ -1,4 +1,4 @@
-package org.wildfly.apigen.gen;
+package org.wildfly.apigen.test.gen;
 
 import org.junit.Assert;
 import org.junit.Before;

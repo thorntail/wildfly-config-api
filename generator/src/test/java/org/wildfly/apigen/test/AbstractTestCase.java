@@ -1,4 +1,4 @@
-package org.wildfly.apigen;
+package org.wildfly.apigen.test;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
