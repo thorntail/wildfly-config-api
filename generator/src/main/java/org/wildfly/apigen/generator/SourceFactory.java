@@ -1,5 +1,6 @@
 package org.wildfly.apigen.generator;
 
+import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
@@ -8,7 +9,9 @@ import org.jboss.forge.roaster.model.source.JavaDocSource;
 import org.jboss.forge.roaster.model.source.PropertySource;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.apigen.invocation.Types;
+import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
 import java.util.Optional;
@@ -24,6 +27,13 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYP
  */
 public class SourceFactory {
 
+    /**
+     * Base template for a resource representation.
+     * Covers the resource attributes
+     *
+     * @param metaData
+     * @return
+     */
     public static JavaClassSource createResourceAsClass(ResourceMetaData metaData) {
 
         String className = Types.javaClassName(metaData.getAddress().getResourceType());
@@ -74,5 +84,50 @@ public class SourceFactory {
         );
 
         return javaClass;
+    }
+
+    /**
+     * Decorates a base resource representation with accessors to it's child resources
+     *
+     * @param scope
+     * @param resourceMetaData
+     * @param javaClass
+     */
+    public static void createChildAccessors(GeneratorScope scope, ResourceMetaData resourceMetaData, JavaClassSource javaClass) {
+
+        ResourceDescription desc = resourceMetaData.getDescription();
+        if(desc.hasChildren())
+        {
+
+            javaClass.addImport("java.util.List");
+            javaClass.addImport(Subresource.class);
+
+            StringBuffer ctor = new StringBuffer();
+
+            for (String childName : desc.getChildrenNames()) {
+                AddressTemplate childAddress = resourceMetaData.getAddress().append(childName + "=*");
+                JavaClassSource childClass = scope.getGenerated(childAddress);
+                javaClass.addImport(childClass);
+
+                String propName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL,childClass.getName()) + "s";
+                String propType = "java.util.List<" + childClass.getName() + ">";
+
+                PropertySource<JavaClassSource> prop = javaClass.addProperty(
+                        propType,
+                        propName    // TODO name mangling
+                );
+                AnnotationSource<JavaClassSource> subresourceMeta = prop.getAccessor().addAnnotation();
+                subresourceMeta.setName("Subresource");
+
+                ctor.append("this.").append(propName).append(" = new ").append("java.util.ArrayList<>();\n");
+            }
+
+            // initialize the collections
+            javaClass.addMethod()
+                    .setConstructor(true)
+                    .setPublic()
+                    .setBody(ctor.toString());
+
+        }
     }
 }

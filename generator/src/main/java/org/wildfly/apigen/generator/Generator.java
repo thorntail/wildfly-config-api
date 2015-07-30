@@ -2,9 +2,13 @@ package org.wildfly.apigen.generator;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
+import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.PropertySource;
 import org.jboss.logmanager.Level;
 import org.wildfly.apigen.invocation.ClientFactory;
+import org.wildfly.apigen.invocation.Subresource;
+import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.DefaultStatementContext;
 import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.operations.ReadDescription;
@@ -64,14 +68,15 @@ public class Generator {
         config.getGeneratorTargets().forEach(
                 target -> {
                     try {
-
+                        GeneratorScope scope = new GeneratorScope();
                         ResourceMetaData resourceMetaData = fetchMetaData(target);
                         resourceMetaData.set(ResourceMetaData.PKG, target.getTargetPackage());
 
                         Iterator<ResourceMetaData> iterator = new MetaDataIterator(resourceMetaData).createInstance();
                         iterator.forEachRemaining(metaData -> {
-                            generate(metaData, targetDir);
+                            generate(scope, metaData, targetDir);
                         });
+
 
                     } catch (Exception e) {
                         log.severe(e.getMessage());
@@ -87,12 +92,16 @@ public class Generator {
     }
 
     private void generate(
-            ResourceMetaData resourceMetaData,
+            GeneratorScope scope, ResourceMetaData resourceMetaData,
             String targetDir){
 
         JavaClassSource javaClass = SourceFactory.createResourceAsClass(resourceMetaData);
 
+        SourceFactory.createChildAccessors(scope, resourceMetaData, javaClass);
+
         writeClass(targetDir, javaClass);
+
+        scope.addGenerated(resourceMetaData.getAddress(), javaClass);
     }
 
     private void writeClass(String targetDir, JavaClassSource javaClass) {

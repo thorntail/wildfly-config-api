@@ -9,6 +9,7 @@ import org.jboss.jandex.MethodInfo;
 import org.junit.Test;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.swarm.config.datasources.DataSource;
 
 import java.io.InputStream;
@@ -44,14 +45,19 @@ public class APITestCase {
 
         ClassInfo clazz = index.getClassByName(DotName.createSimple(DataSource.class.getCanonicalName()));
 
+        DotName bindingMeta = DotName.createSimple(Binding.class.getCanonicalName());
+        DotName addressMeta = DotName.createSimple(Address.class.getCanonicalName());
+        DotName subresourceMeta = DotName.createSimple(Subresource.class.getCanonicalName());
+
         // verify @Address annotations are present
-        clazz.annotations().keySet().contains(DotName.createSimple(Address.class.getCanonicalName()));
+        clazz.annotations().keySet().contains(addressMeta);
 
         // verify @Binding annotations are present
         for (MethodInfo method : clazz.methods()) {
-          if(method.name().startsWith("get"))
+          if(method.name().startsWith("get") && !method.hasAnnotation(subresourceMeta))
           {
-              Assert.assertTrue(method.hasAnnotation(DotName.createSimple(Binding.class.getCanonicalName())));
+
+              Assert.assertTrue(method.hasAnnotation(bindingMeta));
           }
         }
 
