@@ -8,7 +8,10 @@ package org.wildfly.apigen.generator;
  */
 public class Keywords {
 
-    private final static String[] KEYWORDS = new String[] {"abstract","continue","for","new","switch",
+    private static final String PREFIX = "Attribute_";
+
+    private final static String[] KEYWORDS = new String[] {
+            "abstract","continue","for","new","switch",
             "assert","default","goto","package","synchronized",
             "boolean","do","if","private","this",
             "break","double","implements","protected","throw",
@@ -19,10 +22,10 @@ public class Keywords {
             "class","finally","long","volatile",
             "const","float","native","super","while"};
 
-     public static String escape(String token) {
+    public static String escape(String token) {
          for (String keyword : KEYWORDS) {
              if(token.equals(keyword))
-                 return "Attribute_"+token;
+                 return PREFIX +token;
          }
 
          return token;
