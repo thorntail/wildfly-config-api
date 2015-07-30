@@ -2,18 +2,11 @@ package org.wildfly.apigen.generator;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
-import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.JavaDocSource;
-import org.jboss.forge.roaster.model.source.PropertySource;
 import org.jboss.logmanager.Level;
-import org.wildfly.apigen.invocation.Binding;
 import org.wildfly.apigen.invocation.ClientFactory;
-import org.wildfly.apigen.invocation.Types;
-import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.model.DefaultStatementContext;
+import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.operations.ReadDescription;
 
 import java.io.File;
@@ -21,11 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 import java.util.logging.Logger;
-
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
 
 /**
  * @author Heiko Braun
@@ -83,18 +72,18 @@ public class Generator {
         );
     }
 
-    private static ResourceDescription readDescription(Config.ResourceRef ref) throws Exception{
+    private static ResourceDescription readDescription(ResourceRef ref) throws Exception{
         ReadDescription op = new ReadDescription(ref.getSourceAddress());
         ModelNode response = client.execute(op.resolve(new DefaultStatementContext()));
         return ResourceDescription.from(response);
     }
 
     private void generate(
-            Config.ResourceRef ref,
+            ResourceRef ref,
             ResourceDescription description,
             String targetDir) throws Exception {
 
-        JavaClassSource javaClass = generateClass(ref, description);
+        JavaClassSource javaClass = SourceFactory.createResourceAsClass(ref, description);
 
         writeClass(targetDir, javaClass);
     }
@@ -112,49 +101,5 @@ public class Generator {
             log.log(Level.ERROR, "Failed to persist class", e);
         }
 
-    }
-
-    private JavaClassSource generateClass(Config.ResourceRef ref, ResourceDescription description) {
-        String className = Types.javaClassName(ref.getSourceAddress().getResourceType());
-
-        // base class
-        JavaClassSource javaClass =  Roaster.parse(
-                JavaClassSource.class,
-                "public class " + className + " {}"
-        );
-        javaClass.setPackage(ref.getTargetPackage());
-
-        // javadoc
-        JavaDocSource javaDoc = javaClass.getJavaDoc();
-        javaDoc.setText(description.getText());
-
-        // imports
-        javaClass.addImport(Binding.class);
-
-        description.getAttributes().forEach(
-                att -> {
-                    ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
-                    Optional<String> resolvedType = Types.resolveJavaTypeName(modelType);
-
-                    if (resolvedType.isPresent()) {
-
-                        // attributes
-
-                        PropertySource<JavaClassSource> prop = javaClass.addProperty(
-                                resolvedType.get(),
-                                Types.javaAttributeName(att.getName())
-                        );
-                        String attributeDescription = att.getValue().get(DESCRIPTION).asString();
-                        prop.getMutator().getJavaDoc().setText(attributeDescription);
-                        prop.getAccessor().getJavaDoc().setText(attributeDescription);
-
-                        AnnotationSource<JavaClassSource> bindingMeta = prop.getAccessor().addAnnotation();
-                        bindingMeta.setName("Binding");
-                        bindingMeta.setStringValue("detypedName", att.getName());
-                    }
-                }
-        );
-
-        return javaClass;
     }
 }
