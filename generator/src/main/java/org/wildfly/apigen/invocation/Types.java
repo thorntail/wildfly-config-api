@@ -7,6 +7,7 @@ import org.wildfly.apigen.generator.Keywords;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -128,5 +129,30 @@ public class Types<T> {
 
     public final static String javaAttributeName(String dmr) {
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, Keywords.escape(dmr.replace("-", "_")));
+    }
+
+    public static ModelType resolveModelType(Class<?> javaType) {
+
+        ModelType type = null;
+
+        if(String.class.equals(javaType))
+            type = ModelType.STRING;
+        else if(Integer.class.equals(javaType))
+            type = ModelType.INT;
+        else if(Long.class.equals(javaType))
+            type = ModelType.LONG;
+        else if(Boolean.class.equals(javaType))
+            type = ModelType.BOOLEAN;
+        else if(Double.class.equals(javaType))
+            type = ModelType.DOUBLE;
+        else if(List.class.equals(javaType))
+            type = ModelType.LIST;
+        else if(Map.class.equals(javaType))
+            type = ModelType.OBJECT;
+        else {
+            throw new RuntimeException("Failed to resolve ModelType for '"+ javaType.getName()+"'");
+        }
+
+        return type;
     }
 }

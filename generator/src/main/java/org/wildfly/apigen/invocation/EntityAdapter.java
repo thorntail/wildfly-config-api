@@ -56,7 +56,7 @@ public class EntityAdapter<T> {
             indexer.index(stream);
             index = indexer.complete();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize EntityAdapter", e);
+            throw new RuntimeException("Failed to initialize Indexer", e);
         }
 
     }
@@ -384,7 +384,7 @@ public class EntityAdapter<T> {
     @SuppressWarnings("unchecked")
     public ModelNode fromEntity(T entity) throws Exception {
 
-        ModelNode operation = new ModelNode();
+        ModelNode modelMode = new ModelNode();
 
         ClassInfo clazz = index.getClassByName(DotName.createSimple(getType().getCanonicalName()));
         for (MethodInfo method : clazz.methods()) {
@@ -392,7 +392,7 @@ public class EntityAdapter<T> {
             if (method.hasAnnotation(BINDING_META)) {
 
                 Method target = entity.getClass().getMethod(method.name());
-                Class<?> returnType = target.getReturnType();
+                Class<?> propertyType = target.getReturnType();
                 Object propertyValue = target.invoke(entity);
 
                 Binding binding = target.getDeclaredAnnotation(Binding.class);
@@ -408,7 +408,7 @@ public class EntityAdapter<T> {
 
                 if(exprValue!=null)
                 {
-                    operation.get(detypedName).setExpression(exprValue);
+                    modelMode.get(detypedName).setExpression(exprValue);
                     continue; // expression have precedence over real values
                 }
             }*/
@@ -416,28 +416,20 @@ public class EntityAdapter<T> {
                 // VALUES
                 if (propertyValue != null) {
                     try {
-                        ModelType modelType = resolveModelType(returnType.getName());
+                        ModelType dmrType = Types.resolveModelType(propertyType);
 
-                        if (modelType == ModelType.LIST) {
+                        if (dmrType == ModelType.LIST) {
+                            new ListTypeAdapter().toDmr(modelMode, detypedName, (List)propertyValue);
 
-                            System.out.println("unsupported type "+ modelType);
-                            // TODO
-                            /*operation.get(detypedName).set(modelType,
-                                    property.getEntityAdapterForList().fromEntityList((List) propertyValue));*/
-                        } else if (modelType == ModelType.OBJECT) {
+                        } else if (dmrType == ModelType.OBJECT) {
+                            // only Map<String,String> supported
+                            new MapTypeAdapter().toDmr(modelMode, detypedName, (Map)propertyValue);
 
-                            System.out.println("unsupported type "+ modelType);
-                            // TODO
-                            // Only Map<String, String> is supported!
-                            /*Map<String, String> map = (Map<String, String>) propertyValue;
-                            for (Map.Entry<String, String> entry : map.entrySet()) {
-                                operation.get(detypedName).get(entry.getKey()).set(entry.getValue());
-                            }*/
                         } else {
-                            set(operation.get(detypedName), modelType, propertyValue);
+                            new SimpleTypeAdapter().toDmr(modelMode, detypedName, dmrType, propertyValue);
                         }
                     } catch (RuntimeException e) {
-                        throw new RuntimeException("Failed to get value " + returnType.getName(), e);
+                        throw new RuntimeException("Failed to adopt value " + propertyType.getName(), e);
                     }
                 }
 
@@ -445,133 +437,8 @@ public class EntityAdapter<T> {
 
         }
 
-        return operation;
+        return modelMode;
     }
-
-    public ModelNode set(ModelNode target, ModelType type, Object propValue)
-    {
-        if(type.equals(ModelType.STRING))
-        {
-            target.set((String) propValue);
-        }
-        else if(type.equals(ModelType.INT))
-        {
-            target.set((Integer) propValue);
-        }
-        else if(type.equals(ModelType.DOUBLE))
-        {
-            target.set((Double) propValue);
-        }
-        else if(type.equals(ModelType.LONG))
-        {
-            target.set((Long) propValue);
-        }
-        else if(type.equals(ModelType.BOOLEAN))
-        {
-            target.set((Boolean) propValue);
-        }
-        else if(type.equals(ModelType.LIST))
-        {
-            target.setEmptyList();
-            List list = (List)propValue;
-
-            for(Object item : list)
-                target.add(String.valueOf(item));
-        }
-        else
-        {
-            throw new RuntimeException("Type conversion not implemented for "+type);
-        }
-
-        return target;
-    }
-
-    private ModelType resolveModelType(String javaTypeName) {
-
-        ModelType type = null;
-
-        if("java.lang.String".equals(javaTypeName))
-            type = ModelType.STRING;
-        else if("java.lang.Integer".equals(javaTypeName))
-            type = ModelType.INT;
-        else if("java.lang.Long".equals(javaTypeName))
-            type = ModelType.LONG;
-        else if("java.lang.Boolean".equals(javaTypeName))
-            type = ModelType.BOOLEAN;
-        else if("java.lang.Double".equals(javaTypeName))
-            type = ModelType.DOUBLE;
-        else if("java.util.List".equals(javaTypeName))
-            type = ModelType.LIST;
-        else if("java.util.Map".equals(javaTypeName))
-            type = ModelType.OBJECT;
-        else {
-            throw new RuntimeException("Failed to resolve ModelType for '"+ javaTypeName+"'");
-        }
-
-        return type;
-    }
-
-    public ModelNode fromBaseTypeList(List<?> baseTypeValues, Class<?> baseType) {
-        ModelNode node = new ModelNode();
-        if (baseTypeValues.isEmpty()) {
-            node.setEmptyList();
-            return node;
-        }
-
-        for (Object obj : baseTypeValues) {
-            if (baseType == String.class) {
-                node.add((String)obj);
-            } else if (baseType == Long.class) {
-                node.add((Long)obj);
-            } else if (baseType == Integer.class) {
-                node.add((Integer)obj);
-            } else if (baseType == Boolean.class) {
-                node.add((Boolean)obj);
-            } else if (baseType == Double.class) {
-                node.add((Double)obj);
-            } else if (baseType == BigDecimal.class) {
-                node.add((BigDecimal)obj);
-            } else if (baseType == byte[].class) {
-                node.add((byte[])obj);
-            } else {
-                throw new IllegalArgumentException("Can not convert. This value is not of a recognized base type. Value =" + obj.toString());
-            }
-        }
-        return node;
-    }
-
-    /**
-     * Creates a composite operation to create entities.
-     * Basically calls {@link #fromEntity(Object)}
-     *
-     * @param entities
-     * @return a composite ModelNode structure
-     */
-    /*public ModelNode fromEntityList(List<T> entities)
-    {
-        ModelNode operation = new ModelNode();
-        operation.get(OP).set(COMPOSITE);
-        operation.get(ADDRESS).setEmptyList();
-
-        List<ModelNode> steps = new ArrayList<ModelNode>();
-
-        for(T entity : entities)
-        {
-            steps.add(fromEntity(entity));
-        }
-
-        operation.get(STEPS).set(steps);
-        return operation;
-    }*/
-
-    /*public ModelNode fromEntityPropertyList(List<PropertyRecord> entities)
-    {
-        ModelNode propList = new ModelNode();
-        for (PropertyRecord prop : entities) {
-            propList.add(prop.getKey(), prop.getValue());
-        }
-        return propList;
-    }*/
 
     /**
      * Turns a changeset into a composite write attribute operation.

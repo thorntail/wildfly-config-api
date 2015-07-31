@@ -18,5 +18,5 @@ public @interface Binding {
      *
      * @return
      */
-    String detypedName() default "";
+    String detypedName();
 }
