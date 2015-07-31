@@ -19,7 +19,7 @@ public class Types<T> {
 
     private static final Logger logger = Logger.getLogger(Types.class.getName());
 
-    public static ModelType toDmr(String javaTypeName) {
+    /*public static ModelType toDmr(String javaTypeName) {
 
         ModelType type = null;
 
@@ -40,9 +40,9 @@ public class Types<T> {
         }
 
         return type;
-    }
+    }*/
 
-    public static Object fromDmr(ModelNode attributeValue) {
+    /*public static Object fromDmr(ModelNode attributeValue) {
 
         Object result = null;
         final ModelType attributeType = attributeValue.getType();
@@ -90,7 +90,7 @@ public class Types<T> {
 
         return result;
     }
-
+*/
     public static Optional<String> resolveJavaTypeName(ModelType modelType) {
 
         Optional<String> result = Optional.empty();
@@ -155,4 +155,5 @@ public class Types<T> {
 
         return type;
     }
+
 }

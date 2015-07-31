@@ -10,6 +10,9 @@ public class MailSession {
 	private String from;
 	private String jndiName;
 
+	public MailSession() {
+	}
+
 	/**
 	 * Enables JavaMail debugging
 	 */

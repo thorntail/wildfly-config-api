@@ -2,7 +2,9 @@ package org.wildfly.apigen.invocation;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
+import org.jboss.jandex.MethodInfo;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -13,10 +15,10 @@ public class SimpleTypeAdapter {
 
     public void toDmr(ModelNode target, String detypedName, ModelType dmrType, Object value)
     {
-        setValueOn(target.get(detypedName), dmrType, value);
+        setDmrValueOn(target.get(detypedName), dmrType, value);
     }
 
-    public static ModelNode setValueOn(ModelNode target, ModelType type, Object propValue)
+    private ModelNode setDmrValueOn(ModelNode target, ModelType type, Object propValue)
     {
         if(type.equals(ModelType.STRING))
         {
@@ -48,39 +50,95 @@ public class SimpleTypeAdapter {
         }
         else
         {
-            throw new RuntimeException("Type conversion not implemented for "+type);
+            throw new RuntimeException("Unsupported DMR type: "+type);
         }
 
         return target;
     }
 
-    public static ModelNode addValueTo(ModelNode target, ModelType type, Object propValue)
-    {
-        if(type.equals(ModelType.STRING))
-        {
-            target.add((String) propValue);
+    public void fromDmr(Object entity, String javaName, ModelType dmrType, Class<?> propertyType, ModelNode dmrPayload) throws Exception {
+        Method target = entity.getClass().getMethod(javaName, propertyType);
+        setJavaValueOn(entity, target, propertyType, dmrPayload);
+    }
+
+    private void setJavaValueOn(Object entity, Method method, Class<?> propertyType, ModelNode dmrPayload) throws Exception {
+        Object value = null;
+
+        // VALUES
+        if(Boolean.class.equals(propertyType)) {
+            if(dmrPayload.isDefined())
+                value = dmrPayload.asBoolean();
+            else
+                value = false;
         }
-        else if(type.equals(ModelType.INT))
+        else if(Long.class.equals(propertyType))
         {
-            target.add((Integer) propValue);
+            if(dmrPayload.isDefined())
+                value = dmrPayload.asLong();
+            else
+                value = null;
         }
-        else if(type.equals(ModelType.DOUBLE))
+        else if(Integer.class.equals(propertyType))
         {
-            target.add((Double) propValue);
+            if(dmrPayload.isDefined())
+                value = dmrPayload.asInt();
+            else
+                value = null;
         }
-        else if(type.equals(ModelType.LONG))
+        else if(Double.class.equals(propertyType))
         {
-            target.add((Long) propValue);
+            if(dmrPayload.isDefined())
+                value = dmrPayload.asDouble();
+            else
+                value = null;
         }
-        else if(type.equals(ModelType.BOOLEAN))
+        else if(Float.class.equals(propertyType))
         {
-            target.add((Boolean) propValue);
+            if(dmrPayload.isDefined())
+                value = dmrPayload.asDouble();
+            else
+                value = null;
         }
-        else
+        else if(String.class.equals(propertyType))
         {
-            throw new RuntimeException("Type conversion not implemented for "+type);
+            // default
+            if(dmrPayload.isDefined())
+                value = dmrPayload.asString();
+            else
+                value = "";
         }
 
-        return target;
+      /*  else if ("java.util.List".equals(propBinding.getJavaTypeName()))
+                       {
+                           ModelNode list = actualPayload.get(detypedName);
+                           if (list.isDefined() && propValue.isDefined() && !list.asList().isEmpty()) {
+                               if (list.asList().get(0).getType().equals(ModelType.PROPERTY)) {
+                                   value = propBinding.getEntityAdapterForList().fromDMRPropertyList(list.asPropertyList());
+                               } else {
+                                   value = propBinding.getEntityAdapterForList().fromDMRList(list.asList());
+                               }
+                           }
+                           else
+                           {
+                               value = new LinkedList();
+                           }
+                       }
+                       else if ("java.util.Map".equals(propBinding.getJavaTypeName())) {
+                           // Only Map<String, String> is supported!
+                           Map<String, String> map = new HashMap<>();
+                           if (propValue.isDefined() && !propValue.asPropertyList().isEmpty()) {
+                               for (Property property : propValue.asPropertyList()) {
+                                   map.put(property.getName(), property.getValue().asString());
+                               }
+                           }
+                           value = map;
+                       }*/
+
+        else {
+            throw new RuntimeException("Unsupported java type: "+propertyType.getName());
+        }
+        method.invoke(entity, value);
     }
+
+
 }
