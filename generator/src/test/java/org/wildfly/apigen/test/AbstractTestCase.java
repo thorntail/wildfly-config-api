@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.wildfly.apigen.generator.Config;
 import org.wildfly.apigen.generator.ResourceMetaData;
-import org.wildfly.apigen.invocation.AuthCallback;
 import org.wildfly.apigen.invocation.ClientFactory;
 import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.DefaultStatementContext;
