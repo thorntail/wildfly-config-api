@@ -12,7 +12,7 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
  * @author Heiko Braun
  * @since 29/07/15
  */
-public class ReadDescription implements ExecutableOp {
+public class ReadDescription implements AddressTemplateSupport {
     private AddressTemplate address;
 
     public ReadDescription(AddressTemplate address) {

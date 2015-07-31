@@ -7,7 +7,7 @@ import org.wildfly.apigen.model.StatementContext;
  * @author Heiko Braun
  * @since 29/07/15
  */
-public interface ExecutableOp {
+public interface AddressTemplateSupport {
 
     ModelNode resolve(StatementContext ctx);
 }
