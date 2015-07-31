@@ -24,9 +24,9 @@ public class IntegrationTestCase {
 
     @BeforeClass
     public static void setup() throws Exception {
-        String testResourceDir = System.getProperty("testResourceDir");
-        Assert.assertNotNull(testResourceDir, "No configuration given");
-        config = Config.fromJson(testResourceDir + "/generator-config.json");
+        String configDirectory = System.getProperty("APIGEN_CFG_DIR");
+        Assert.assertNotNull(configDirectory, "No configuration given");
+        config = Config.fromJson(configDirectory + "/generator-config.json");
         client = ClientFactory.createClient(config);
     }
 

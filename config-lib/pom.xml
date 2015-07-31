@@ -113,7 +113,7 @@
                 <configuration>
                     <systemProperties>
                         <property>
-                            <name>testResourceDir</name>
+                            <name>APIGEN_CFG_DIR</name>
                             <value>${project.basedir}/src/main/resources</value>
                         </property>
                         <property>
