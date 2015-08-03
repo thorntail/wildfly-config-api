@@ -29,12 +29,12 @@ public class APITestCase {
 
         // attributes
         DataSource dataSource = new DataSource();
-        dataSource.setUserName("john_doe");
-        dataSource.setPassword("password");
+        dataSource.userName("john_doe")
+            .password("password");
 
         // subresources
         ConnectionProperties prop = new ConnectionProperties();
-        prop.setValue("foo-bar");
+        prop.value("foo-bar");
         dataSource.getConnectionPropertiess().add(prop);
     }
 

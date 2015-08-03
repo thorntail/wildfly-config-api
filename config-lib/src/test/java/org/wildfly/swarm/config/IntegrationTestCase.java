@@ -50,18 +50,18 @@ public class IntegrationTestCase {
         EntityAdapter<DataSource> entityAdapter = new EntityAdapter<>(DataSource.class);
         DataSource dataSource = entityAdapter.fromDMR(payload);
         Assert.assertNotNull(dataSource);
-        Assert.assertEquals("java:jboss/datasources/ExampleDS", dataSource.getJndiName());
+        Assert.assertEquals("java:jboss/datasources/ExampleDS", dataSource.jndiName());
 
     }
 
     @Test
     public void testDatasourceMarshalling() throws Exception {
         DataSource dataSource = new DataSource();
-        dataSource.setJndiName("java:/foo/bar/DS");
-        dataSource.setUserName("john.doe");
-        dataSource.setPassword("password");
-        dataSource.setConnectionUrl("jdbc:h2:mem:swarm-test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
-        dataSource.setDriverName("h2");
+        dataSource.jndiName("java:/foo/bar/DS");
+        dataSource.userName("john.doe");
+        dataSource.password("password");
+        dataSource.connectionUrl("jdbc:h2:mem:swarm-test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+        dataSource.driverName("h2");
 
 
         EntityAdapter<DataSource> entityAdapter = new EntityAdapter<>(DataSource.class);

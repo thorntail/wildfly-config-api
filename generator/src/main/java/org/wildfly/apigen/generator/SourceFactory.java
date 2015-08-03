@@ -3,10 +3,7 @@ package org.wildfly.apigen.generator;
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.source.AnnotationSource;
-import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.JavaDocSource;
-import org.jboss.forge.roaster.model.source.PropertySource;
+import org.jboss.forge.roaster.model.source.*;
 import org.jboss.logmanager.Level;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
@@ -75,15 +72,32 @@ public class SourceFactory {
                         // attributes
 
                         try {
-                            PropertySource<JavaClassSource> prop = javaClass.addProperty(
-                                    resolvedType.get(),
-                                    Types.javaAttributeName(att.getName())
-                            );
+                            final String name = Types.javaAttributeName(att.getName());
                             String attributeDescription = att.getValue().get(DESCRIPTION).asString();
-                            prop.getMutator().getJavaDoc().setText(attributeDescription);
-                            prop.getAccessor().getJavaDoc().setText(attributeDescription);
 
-                            AnnotationSource<JavaClassSource> bindingMeta = prop.getAccessor().addAnnotation();
+                            javaClass.addField()
+                                    .setName(name)
+                                    .setType(resolvedType.get())
+                                    .setPrivate();
+
+                            final MethodSource<JavaClassSource> accessor = javaClass.addMethod();
+                            accessor.getJavaDoc().setText(attributeDescription);
+                            accessor.setPublic()
+                                    .setName(name)
+                                    .setReturnType(resolvedType.get())
+                                    .setBody("return this." + name + ";");
+
+
+                            final MethodSource<JavaClassSource> mutator = javaClass.addMethod();
+                            mutator.getJavaDoc().setText(attributeDescription);
+                            mutator.addParameter(resolvedType.get(), "value");
+                            mutator.setPublic()
+                                    .setName(name)
+                                    .setReturnType(className)
+                                    .setBody("this." + name + " = value;\nreturn this;")
+                                    .getJavaDoc().setText(attributeDescription);
+
+                            AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
                             bindingMeta.setName("Binding");
                             bindingMeta.setStringValue("detypedName", att.getName());
 
