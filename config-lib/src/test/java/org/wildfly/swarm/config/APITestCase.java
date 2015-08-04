@@ -62,9 +62,8 @@ public class APITestCase {
 
         // verify @Binding annotations are present
         for (MethodInfo method : clazz.methods()) {
-          if(method.name().startsWith("get") && !method.hasAnnotation(subresourceMeta))
+          if(method.parameters().isEmpty() && !method.hasAnnotation(subresourceMeta) && !method.name().equals("<init>"))
           {
-
               Assert.assertTrue(method.hasAnnotation(bindingMeta));
           }
         }
