@@ -35,7 +35,7 @@ public class APITestCase {
         // subresources
         ConnectionProperties prop = new ConnectionProperties();
         prop.value("foo-bar");
-        dataSource.getConnectionPropertiess().add(prop);
+        dataSource.connectionProperties(prop);
     }
 
     /**

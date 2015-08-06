@@ -12,7 +12,7 @@ import java.util.Map;
 public class CollectionTypeExample {
 
     @Binding(detypedName = "mapAttribute")
-    public Map<String,String> getProperties() {
+    public Map<String,String> properties() {
         Map<String, String> map = new HashMap<>();
         map.put("a", "b");
         map.put("c", "d");
@@ -20,12 +20,12 @@ public class CollectionTypeExample {
         return map;
     }
 
-    public void setProperties(Map<String,String> map) {
+    public void properties(Map<String,String> map) {
 
     }
 
     @Binding(detypedName = "listAttribute")
-    public List<Integer> getItems() {
+    public List<Integer> items() {
         List<Integer> list = new ArrayList<>();
         list.add(1);
         list.add(2);
@@ -34,7 +34,7 @@ public class CollectionTypeExample {
         return list;
     }
 
-    public void setItems(List<Integer> list) {
+    public void items(List<Integer> list) {
 
     }
 

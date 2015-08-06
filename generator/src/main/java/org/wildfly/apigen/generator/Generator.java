@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -93,10 +94,11 @@ public class Generator {
 
         JavaClassSource javaClass = SourceFactory.createResourceAsClass(resourceMetaData);
 
-        SourceFactory.createChildAccessors(scope, resourceMetaData, javaClass);
+        if (!resourceMetaData.getDescription().getChildrenNames().isEmpty()) {
+            SourceFactory.createChildAccessors(scope, resourceMetaData, javaClass);
+        }
 
         writeClass(targetDir, javaClass);
-
         scope.addGenerated(resourceMetaData.getAddress(), javaClass);
     }
 

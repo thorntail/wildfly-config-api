@@ -5,6 +5,7 @@ import org.jboss.dmr.ModelType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.wildfly.apigen.invocation.EntityAdapter;
+import org.wildfly.apigen.test.invocation.mail.MailSession;
 
 import java.util.Iterator;
 
@@ -41,8 +42,8 @@ public class TypeAdapterTestCase {
         EntityAdapter<MailSession> entityAdapter = new EntityAdapter<>(MailSession.class);
 
         MailSession mailSession = new MailSession();
-        mailSession.setFrom("john.doe");
-        mailSession.setDebug(true);
+        mailSession.from("john.doe");
+        mailSession.debug(true);
 
         ModelNode modelNode = entityAdapter.fromEntity(mailSession);
 
@@ -64,8 +65,8 @@ public class TypeAdapterTestCase {
         MailSession mailSession = entityAdapter.fromDMR(modelNode);
 
         Assert.assertNotNull(mailSession);
-        Assert.assertEquals("john.doe", mailSession.getFrom());
-        Assert.assertEquals(Boolean.TRUE, mailSession.getDebug());
+        Assert.assertEquals("john.doe", mailSession.from());
+        Assert.assertEquals(Boolean.TRUE, mailSession.debug());
 
     }
 
@@ -81,9 +82,9 @@ public class TypeAdapterTestCase {
 
         Assert.assertNotNull(collectionTypes);
 
-        Assert.assertNotNull(collectionTypes.getItems());
-        Assert.assertTrue(collectionTypes.getItems().get(0) == 1);
-        Assert.assertTrue(collectionTypes.getItems().get(1) == 2);
+        Assert.assertNotNull(collectionTypes.items());
+        Assert.assertTrue(collectionTypes.items().get(0) == 1);
+        Assert.assertTrue(collectionTypes.items().get(1) == 2);
 
     }
 
@@ -99,10 +100,10 @@ public class TypeAdapterTestCase {
 
         Assert.assertNotNull(collectionTypes);
 
-        Assert.assertNotNull(collectionTypes.getProperties());
-        Assert.assertEquals(2, collectionTypes.getProperties().size());
+        Assert.assertNotNull(collectionTypes.properties());
+        Assert.assertEquals(2, collectionTypes.properties().size());
 
-        Iterator<String> iterator = collectionTypes.getProperties().keySet().iterator();
+        Iterator<String> iterator = collectionTypes.properties().keySet().iterator();
         Assert.assertEquals("a", iterator.next());
         Assert.assertEquals("c", iterator.next());
 
