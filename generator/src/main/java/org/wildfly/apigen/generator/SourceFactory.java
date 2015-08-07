@@ -199,6 +199,7 @@ public class SourceFactory {
         );
         subresourceClass.setPackage(resourceMetaData.get(ResourceMetaData.PKG));
         subresourceClass.getJavaDoc().setText("Child mutators for " + javaClass.getName());
+        subresourceClass.setPublic();
 
         javaClass.addField()
                 .setPrivate()
