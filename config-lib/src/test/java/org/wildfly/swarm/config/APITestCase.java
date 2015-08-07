@@ -29,13 +29,13 @@ public class APITestCase {
 
         // attributes
         DataSource dataSource = new DataSource();
-        dataSource.setUserName("john_doe");
-        dataSource.setPassword("password");
+        dataSource.userName("john_doe")
+            .password("password");
 
         // subresources
         ConnectionProperties prop = new ConnectionProperties();
-        prop.setValue("foo-bar");
-        dataSource.getConnectionPropertiess().add(prop);
+        prop.value("foo-bar");
+        dataSource.connectionProperties(prop);
     }
 
     /**
@@ -62,9 +62,8 @@ public class APITestCase {
 
         // verify @Binding annotations are present
         for (MethodInfo method : clazz.methods()) {
-          if(method.name().startsWith("get") && !method.hasAnnotation(subresourceMeta))
+          if(method.parameters().isEmpty() && !method.hasAnnotation(subresourceMeta) && !method.name().equals("<init>"))
           {
-
               Assert.assertTrue(method.hasAnnotation(bindingMeta));
           }
         }

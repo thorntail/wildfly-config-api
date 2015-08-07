@@ -124,7 +124,6 @@ public class EntityAdapter<T> {
         ClassInfo clazz = index.getClassByName(DotName.createSimple(getType().getCanonicalName()));
 
         for (MethodInfo method : clazz.methods()) {
-
             if (method.hasAnnotation(BINDING_META)) {
 
                 Method getter = entity.getClass().getMethod(method.name());
@@ -132,8 +131,6 @@ public class EntityAdapter<T> {
 
                 Binding binding = getter.getDeclaredAnnotation(Binding.class);
                 String detypedName = binding.detypedName();
-
-                String javaName = method.name().replace("get", "set");
 
                 ModelNode dmrPayload = actualPayload.get(detypedName);
 
@@ -156,13 +153,12 @@ public class EntityAdapter<T> {
 
                 // VALUES
                 ModelType dmrType = Types.resolveModelType(propertyType);
-
                 if (dmrType == ModelType.LIST) {
-                    new ListTypeAdapter().fromDmr(entity, javaName, dmrType, propertyType, dmrPayload);
+                    new ListTypeAdapter().fromDmr(entity, method.name(), dmrType, propertyType, dmrPayload);
                 } else if (dmrType == ModelType.OBJECT) {
-                    new MapTypeAdapter().fromDmr(entity, javaName, dmrType, propertyType, dmrPayload);
+                    new MapTypeAdapter().fromDmr(entity, method.name(), dmrType, propertyType, dmrPayload);
                 } else {
-                    new SimpleTypeAdapter().fromDmr(entity, javaName, dmrType, propertyType, dmrPayload);
+                    new SimpleTypeAdapter().fromDmr(entity, method.name(), dmrType, propertyType, dmrPayload);
                 }
 
 

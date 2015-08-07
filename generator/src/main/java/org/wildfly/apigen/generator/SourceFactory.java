@@ -3,10 +3,7 @@ package org.wildfly.apigen.generator;
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.source.AnnotationSource;
-import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.JavaDocSource;
-import org.jboss.forge.roaster.model.source.PropertySource;
+import org.jboss.forge.roaster.model.source.*;
 import org.jboss.logmanager.Level;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
@@ -15,6 +12,7 @@ import org.wildfly.apigen.invocation.Types;
 import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -67,26 +65,41 @@ public class SourceFactory {
 
         desc.getAttributes().forEach(
                 att -> {
+                    //System.err.println("Attribute value: " + att.getValue());
                     ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
                     Optional<String> resolvedType = Types.resolveJavaTypeName(modelType);
 
                     if (resolvedType.isPresent()) {
 
                         // attributes
-
                         try {
-                            PropertySource<JavaClassSource> prop = javaClass.addProperty(
-                                    resolvedType.get(),
-                                    Types.javaAttributeName(att.getName())
-                            );
+                            final String name = Types.javaAttributeName(att.getName());
                             String attributeDescription = att.getValue().get(DESCRIPTION).asString();
-                            prop.getMutator().getJavaDoc().setText(attributeDescription);
-                            prop.getAccessor().getJavaDoc().setText(attributeDescription);
 
-                            AnnotationSource<JavaClassSource> bindingMeta = prop.getAccessor().addAnnotation();
+                            javaClass.addField()
+                                    .setName(name)
+                                    .setType(resolvedType.get())
+                                    .setPrivate();
+
+                            final MethodSource<JavaClassSource> accessor = javaClass.addMethod();
+                            accessor.getJavaDoc().setText(attributeDescription);
+                            accessor.setPublic()
+                                    .setName(name)
+                                    .setReturnType(resolvedType.get())
+                                    .setBody("return this." + name + ";");
+
+
+                            final MethodSource<JavaClassSource> mutator = javaClass.addMethod();
+                            mutator.getJavaDoc().setText(attributeDescription);
+                            mutator.addParameter(resolvedType.get(), "value");
+                            mutator.setPublic()
+                                    .setName(name)
+                                    .setReturnType(className)
+                                    .setBody("this." + name + " = value;\nreturn this;");
+
+                            AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
                             bindingMeta.setName("Binding");
                             bindingMeta.setStringValue("detypedName", att.getName());
-
                         }
                         catch (Exception e)
                         {
@@ -101,49 +114,108 @@ public class SourceFactory {
 
     /**
      * Decorates a base resource representation with accessors to it's child resources
-     *
      * @param scope
      * @param resourceMetaData
      * @param javaClass
      */
     public static void createChildAccessors(GeneratorScope scope, ResourceMetaData resourceMetaData, JavaClassSource javaClass) {
 
-        ResourceDescription desc = resourceMetaData.getDescription();
-        Set<String> childrenNames = desc.getChildrenNames();
-        if(!childrenNames.isEmpty())
-        {
-            javaClass.addImport("java.util.List");
-            javaClass.addImport(Subresource.class);
+        final JavaClassSource subresourceClass = createSubresourceClass(resourceMetaData, javaClass);
 
-            StringBuffer ctor = new StringBuffer();
+        // For each subresource create a getter/mutator/list-mutator
+        final ResourceDescription resourceMetaDataDescription = resourceMetaData.getDescription();
+        final Set<String> childrenNames = resourceMetaDataDescription.getChildrenNames();
+        for (String childName : childrenNames) {
 
-            for (String childName : childrenNames) {
-                AddressTemplate childAddress = resourceMetaData.getAddress().append(childName + "=*");
-                JavaClassSource childClass = scope.getGenerated(childAddress);
-                javaClass.addImport(childClass);
+            final AddressTemplate childAddress = resourceMetaData.getAddress().append(childName + "=*");
+            final JavaClassSource childClass = scope.getGenerated(childAddress);
+            //subresourceClass.addImport(childClass);
 
-                String propName = CaseFormat.UPPER_CAMEL.to(
-                        CaseFormat.LOWER_CAMEL,
-                        Keywords.escape(childClass.getName())
-                ) + "s";
-                String propType = "java.util.List<" + childClass.getName() + ">";
+            final String childClassName = childClass.getName();
+            final String propType = "java.util.List<" + childClassName + ">";
+            String propName = CaseFormat.UPPER_CAMEL.to(
+                    CaseFormat.LOWER_CAMEL,
+                    Keywords.escape(childClassName)
+            );
+            if (!propName.endsWith("s")) { propName += "s"; }
 
-                PropertySource<JavaClassSource> prop = javaClass.addProperty(
-                        propType,
-                        propName    // TODO name mangling
-                );
-                AnnotationSource<JavaClassSource> subresourceMeta = prop.getAccessor().addAnnotation();
-                subresourceMeta.setName("Subresource");
+            // Add a property and an initializer for this subresource to the class
+            final String resourceText = resourceMetaDataDescription.getChildDescription(childName).getText();
+            subresourceClass.addField()
+                    .setName(propName)
+                    .setType(propType)
+                    .setPrivate()
+                    .setLiteralInitializer("new java.util.ArrayList<>();")
+                    .getJavaDoc().setText(resourceText);
 
-                ctor.append("this.").append(propName).append(" = new ").append("java.util.ArrayList<>();\n");
-            }
+            // Add an accessor method
+            final MethodSource<JavaClassSource> accessor = subresourceClass.addMethod();
+            accessor.getJavaDoc()
+                    .setText("Get the list of " + childClassName + " resources")
+                    .addTagValue("@return", "the list of resources");
+            accessor.setPublic()
+                    .setName(propName)
+                    .setReturnType(propType)
+                    .setBody("return this." + propName + ";");
 
-            // initialize the collections
-            javaClass.addMethod()
-                    .setConstructor(true)
-                    .setPublic()
-                    .setBody(ctor.toString());
+            // Add a mutator method that takes a list of resources. Mutators are added to the containing class
+            final MethodSource<JavaClassSource> listMutator = javaClass.addMethod();
+            listMutator.getJavaDoc()
+                    .setText("Add all " + childClassName + " objects to this subresource")
+                    .addTagValue("@return", "this")
+                    .addTagValue("@param", "value List of " + childClassName + " objects.");
+            listMutator.addParameter(propType, "value");
+            listMutator.setPublic()
+                    .setName(propName)
+                    .setReturnType(javaClass.getName())
+                    .setBody("this.subresources." + propName + ".addAll(value);\nreturn this;");
+
+            // Add a mutator method that takes a single resource. Mutators are added to the containing class
+            final MethodSource<JavaClassSource> mutator = javaClass.addMethod();
+            mutator.getJavaDoc()
+                    .setText("Add the " + childClassName + " object to the list of subresources")
+                    .addTagValue("@param", "value The " + childClassName + " to add")
+                    .addTagValue("@return", "this");
+            mutator.addParameter(childClassName, "value");
+            mutator.setPublic()
+                    .setName(propName)
+                    .setReturnType(javaClass.getName())
+                    .setBody("this.subresources." + propName + ".add(value);\nreturn this;");
+
+            final AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
+            subresourceMeta.setName("Subresource");
 
         }
+
+        // initialize the collections
+        javaClass.addNestedType(subresourceClass);
+    }
+
+    private static JavaClassSource createSubresourceClass(ResourceMetaData resourceMetaData, JavaClassSource javaClass) {
+
+        JavaClassSource subresourceClass =  Roaster.parse(
+                JavaClassSource.class,
+                "class " + javaClass.getName() + "Resources" + " {}"
+        );
+        subresourceClass.setPackage(resourceMetaData.get(ResourceMetaData.PKG));
+        subresourceClass.getJavaDoc().setText("Child mutators for " + javaClass.getName());
+
+        javaClass.addField()
+                .setPrivate()
+                .setType(subresourceClass.getName())
+                .setName("subresources")
+                .setLiteralInitializer("new " + subresourceClass.getName() + "();");
+
+        final MethodSource<JavaClassSource> subresourcesMethod = javaClass.addMethod()
+                .setName("subresources")
+                .setPublic();
+        subresourcesMethod.setReturnType(subresourceClass.getName());
+        subresourcesMethod.setBody("return this.subresources;");
+        subresourcesMethod.addAnnotation().setName("Subresource");
+
+
+        javaClass.addImport("java.util.List");
+        javaClass.addImport(Subresource.class);
+        return subresourceClass;
     }
 }

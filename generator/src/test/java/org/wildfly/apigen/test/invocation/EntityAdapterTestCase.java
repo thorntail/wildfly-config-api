@@ -1,10 +1,12 @@
 package org.wildfly.apigen.test.invocation;
 
 import org.jboss.dmr.ModelNode;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.wildfly.apigen.invocation.EntityAdapter;
 import org.wildfly.apigen.test.AbstractTestCase;
+import org.wildfly.apigen.test.invocation.mail.MailSession;
 
 
 /**
@@ -21,15 +23,24 @@ public class EntityAdapterTestCase extends AbstractTestCase {
     @Before
     public void fixture() {
         mailSession = new MailSession();
-        mailSession.setDebug(true);
-        mailSession.setFrom("john@doe.com");
-        mailSession.setJndiName("java:/mail/Test");
+        mailSession.debug(true);
+        mailSession.from("john@doe.com");
+        mailSession.jndiName("java:/mail/Test");
     }
 
     @Test
     public void testSimpleResourceMarshalling() throws Exception {
         EntityAdapter<MailSession> entityAdapter = new EntityAdapter<>(MailSession.class);
         ModelNode modelNode = entityAdapter.fromEntity(mailSession);
-        System.out.println(modelNode);
+        Assert.assertTrue(modelNode.get("debug").asBoolean() == true);
+        Assert.assertTrue(modelNode.get("from").asString().equals("john@doe.com"));
+        Assert.assertTrue(modelNode.get("jndi-name").asString().equals("java:/mail/Test"));
+
+        MailSession session = entityAdapter.fromDMR(modelNode);
+        Assert.assertTrue(session.debug() == true);
+        Assert.assertTrue(session.from().equals("john@doe.com"));
+        Assert.assertTrue(session.jndiName().equals("java:/mail/Test"));
+
+//        System.out.println(modelNode);
     }
 }

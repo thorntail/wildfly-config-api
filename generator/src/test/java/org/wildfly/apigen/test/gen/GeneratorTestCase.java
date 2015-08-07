@@ -40,12 +40,12 @@ public class GeneratorTestCase extends AbstractTestCase {
 
         JavaClassSource javaClass = SourceFactory.createResourceAsClass(subresource);
 
-        System.out.println(javaClass);
+        //System.out.println(javaClass);
     }
 
     @Test
     public void testChildResourceTraversal() {
-        System.out.println(metaData.getDescription().getChildrenNames());
+//        System.out.println(metaData.getDescription().getChildrenNames());
 
         Iterator<ResourceMetaData> iterator = new MetaDataIterator(metaData).createInstance();
 
@@ -54,7 +54,7 @@ public class GeneratorTestCase extends AbstractTestCase {
         while(iterator.hasNext())
         {
             ResourceMetaData child = iterator.next();
-            System.out.println(child.getAddress());
+//            System.out.println(child.getAddress());
             Assert.assertTrue(
                     "Wrong order of elements",
                     child.getAddress().tokenLength() <= previous
@@ -73,11 +73,11 @@ public class GeneratorTestCase extends AbstractTestCase {
         metaData.set(ResourceMetaData.PKG, "foo.bar");
 
         metaData.getDescription().getAttributes().forEach(
-                att -> System.out.println(att.getName())
+                att -> {} //System.out.println(att.getName())
         );
 
         JavaClassSource javaClass = SourceFactory.createResourceAsClass(metaData);
-        System.out.println(javaClass.toString());
+//        System.out.println(javaClass.toString());
 
     }
 
