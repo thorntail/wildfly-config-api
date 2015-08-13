@@ -11,6 +11,16 @@ import java.util.Map;
 @Address("/subsystem=foo-bar")
 public class CollectionTypeExample {
 
+    private String key;
+
+    public CollectionTypeExample(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
     @Binding(detypedName = "mapAttribute")
     public Map<String,String> properties() {
         Map<String, String> map = new HashMap<>();

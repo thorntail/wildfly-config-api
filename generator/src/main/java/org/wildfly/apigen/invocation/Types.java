@@ -4,6 +4,7 @@ import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.wildfly.apigen.generator.Keywords;
+import org.wildfly.apigen.generator.ResourceMetaData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,8 +124,18 @@ public class Types<T> {
         return result;
     }
 
-    public final static String javaClassName(String dmr) {
-        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL,  dmr.replace("-", "_"));
+    public final static String javaClassName(ResourceMetaData metaData) {
+        String name = null;
+        if(metaData.getDescription().isSingleton())
+        {
+            name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL,  metaData.getDescription().getSingletonName().replace("-", "_"));
+        }
+        else
+        {
+            name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL,  metaData.getAddress().getResourceType().replace("-", "_"));
+        }
+        return name;
+
     }
 
     public final static String javaAttributeName(String dmr) {

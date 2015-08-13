@@ -3,16 +3,20 @@ package org.wildfly.apigen.generator;
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.source.*;
+import org.jboss.forge.roaster.model.source.AnnotationSource;
+import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.JavaDocSource;
+import org.jboss.forge.roaster.model.source.JavaEnumSource;
+import org.jboss.forge.roaster.model.source.MethodSource;
 import org.jboss.logmanager.Level;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.apigen.invocation.Types;
 import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -34,12 +38,14 @@ public class SourceFactory {
      * Base template for a resource representation.
      * Covers the resource attributes
      *
+     *
+     * @param scope
      * @param metaData
      * @return
      */
-    public static JavaClassSource createResourceAsClass(ResourceMetaData metaData) {
+    public static JavaClassSource createResourceAsClass(GeneratorScope scope, ResourceMetaData metaData) {
 
-        String className = Types.javaClassName(metaData.getAddress().getResourceType());
+        String className = Types.javaClassName(metaData);
 
         // base class
         JavaClassSource javaClass =  Roaster.parse(
@@ -47,7 +53,40 @@ public class SourceFactory {
                 "public class " + className + " {}"
         );
 
-        javaClass.setPackage(metaData.get(ResourceMetaData.PKG));
+        // resource name
+        javaClass.addField()
+                .setName("key")
+                .setPrivate()
+                .setType(String.class);
+
+        // constructors
+        boolean isSingleton = metaData.getDescription().isSingleton();
+        if(isSingleton)
+        {
+            javaClass.addMethod()
+                    .setConstructor(true)
+                    .setPublic()
+                    .setBody("this.key = \""+metaData.getDescription().getSingletonName()+"\";");
+        }
+        else
+        {
+            // regular resources need to provide a key
+            javaClass.addMethod()
+                    .setConstructor(true)
+                    .setPublic()
+                    .setBody("this.key = key;")
+                    .addParameter(String.class, "key");
+
+        }
+
+        MethodSource<JavaClassSource> keyAccessor = javaClass.addMethod()
+                .setName("getKey")
+                .setPublic()
+                .setReturnType(String.class)
+                .setBody("return this.key;");
+
+
+        javaClass.setPackage(derivePackageName(metaData));
 
         // javadoc
         JavaDocSource javaDoc = javaClass.getJavaDoc();
@@ -55,6 +94,7 @@ public class SourceFactory {
         javaDoc.setText(desc.getText());
 
         // imports
+        javaClass.addImport(Implicit.class);
         javaClass.addImport(Address.class);
         javaClass.addImport(Binding.class);
 
@@ -62,6 +102,11 @@ public class SourceFactory {
         AnnotationSource<JavaClassSource> addressMeta = javaClass.addAnnotation();
         addressMeta.setName("Address");
         addressMeta.setStringValue(metaData.getAddress().getTemplate());
+
+        if(isSingleton) {
+            AnnotationSource<JavaClassSource> implicitMeta = javaClass.addAnnotation();
+            implicitMeta.setName("Implicit");
+        }
 
         desc.getAttributes().forEach(
                 att -> {
@@ -100,9 +145,7 @@ public class SourceFactory {
                             AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
                             bindingMeta.setName("Binding");
                             bindingMeta.setStringValue("detypedName", att.getName());
-                        }
-                        catch (Exception e)
-                        {
+                        } catch (Exception e) {
                             log.log(Level.ERROR, "Failed to process " + metaData.getAddress() + ", attribute " + att.getName(), e);
                         }
                     }
@@ -110,6 +153,32 @@ public class SourceFactory {
         );
 
         return javaClass;
+    }
+
+    private static String derivePackageName(ResourceMetaData metaData) {
+        int level = metaData.getAddress().tokenLength();
+        StringBuffer sb = new StringBuffer();
+        if(level>1) {
+
+            int subLevel = level;
+            while(subLevel>=1) {
+                AddressTemplate sub = metaData.getAddress().subTemplate(subLevel - 1, subLevel);
+                String type = sub.getResourceType().replace("-", "_");
+                String subPackage = CaseFormat.LOWER_UNDERSCORE.to(
+                        CaseFormat.LOWER_CAMEL,
+                        type
+                );
+
+                sb.insert(0, "."+subPackage);
+                subLevel--;
+            }
+
+        }
+
+        sb.insert(0, metaData.get(ResourceMetaData.PKG));
+        //System.out.println(metaData.getAddress() + " >> " + sb.toString());
+        return sb.toString();
+
     }
 
     /**
@@ -124,12 +193,12 @@ public class SourceFactory {
 
         // For each subresource create a getter/mutator/list-mutator
         final ResourceDescription resourceMetaDataDescription = resourceMetaData.getDescription();
-        final Set<String> childrenNames = resourceMetaDataDescription.getChildrenNames();
+        final Set<String> childrenNames = resourceMetaDataDescription.getChildrenTypes();
         for (String childName : childrenNames) {
 
             final AddressTemplate childAddress = resourceMetaData.getAddress().append(childName + "=*");
             final JavaClassSource childClass = scope.getGenerated(childAddress);
-            //subresourceClass.addImport(childClass);
+            javaClass.addImport(childClass);
 
             final String childClassName = childClass.getName();
             final String propType = "java.util.List<" + childClassName + ">";
@@ -218,5 +287,54 @@ public class SourceFactory {
         javaClass.addImport("java.util.List");
         javaClass.addImport(Subresource.class);
         return subresourceClass;
+    }
+
+    public static void createSingletonChildAccessors(GeneratorScope scope, ResourceMetaData resourceMetaData, JavaClassSource javaClass) {
+
+        final ResourceDescription description = resourceMetaData.getDescription();
+        final Set<String> singletonNames = description.getSingletonChildrenTypes();
+        for (String singletonName : singletonNames) {
+
+            String[] split = singletonName.split("=");
+            String type = split[0];
+            String name = split[1];
+            final AddressTemplate childAddress = resourceMetaData.getAddress().append(type+"="+name);
+            final JavaClassSource childClass = scope.getGenerated(childAddress);
+            javaClass.addImport(childClass);
+
+            String propName = CaseFormat.UPPER_CAMEL.to(
+                    CaseFormat.LOWER_CAMEL,
+                    name.replace("-", "_").toLowerCase()
+            );
+
+            javaClass.addField()
+                    .setName(propName)
+                    .setType(childClass)
+                    .setPrivate();
+
+            // Add an accessor method
+            final MethodSource<JavaClassSource> accessor = javaClass.addMethod();
+            String javaDoc = description.getChildDescription(type, name).getText();
+            accessor.getJavaDoc()
+                    .setText(javaDoc);
+            accessor.setPublic()
+                    .setName(propName)
+                    .setReturnType(childClass)
+                    .setBody("return this." + propName + ";");
+
+            AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
+            subresourceMeta.setName("Subresource");
+
+            // Add a mutator
+            final MethodSource<JavaClassSource> mutator = javaClass.addMethod();
+            mutator.getJavaDoc()
+                    .setText(javaDoc);
+            mutator.addParameter(childClass, "value");
+            mutator.setPublic()
+                    .setName(propName)
+                    .setReturnType(javaClass.getName())
+                    .setBody("this." + propName + "=value;\nreturn this;");
+
+        }
     }
 }

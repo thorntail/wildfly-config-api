@@ -1,16 +1,24 @@
 package org.wildfly.apigen.test.gen;
 
+import org.jboss.dmr.ModelNode;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.wildfly.apigen.test.AbstractTestCase;
-import org.wildfly.apigen.generator.MetaDataIterator;
+import org.wildfly.apigen.generator.Config;
+import org.wildfly.apigen.generator.Generator;
+import org.wildfly.apigen.generator.GeneratorScope;
+import org.wildfly.apigen.generator.MetaDataTraversal;
 import org.wildfly.apigen.generator.ResourceMetaData;
 import org.wildfly.apigen.generator.SourceFactory;
 import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.apigen.model.DefaultStatementContext;
+import org.wildfly.apigen.model.ResourceDescription;
+import org.wildfly.apigen.operations.ReadDescription;
+import org.wildfly.apigen.test.AbstractTestCase;
 
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author Heiko Braun
@@ -38,23 +46,22 @@ public class GeneratorTestCase extends AbstractTestCase {
         );
         subresource.set(ResourceMetaData.PKG, "foo.bar.test");
 
-        JavaClassSource javaClass = SourceFactory.createResourceAsClass(subresource);
+        GeneratorScope scope = new GeneratorScope();
+        JavaClassSource javaClass = SourceFactory.createResourceAsClass(scope, subresource);
 
-        //System.out.println(javaClass);
     }
 
     @Test
     public void testChildResourceTraversal() {
-//        System.out.println(metaData.getDescription().getChildrenNames());
 
-        Iterator<ResourceMetaData> iterator = new MetaDataIterator(metaData).createInstance();
+        Iterator<ResourceMetaData> iterator = new MetaDataTraversal(metaData).createInstance();
 
         // verify that the order reflects the nesting structure
         Integer previous = Integer.MAX_VALUE;
         while(iterator.hasNext())
         {
             ResourceMetaData child = iterator.next();
-//            System.out.println(child.getAddress());
+
             Assert.assertTrue(
                     "Wrong order of elements",
                     child.getAddress().tokenLength() <= previous
@@ -76,8 +83,80 @@ public class GeneratorTestCase extends AbstractTestCase {
                 att -> {} //System.out.println(att.getName())
         );
 
-        JavaClassSource javaClass = SourceFactory.createResourceAsClass(metaData);
-//        System.out.println(javaClass.toString());
+        GeneratorScope scope = new GeneratorScope();
+        JavaClassSource javaClass = SourceFactory.createResourceAsClass(scope, metaData);
+
+    }
+
+    /**
+     * Single occurrence of singleton meta data per child type
+     * @throws Exception
+     */
+    @Test
+    public void testSimpleSingletons() throws Exception {
+
+        String configDirectory = System.getProperty("APIGEN_CFG_DIR");
+
+        ResourceMetaData root = getResourceMetaData(
+                AddressTemplate.of("/subsystem=logging")
+        );
+        root.set(ResourceMetaData.PKG, "foo.bar.logging");
+
+        Config config = Config.fromJson(configDirectory+"/logging-config.json");
+        Generator generator = new Generator("./target/generated-test-sources", config);
+        generator.processGeneratorTargets();
+        generator.shutdown();
+
+    }
+
+    /**
+     * Multiple different singleton resources per child type
+     * @throws Exception
+     */
+    @Test
+    public void testComplexSingletons() throws Exception {
+
+        String configDirectory = System.getProperty("APIGEN_CFG_DIR");
+
+        ResourceMetaData root = getResourceMetaData(
+                AddressTemplate.of("/subsystem=ejb3")
+        );
+        root.set(ResourceMetaData.PKG, "foo.bar.ejb3");
+
+        Config config = Config.fromJson(configDirectory+"/ejb3-config.json");
+        Generator generator = new Generator("./target/generated-test-sources", config);
+        generator.processGeneratorTargets();
+        generator.shutdown();
+
+    }
+
+    /**
+     * Test parsing of singleton type meta data
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testSingletonMetaData() throws Exception {
+
+        AddressTemplate address = AddressTemplate.of("/subsystem=ejb3");
+        ReadDescription rrd = new ReadDescription(address);
+
+        ModelNode response = client.execute(rrd.resolve(new DefaultStatementContext()));
+
+        ResourceDescription description = ResourceDescription.from(response);
+
+        Set<String> childrenTypes = description.getChildrenTypes();
+        Set<String> singletonChildrenTypes = description.getSingletonChildrenTypes();
+
+        childrenTypes.forEach(s -> System.out.println(s));
+        singletonChildrenTypes.forEach(s -> System.out.println(s));
+
+        Assert.assertFalse(childrenTypes.contains("service"));
+        Assert.assertEquals(4, singletonChildrenTypes.size());
+        Assert.assertTrue(singletonChildrenTypes.contains("service=timer-service"));
+        Assert.assertTrue(singletonChildrenTypes.contains("service=remote"));
+        Assert.assertTrue(singletonChildrenTypes.contains("service=async"));
+        Assert.assertTrue(singletonChildrenTypes.contains("service=iiop"));
 
     }
 

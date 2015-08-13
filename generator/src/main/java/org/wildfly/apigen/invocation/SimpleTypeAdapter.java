@@ -110,9 +110,9 @@ public class SimpleTypeAdapter {
 
       /*  else if ("java.util.List".equals(propBinding.getJavaTypeName()))
                        {
-                           ModelNode list = actualPayload.get(detypedName);
+                           ModelNode list = actualPayload.resolve(detypedName);
                            if (list.isDefined() && propValue.isDefined() && !list.asList().isEmpty()) {
-                               if (list.asList().get(0).getType().equals(ModelType.PROPERTY)) {
+                               if (list.asList().resolve(0).getType().equals(ModelType.PROPERTY)) {
                                    value = propBinding.getEntityAdapterForList().fromDMRPropertyList(list.asPropertyList());
                                } else {
                                    value = propBinding.getEntityAdapterForList().fromDMRList(list.asList());

@@ -22,7 +22,7 @@ public class EntityAdapterTestCase extends AbstractTestCase {
 
     @Before
     public void fixture() {
-        mailSession = new MailSession();
+        mailSession = new MailSession("TestMail");
         mailSession.debug(true);
         mailSession.from("john@doe.com");
         mailSession.jndiName("java:/mail/Test");
@@ -36,7 +36,7 @@ public class EntityAdapterTestCase extends AbstractTestCase {
         Assert.assertTrue(modelNode.get("from").asString().equals("john@doe.com"));
         Assert.assertTrue(modelNode.get("jndi-name").asString().equals("java:/mail/Test"));
 
-        MailSession session = entityAdapter.fromDMR(modelNode);
+        MailSession session = entityAdapter.fromDMR("key", modelNode);
         Assert.assertTrue(session.debug() == true);
         Assert.assertTrue(session.from().equals("john@doe.com"));
         Assert.assertTrue(session.jndiName().equals("java:/mail/Test"));

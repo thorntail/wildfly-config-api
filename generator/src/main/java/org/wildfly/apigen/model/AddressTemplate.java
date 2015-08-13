@@ -58,7 +58,7 @@ import java.util.NoSuchElementException;
  *     AddressTemplate a4 = AddressTemplate.of("{selected.profile}/subsystem=mail/mail-session=*");
  * </pre>
  * <p/>
- * To get a fully qualified address from an address template use the {@link #resolve(StatementContext, String...)} method.
+ * To resolve a fully qualified address from an address template use the {@link #resolve(StatementContext, String...)} method.
  *
  * @author Harald Pehl
  */
@@ -208,6 +208,13 @@ public class AddressTemplate implements Comparable<AddressTemplate> {
     public String getResourceType() {
         if (!tokens.isEmpty() && tokens.getLast().hasKey()) {
             return tokens.getLast().getKey();
+        }
+        return null;
+    }
+
+    public String getResourceName() {
+        if (!tokens.isEmpty() && tokens.getLast().hasKey()) {
+            return tokens.getLast().getValue();
         }
         return null;
     }

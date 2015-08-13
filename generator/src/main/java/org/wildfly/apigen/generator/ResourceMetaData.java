@@ -1,10 +1,14 @@
 package org.wildfly.apigen.generator;
 
+import org.jboss.dmr.ModelNode;
 import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Heiko Braun
@@ -17,9 +21,13 @@ public class ResourceMetaData implements Comparable<ResourceMetaData> {
     private AddressTemplate address;
     private ResourceDescription desc;
 
-    private Map<String,String> cfg = new HashMap<>();
+    private Map<String, String> cfg = new HashMap<>();
 
     public ResourceMetaData(AddressTemplate address, ResourceDescription desc) {
+
+        if (!desc.isDefined())
+            throw new IllegalStateException("Undefined resource description");
+
         this.address = address;
         this.desc = desc;
     }
@@ -46,11 +54,11 @@ public class ResourceMetaData implements Comparable<ResourceMetaData> {
         cfg.put(key, value);
     }
 
-    public Map<String,String> getAll() {
+    public Map<String, String> getAllCfg() {
         return cfg;
     }
 
-    public void setAll(Map<String, String> values) {
+    public void setAllCfg(Map<String, String> values) {
         cfg.putAll(values);
     }
 
@@ -58,4 +66,5 @@ public class ResourceMetaData implements Comparable<ResourceMetaData> {
     public String toString() {
         return address.getTemplate();
     }
+
 }

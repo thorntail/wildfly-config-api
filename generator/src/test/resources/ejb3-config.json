@@ -1,0 +1,14 @@
+{
+  "server" : {
+    "host" : "localhost",
+    "port" : 9990,
+    "user" : "admin",
+    "pass" : "passWord123"
+  },
+  "generatorTargets" : [
+    {
+      "sourceAddress": "/subsystem=ejb3",
+      "targetPackage": "org.wildfly.swarm.config.ejb3"
+    }
+  ]
+}

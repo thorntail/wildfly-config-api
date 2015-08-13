@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
 import org.wildfly.apigen.invocation.Subresource;
-import org.wildfly.swarm.config.datasources.ConnectionProperties;
-import org.wildfly.swarm.config.datasources.DataSource;
+import org.wildfly.swarm.config.datasources.subsystem.dataSource.DataSource;
+import org.wildfly.swarm.config.datasources.subsystem.dataSource.connectionProperties.ConnectionProperties;
 
 import java.io.InputStream;
 
@@ -19,7 +19,7 @@ import java.io.InputStream;
  * @author Heiko Braun
  * @since 29/07/15
  */
-public class APITestCase {
+public class BindingMetaDataTestCase {
 
     /**
      * This test just makes sure the generated classes can be instantiated.
@@ -28,15 +28,19 @@ public class APITestCase {
     public void testClassInstances() {
 
         // attributes
-        DataSource dataSource = new DataSource();
+        DataSource dataSource = new DataSource("Test");
         dataSource.userName("john_doe")
             .password("password");
 
         // subresources
-        ConnectionProperties prop = new ConnectionProperties();
+        ConnectionProperties prop = new ConnectionProperties("Prop-One");
         prop.value("foo-bar");
         dataSource.connectionProperties(prop);
     }
+
+    private final static String[] BLACKLIST = {
+            "<init>", "getKey"
+    };
 
     /**
      * Verification of the binding meta on the generated classes
@@ -62,12 +66,22 @@ public class APITestCase {
 
         // verify @Binding annotations are present
         for (MethodInfo method : clazz.methods()) {
-          if(method.parameters().isEmpty() && !method.hasAnnotation(subresourceMeta) && !method.name().equals("<init>"))
+          if(method.parameters().isEmpty()
+                  && !method.hasAnnotation(subresourceMeta)
+                  && !isExcluded(method.name()))
           {
-              Assert.assertTrue(method.hasAnnotation(bindingMeta));
+              Assert.assertTrue(method.name()+" is missing @Binding", method.hasAnnotation(bindingMeta));
           }
         }
 
+    }
+
+    private static boolean isExcluded(String s) {
+        for (String ex : BLACKLIST) {
+            if(ex.equals(s))
+                return true;
+        }
+        return false;
     }
 
 }

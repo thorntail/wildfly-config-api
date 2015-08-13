@@ -14,6 +14,15 @@ public class MailSession {
 	private String from;
 	private String jndiName;
 	private MailSessionResources subresources = new MailSessionResources();
+	private String key;
+
+	public MailSession(String key) {
+		this.key = key;
+	}
+
+	public String getKey() {
+		return key;
+	}
 
 	/**
 	 * Enables JavaMail debugging

@@ -10,6 +10,7 @@ import org.jboss.jandex.MethodInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Map;
  */
 public class EntityAdapter<T> {
 
+    private final static DotName IMPLICIT_META = DotName.createSimple(Implicit.class.getCanonicalName());
     private final static DotName BINDING_META = DotName.createSimple(Binding.class.getCanonicalName());
     private final static DotName ADDRESS_META = DotName.createSimple(Address.class.getCanonicalName());
     private final static DotName SUBRESOURCE_META = DotName.createSimple(Subresource.class.getCanonicalName());
@@ -100,7 +102,7 @@ public class EntityAdapter<T> {
      * @param modelNode a ModelNode
      * @return an entity representation of type T
      */
-    public T fromDMR(ModelNode modelNode) throws Exception {
+    public T fromDMR(String keyValue, ModelNode modelNode) throws Exception {
 
         if (isBaseTypeAdapter()) return convertToBaseType(modelNode);
 
@@ -120,8 +122,24 @@ public class EntityAdapter<T> {
             throw new IllegalArgumentException("Unsupported ModelType "+modelNode.getType()+": "+modelNode);
         }
 
-        T entity = (T) getType().newInstance();
         ClassInfo clazz = index.getClassByName(DotName.createSimple(getType().getCanonicalName()));
+
+        T entity = null;
+        boolean implicitKey = clazz.annotations().containsKey(IMPLICIT_META);
+
+        if(implicitKey)
+        {
+            // implicit (aka singleton) resource
+            Constructor<?> ctor = getType().getConstructor();
+            entity = (T) ctor.newInstance();
+        }
+        else
+        {
+            // explicit (regular) resource
+            entity = (T) getType().getConstructor(String.class)
+                    .newInstance(keyValue);
+        }
+
 
         for (MethodInfo method : clazz.methods()) {
             if (method.hasAnnotation(BINDING_META)) {
@@ -141,7 +159,7 @@ public class EntityAdapter<T> {
                     if(propValue.isDefined()
                             && propValue.getType() == ModelType.EXPRESSION)
                     {
-                        String exprValue = actualPayload.get(propBinding.getDetypedName()).asString();
+                        String exprValue = actualPayload.resolve(propBinding.getDetypedName()).asString();
 
                         ExpressionAdapter.setExpressionValue(entity, propBinding.getJavaName(), exprValue);
 
@@ -199,7 +217,7 @@ public class EntityAdapter<T> {
 
                 if(exprValue!=null)
                 {
-                    modelMode.get(detypedName).setExpression(exprValue);
+                    modelMode.resolve(detypedName).setExpression(exprValue);
                     continue; // expression have precedence over real values
                 }
             }*/

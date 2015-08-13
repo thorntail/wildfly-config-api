@@ -22,7 +22,7 @@ import java.io.IOException;
 public class AbstractTestCase  {
 
     protected static ModelControllerClient client;
-    private static Config config;
+    protected static Config config;
 
     @BeforeClass
     public static void setup() throws Exception {

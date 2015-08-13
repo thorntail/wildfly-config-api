@@ -101,7 +101,7 @@ public class Operation extends ModelNode {
             }
         }
         if (role != null && !name.equals("WHOMAI")) {
-            // otherwise we get the replacement role
+            // otherwise we resolve the replacement role
             get(OPERATION_HEADERS).get(ROLES).set(role);
         }
     }

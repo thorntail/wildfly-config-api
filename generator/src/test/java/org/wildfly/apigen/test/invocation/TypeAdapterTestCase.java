@@ -18,7 +18,7 @@ public class TypeAdapterTestCase {
     @Test
     public void testMapJavaType() throws Exception {
         EntityAdapter<CollectionTypeExample> entityAdapter = new EntityAdapter<>(CollectionTypeExample.class);
-        ModelNode modelNode = entityAdapter.fromEntity(new CollectionTypeExample());
+        ModelNode modelNode = entityAdapter.fromEntity(new CollectionTypeExample("Test"));
 
         ModelNode someAttribute = modelNode.get("mapAttribute");
 
@@ -30,7 +30,7 @@ public class TypeAdapterTestCase {
     @Test
     public void testListJavaType() throws Exception {
         EntityAdapter<CollectionTypeExample> entityAdapter = new EntityAdapter<>(CollectionTypeExample.class);
-        ModelNode modelNode = entityAdapter.fromEntity(new CollectionTypeExample());
+        ModelNode modelNode = entityAdapter.fromEntity(new CollectionTypeExample("Test"));
 
         ModelNode someAttribute = modelNode.get("listAttribute");
         Assert.assertEquals(ModelType.LIST, someAttribute.getType());
@@ -41,7 +41,7 @@ public class TypeAdapterTestCase {
     public void testSimpleJavaType() throws Exception {
         EntityAdapter<MailSession> entityAdapter = new EntityAdapter<>(MailSession.class);
 
-        MailSession mailSession = new MailSession();
+        MailSession mailSession = new MailSession("TestMail");
         mailSession.from("john.doe");
         mailSession.debug(true);
 
@@ -62,7 +62,7 @@ public class TypeAdapterTestCase {
         modelNode.get("debug").set(true);
 
         EntityAdapter<MailSession> entityAdapter = new EntityAdapter<>(MailSession.class);
-        MailSession mailSession = entityAdapter.fromDMR(modelNode);
+        MailSession mailSession = entityAdapter.fromDMR("key", modelNode);
 
         Assert.assertNotNull(mailSession);
         Assert.assertEquals("john.doe", mailSession.from());
@@ -78,7 +78,7 @@ public class TypeAdapterTestCase {
         modelNode.get("listAttribute").add(3);
 
         EntityAdapter<CollectionTypeExample> entityAdapter = new EntityAdapter<>(CollectionTypeExample.class);
-        CollectionTypeExample collectionTypes = entityAdapter.fromDMR(modelNode);
+        CollectionTypeExample collectionTypes = entityAdapter.fromDMR("key", modelNode);
 
         Assert.assertNotNull(collectionTypes);
 
@@ -96,7 +96,7 @@ public class TypeAdapterTestCase {
         modelNode.get("mapAttribute").add("c", "d");
 
         EntityAdapter<CollectionTypeExample> entityAdapter = new EntityAdapter<>(CollectionTypeExample.class);
-        CollectionTypeExample collectionTypes = entityAdapter.fromDMR(modelNode);
+        CollectionTypeExample collectionTypes = entityAdapter.fromDMR("key", modelNode);
 
         Assert.assertNotNull(collectionTypes);
 

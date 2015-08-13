@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 /**
  *
- * TODO: Semantics of resolve() versus get(). IMO the later would be correct and resolve should go ...
+ * TODO: Semantics of resolve() versus resolve(). IMO the later would be correct and resolve should go ...
  * It might better to leave the resolution semantic to a specific implementation (parent delegation, namespace based, etc)
  *
  * @author Heiko Braun

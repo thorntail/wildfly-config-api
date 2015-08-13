@@ -26,6 +26,7 @@ import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,6 +42,8 @@ public class ResourceDescription extends ModelNode {
 
     static final String ACCESS_CONTROL = "access-control";
     static final String NOTIFICATIONS = "notifications";
+    private boolean isSingleton;
+    private String singletonName;
 
     public ResourceDescription() {
         super();
@@ -63,7 +66,7 @@ public class ResourceDescription extends ModelNode {
     }
 
     public boolean hasChildrenDefined() {
-        return hasDefined(CHILDREN);
+        return hasDefined(CHILDREN) && !get(CHILDREN).keys().isEmpty();
     }
 
     public boolean hasOperations() {
@@ -74,16 +77,55 @@ public class ResourceDescription extends ModelNode {
         return hasDefined(NOTIFICATIONS);
     }
 
-    public Set<String> getChildrenNames() {
-        return hasChildrenDefined() ? get(CHILDREN).keys() : Collections.EMPTY_SET;
+    public Set<String> getChildrenTypes() {
+
+        Set<String> result = new HashSet<>();
+
+        if(hasChildrenDefined())
+        {
+            ModelNode children = get(CHILDREN);
+            List<Property> items = children.asPropertyList();
+            for (Property item : items) {
+                Set<String> keys = item.getValue().get(MODEL_DESCRIPTION).keys();
+                if(keys.contains("*")) // regular resources (opposed to singletons, that carry distinct names)
+                {
+                    result.add(item.getName());
+                }
+            }
+        }
+
+        return result;
     }
+
+    public Set<String> getSingletonChildrenTypes() {
+
+        Set<String> result = new HashSet<>();
+
+        if(hasChildrenDefined())
+        {
+            ModelNode children = get(CHILDREN);
+            List<Property> items = children.asPropertyList();
+            for (Property item : items) {
+                Set<String> keys = item.getValue().get(MODEL_DESCRIPTION).keys();
+                if(!keys.contains("*")) // singleton resources
+                {
+                    for (String key : keys) {
+                        result.add(item.getName()+"="+key);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
     /**
      * Looks for the description of a child resource.
-     * @param resourceName The name of the child resource
+     * @param childType The type of the child resource
      * @return the description of the child resource or {@link #EMPTY} if no such resource exists.
      */
-    public ResourceDescription getChildDescription(String resourceName) {
-        return getChildDescription(resourceName, "*");
+    public ResourceDescription getChildDescription(String childType) {
+        return getChildDescription(childType, "*");
     }
 
     /**
@@ -111,7 +153,8 @@ public class ResourceDescription extends ModelNode {
 
     public static ResourceDescription from(ModelNode response) {
 
-        assert response.get(OUTCOME).asString().equals(SUCCESS);
+        if(!response.get(OUTCOME).asString().equals(SUCCESS))
+            throw new RuntimeException(response.get(FAILURE_DESCRIPTION).asString());
 
         ModelNode result = response.get(RESULT);
         if(ModelType.LIST == result.getType())
@@ -129,5 +172,18 @@ public class ResourceDescription extends ModelNode {
 
     public String getText() {
         return get(DESCRIPTION).asString();
+    }
+
+    public boolean isSingleton() {
+        return isSingleton;
+    }
+
+    public String getSingletonName() {
+        return singletonName;
+    }
+
+    public void setSingletonName(String name) {
+        this.isSingleton = true;
+        this.singletonName = name;
     }
 }
