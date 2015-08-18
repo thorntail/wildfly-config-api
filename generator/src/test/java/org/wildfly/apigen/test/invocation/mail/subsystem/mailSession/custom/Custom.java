@@ -1,5 +1,6 @@
-package org.wildfly.apigen.test.invocation.mail;
+package org.wildfly.swarm.config.mail.subsystem.mailSession.custom;
 
+import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
 /**
@@ -8,11 +9,20 @@ import org.wildfly.apigen.invocation.Binding;
 @Address("/subsystem=mail/mail-session=*/custom=*")
 public class Custom {
 
+	private String key;
 	private String outboundSocketBindingRef;
 	private String password;
 	private Boolean ssl;
 	private Boolean tls;
 	private String username;
+
+	public Custom(String key) {
+		this.key = key;
+	}
+
+	public String getKey() {
+		return this.key;
+	}
 
 	/**
 	 * Outbound Socket binding to mail server

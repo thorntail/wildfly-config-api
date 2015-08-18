@@ -281,8 +281,6 @@ public class SourceFactory {
                 .setPublic();
         subresourcesMethod.setReturnType(subresourceClass.getName());
         subresourcesMethod.setBody("return this.subresources;");
-        subresourcesMethod.addAnnotation().setName("Subresource");
-
 
         javaClass.addImport("java.util.List");
         javaClass.addImport(Subresource.class);

@@ -1,18 +1,31 @@
-package org.wildfly.apigen.test.invocation.mail;
+package org.wildfly.swarm.config.mail;
 
+import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
 import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
+import org.wildfly.swarm.config.mail.subsystem.mailSession.MailSession;
 /**
  * The mail subsystem
  */
 @Address("/subsystem=mail")
-public class Subsystem {
+@Implicit
+public class Mail {
 
-	private SubsystemResources subresources = new SubsystemResources();
+	private String key;
+	private MailResources subresources = new MailResources();
 
-	public SubsystemResources subresources() {
+	public Mail() {
+		this.key = "mail";
+	}
+
+	public String getKey() {
+		return this.key;
+	}
+
+	@Subresource
+	public MailResources subresources() {
 		return this.subresources;
 	}
 
@@ -21,7 +34,7 @@ public class Subsystem {
 	 * @return this
 	 * @param value List of MailSession objects.
 	 */
-	public Subsystem mailSessions(List<MailSession> value) {
+	public Mail mailSessions(List<MailSession> value) {
 		this.subresources.mailSessions.addAll(value);
 		return this;
 	}
@@ -31,15 +44,15 @@ public class Subsystem {
 	 * @param value The MailSession to add
 	 * @return this
 	 */
-	public Subsystem mailSessions(MailSession value) {
+	public Mail mailSessions(MailSession value) {
 		this.subresources.mailSessions.add(value);
 		return this;
 	}
 
 	/**
-	 * Child mutators for Subsystem
+	 * Child mutators for Mail
 	 */
-	class SubsystemResources {
+	public class MailResources {
 		/**
 		 * Mail session definition
 		 */
