@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.wildfly.apigen.invocation.EntityAdapter;
 import org.wildfly.apigen.test.AbstractTestCase;
-import org.wildfly.swarm.config.mail.Mail;
-import org.wildfly.swarm.config.mail.subsystem.mailSession.MailSession;
+import org.wildfly.apigen.test.invocation.mail.Mail;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession;
 
 
 /**

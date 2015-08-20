@@ -1,14 +1,14 @@
-package org.wildfly.swarm.config.mail.subsystem.mailSession;
+package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession;
 
-import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
-import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
-import org.wildfly.swarm.config.mail.subsystem.mailSession.custom.Custom;
-import org.wildfly.swarm.config.mail.subsystem.mailSession.server.Pop3;
-import org.wildfly.swarm.config.mail.subsystem.mailSession.server.Smtp;
-import org.wildfly.swarm.config.mail.subsystem.mailSession.server.Imap;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom.Custom;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Imap;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Pop3;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp;
+
+import java.util.List;
 /**
  * Mail session definition
  */

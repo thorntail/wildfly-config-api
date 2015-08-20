@@ -1,4 +1,4 @@
-package org.wildfly.swarm.config.mail.subsystem.mailSession.server;
+package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server;
 
 import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;

@@ -5,8 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.wildfly.apigen.invocation.Marshaller;
 import org.wildfly.apigen.test.AbstractTestCase;
-import org.wildfly.swarm.config.mail.Mail;
-import org.wildfly.swarm.config.mail.subsystem.mailSession.MailSession;
+import org.wildfly.apigen.test.invocation.mail.Mail;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom.Custom;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class MarshallerTestCase extends AbstractTestCase {
         mailSession.from("sparky@rainbow.com");
         mailSession.jndiName("java:/mail/Test");
         mail.mailSessions(mailSession);
+        mailSession.customs(new Custom("CUSTOM").username("elmer").password("fudd"));
     }
 
     @Test

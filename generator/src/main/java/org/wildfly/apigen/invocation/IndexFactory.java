@@ -6,6 +6,7 @@ import org.jboss.jandex.Indexer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 /**
  * @author Lance Ball
@@ -19,16 +20,23 @@ public class IndexFactory {
     /**
      * Creates an annotation index for the given entity type
      */
-    public static Index createIndex(Class<?> type) {
-        try {
-            Indexer indexer = new Indexer();
-            String className = type.getName().replace(".","/") + ".class";
-            InputStream stream = type.getClassLoader()
-                    .getResourceAsStream(className);
-            indexer.index(stream);
-            return indexer.complete();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize Indexer", e);
+    public synchronized static Index createIndex(Class<?> type) {
+        Index index = indices.get(type);
+        if (index == null) {
+            try {
+                Indexer indexer = new Indexer();
+                String className = type.getName().replace(".","/") + ".class";
+                InputStream stream = type.getClassLoader()
+                        .getResourceAsStream(className);
+                indexer.index(stream);
+                index = indexer.complete();
+                indices.put(type, index);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to initialize Indexer", e);
+            }
         }
+        return index;
     }
+
+    private static final HashMap<Class<?>, Index> indices = new HashMap<>();
 }

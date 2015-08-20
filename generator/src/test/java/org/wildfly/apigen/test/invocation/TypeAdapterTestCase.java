@@ -5,7 +5,7 @@ import org.jboss.dmr.ModelType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.wildfly.apigen.invocation.EntityAdapter;
-import org.wildfly.swarm.config.mail.subsystem.mailSession.MailSession;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession;
 
 import java.util.Iterator;
 
