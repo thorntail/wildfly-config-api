@@ -58,6 +58,7 @@ public class EntityAdapter<T> {
                 (clazz == byte[].class);
     }
 
+    @SuppressWarnings("unchecked")
     private T convertToBaseType(ModelNode dmr) {
         if (getType() == String.class) return (T)dmr.asString();
         if (getType() == Long.class) return (T)Long.valueOf(dmr.asLong());
@@ -76,6 +77,7 @@ public class EntityAdapter<T> {
      * @param modelNode a ModelNode
      * @return an entity representation of type T
      */
+    @SuppressWarnings("unchecked")
     public T fromDMR(String keyValue, ModelNode modelNode) throws Exception {
 
         if (isBaseTypeAdapter()) return convertToBaseType(modelNode);
@@ -165,6 +167,7 @@ public class EntityAdapter<T> {
      * @param entity
      * @return ModelNode
      */
+    @SuppressWarnings("unchecked")
     public ModelNode fromEntity(T entity) throws Exception {
 
         ModelNode modelMode = new ModelNode();

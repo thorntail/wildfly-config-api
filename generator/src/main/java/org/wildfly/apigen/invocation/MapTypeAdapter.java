@@ -5,10 +5,11 @@ import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.*;
 
 /**
  * @author Heiko Braun
@@ -25,14 +26,15 @@ public class MapTypeAdapter {
     public void fromDmr(Object entity, String javaName, ModelType dmrType, Class<?> propertyType, ModelNode dmrPayload) throws Exception {
 
         Method target = entity.getClass().getMethod(javaName, propertyType);
-        List<Property> properties = dmrPayload.isDefined() ? dmrPayload.asPropertyList() : Collections.EMPTY_LIST;
+        @SuppressWarnings("unchecked")
+        List<Property> properties = dmrPayload.isDefined() ? dmrPayload.asPropertyList() : EMPTY_LIST;
         if(properties.isEmpty())
         {
-            target.invoke(entity, Collections.EMPTY_MAP);
+            target.invoke(entity, EMPTY_MAP);
         }
         else
         {
-            Map map = new HashMap<>(properties.size());
+            Map<String, Object> map = new HashMap<>(properties.size());
 
             for (Property prop : properties) {
                 map.put(prop.getName(), toJavaValue(prop.getValue().getType(), prop.getValue()));

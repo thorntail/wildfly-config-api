@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 
@@ -57,6 +58,7 @@ public class ResourceDescription extends ModelNode {
         return hasDefined(ATTRIBUTES);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Property> getAttributes() {
         return hasAttributes() ? get(ATTRIBUTES).asPropertyList() : Collections.EMPTY_LIST;
     }
@@ -109,9 +111,7 @@ public class ResourceDescription extends ModelNode {
                 Set<String> keys = item.getValue().get(MODEL_DESCRIPTION).keys();
                 if(!keys.contains("*")) // singleton resources
                 {
-                    for (String key : keys) {
-                        result.add(item.getName()+"="+key);
-                    }
+                    result.addAll(keys.stream().map(key -> item.getName() + "=" + key).collect(Collectors.toList()));
                 }
             }
         }

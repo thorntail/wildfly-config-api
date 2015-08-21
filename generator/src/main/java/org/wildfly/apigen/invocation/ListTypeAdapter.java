@@ -13,6 +13,8 @@ import java.util.List;
  * @since 31/07/15
  */
 public class ListTypeAdapter {
+
+    @SuppressWarnings("unchecked")
     public void toDmr(ModelNode modelMode, String detypedName, List value) {
 
         if(value.isEmpty()) {
@@ -21,7 +23,6 @@ public class ListTypeAdapter {
         else {
             value.forEach(
                     v -> {
-
                         // model type  is derived from list item java type
                         ModelType listValueType = Types.resolveModelType(v.getClass());
                         addDmrValueTo(modelMode.get(detypedName), listValueType, v);
@@ -60,6 +61,7 @@ public class ListTypeAdapter {
     }
 
 
+    @SuppressWarnings("unchecked")
     public void fromDmr(Object entity, String javaName, ModelType dmrType, Class<?> propertyType, ModelNode dmrPayload) throws Exception {
 
         Method target = entity.getClass().getMethod(javaName, propertyType);

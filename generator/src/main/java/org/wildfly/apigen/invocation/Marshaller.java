@@ -25,6 +25,7 @@ public class Marshaller {
     private static HashMap<Class<?>, EntityAdapter<?>> adapters = new HashMap<>();
     private static HashMap<Class<?>, Optional<Subresource>> subresources = new HashMap<>();
 
+    @SuppressWarnings("unchecked")
     private static LinkedList<ModelNode> appendNode(Object node, LinkedList<ModelNode> list) throws Exception {
         EntityAdapter adapter = adapterFor(node.getClass());
         list.add(adapter.fromEntity(node));
