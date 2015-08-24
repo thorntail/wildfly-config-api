@@ -1,18 +1,29 @@
-package org.wildfly.apigen.test.invocation.mail;
+package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server;
 
+import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
 /**
  * Mail session server
  */
-@Address("/subsystem=mail/mail-session=*/custom=*")
-public class Custom {
+@Address("/subsystem=mail/mail-session=*/server=imap")
+@Implicit
+public class Imap {
 
+	private String key;
 	private String outboundSocketBindingRef;
 	private String password;
 	private Boolean ssl;
 	private Boolean tls;
 	private String username;
+
+	public Imap() {
+		this.key = "imap";
+	}
+
+	public String getKey() {
+		return this.key;
+	}
 
 	/**
 	 * Outbound Socket binding to mail server
@@ -25,7 +36,7 @@ public class Custom {
 	/**
 	 * Outbound Socket binding to mail server
 	 */
-	public Custom outboundSocketBindingRef(String value) {
+	public Imap outboundSocketBindingRef(String value) {
 		this.outboundSocketBindingRef = value;
 		return this;
 	}
@@ -41,7 +52,7 @@ public class Custom {
 	/**
 	 * Password to authenticate on server
 	 */
-	public Custom password(String value) {
+	public Imap password(String value) {
 		this.password = value;
 		return this;
 	}
@@ -57,7 +68,7 @@ public class Custom {
 	/**
 	 * Does server require SSL?
 	 */
-	public Custom ssl(Boolean value) {
+	public Imap ssl(Boolean value) {
 		this.ssl = value;
 		return this;
 	}
@@ -73,7 +84,7 @@ public class Custom {
 	/**
 	 * Does server require TLS?
 	 */
-	public Custom tls(Boolean value) {
+	public Imap tls(Boolean value) {
 		this.tls = value;
 		return this;
 	}
@@ -89,7 +100,7 @@ public class Custom {
 	/**
 	 * Username to authenticate on server
 	 */
-	public Custom username(String value) {
+	public Imap username(String value) {
 		this.username = value;
 		return this;
 	}

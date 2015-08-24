@@ -5,11 +5,8 @@ import org.jboss.dmr.ModelType;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Index;
-import org.jboss.jandex.Indexer;
 import org.jboss.jandex.MethodInfo;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -21,42 +18,19 @@ import java.util.Map;
  */
 public class EntityAdapter<T> {
 
-    private final static DotName IMPLICIT_META = DotName.createSimple(Implicit.class.getCanonicalName());
-    private final static DotName BINDING_META = DotName.createSimple(Binding.class.getCanonicalName());
-    private final static DotName ADDRESS_META = DotName.createSimple(Address.class.getCanonicalName());
-    private final static DotName SUBRESOURCE_META = DotName.createSimple(Subresource.class.getCanonicalName());
-
     private final Class<?> type;
     private Index index;
 
     public EntityAdapter(Class<?> type) {
         this.type = type;
-
-        createIndex();
-
-    }
-
-    /**
-     * Creates an annotation index for the given entity T
-     */
-    private void createIndex() {
-        try {
-            Indexer indexer = new Indexer();
-            String className = getType().getCanonicalName().replace(".","/") + ".class";
-
-            InputStream stream = getType().getClassLoader()
-                    .getResourceAsStream(className);
-            indexer.index(stream);
-            index = indexer.complete();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize Indexer", e);
-        }
-
+        this.index = IndexFactory.createIndex(type);
     }
 
     private Class<?> getType() {
         return type;
     }
+
+    public Index getIndex() { return index; }
 
     /**
      * Determine if this is an EntityAdapter for a one of the supported ModelNode
@@ -84,6 +58,7 @@ public class EntityAdapter<T> {
                 (clazz == byte[].class);
     }
 
+    @SuppressWarnings("unchecked")
     private T convertToBaseType(ModelNode dmr) {
         if (getType() == String.class) return (T)dmr.asString();
         if (getType() == Long.class) return (T)Long.valueOf(dmr.asLong());
@@ -102,6 +77,7 @@ public class EntityAdapter<T> {
      * @param modelNode a ModelNode
      * @return an entity representation of type T
      */
+    @SuppressWarnings("unchecked")
     public T fromDMR(String keyValue, ModelNode modelNode) throws Exception {
 
         if (isBaseTypeAdapter()) return convertToBaseType(modelNode);
@@ -125,7 +101,7 @@ public class EntityAdapter<T> {
         ClassInfo clazz = index.getClassByName(DotName.createSimple(getType().getCanonicalName()));
 
         T entity = null;
-        boolean implicitKey = clazz.annotations().containsKey(IMPLICIT_META);
+        boolean implicitKey = clazz.annotations().containsKey(IndexFactory.IMPLICIT_META);
 
         if(implicitKey)
         {
@@ -142,7 +118,7 @@ public class EntityAdapter<T> {
 
 
         for (MethodInfo method : clazz.methods()) {
-            if (method.hasAnnotation(BINDING_META)) {
+            if (method.hasAnnotation(IndexFactory.BINDING_META)) {
 
                 Method getter = entity.getClass().getMethod(method.name());
                 Class<?> propertyType = getter.getReturnType();
@@ -191,6 +167,7 @@ public class EntityAdapter<T> {
      * @param entity
      * @return ModelNode
      */
+    @SuppressWarnings("unchecked")
     public ModelNode fromEntity(T entity) throws Exception {
 
         ModelNode modelMode = new ModelNode();
@@ -198,7 +175,7 @@ public class EntityAdapter<T> {
         ClassInfo clazz = index.getClassByName(DotName.createSimple(getType().getCanonicalName()));
         for (MethodInfo method : clazz.methods()) {
 
-            if (method.hasAnnotation(BINDING_META)) {
+            if (method.hasAnnotation(IndexFactory.BINDING_META)) {
 
                 Method target = entity.getClass().getMethod(method.name());
                 Class<?> propertyType = target.getReturnType();

@@ -1,27 +1,35 @@
-package org.wildfly.apigen.test.invocation.mail;
+package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession;
 
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Binding;
-import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom.Custom;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Imap;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Pop3;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp;
+
+import java.util.List;
 /**
  * Mail session definition
  */
 @Address("/subsystem=mail/mail-session=*")
 public class MailSession {
 
+	private String key;
 	private Boolean debug;
 	private String from;
 	private String jndiName;
 	private MailSessionResources subresources = new MailSessionResources();
-	private String key;
+	private Pop3 pop3;
+	private Smtp smtp;
+	private Imap imap;
 
 	public MailSession(String key) {
 		this.key = key;
 	}
 
 	public String getKey() {
-		return key;
+		return this.key;
 	}
 
 	/**
@@ -72,28 +80,9 @@ public class MailSession {
 		return this;
 	}
 
+	@Subresource
 	public MailSessionResources subresources() {
 		return this.subresources;
-	}
-
-	/**
-	 * Add all Server objects to this subresource
-	 * @return this
-	 * @param value List of Server objects.
-	 */
-	public MailSession servers(List<Server> value) {
-		this.subresources.servers.addAll(value);
-		return this;
-	}
-
-	/**
-	 * Add the Server object to the list of subresources
-	 * @param value The Server to add
-	 * @return this
-	 */
-	public MailSession servers(Server value) {
-		this.subresources.servers.add(value);
-		return this;
 	}
 
 	/**
@@ -119,24 +108,11 @@ public class MailSession {
 	/**
 	 * Child mutators for MailSession
 	 */
-	class MailSessionResources {
-		/**
-		 * undefined
-		 */
-		private List<Server> servers = new java.util.ArrayList<>();
+	public class MailSessionResources {
 		/**
 		 * Mail session server
 		 */
 		private List<Custom> customs = new java.util.ArrayList<>();
-
-		/**
-		 * Get the list of Server resources
-		 * @return the list of resources
-		 */
-		@Subresource
-		public List<Server> servers() {
-			return this.servers;
-		}
 
 		/**
 		 * Get the list of Custom resources
@@ -146,5 +122,53 @@ public class MailSession {
 		public List<Custom> customs() {
 			return this.customs;
 		}
+	}
+
+	/**
+	 * Mail session server
+	 */
+	@Subresource
+	public Pop3 pop3() {
+		return this.pop3;
+	}
+
+	/**
+	 * Mail session server
+	 */
+	public MailSession pop3(Pop3 value) {
+		this.pop3 = value;
+		return this;
+	}
+
+	/**
+	 * Mail session server
+	 */
+	@Subresource
+	public Smtp smtp() {
+		return this.smtp;
+	}
+
+	/**
+	 * Mail session server
+	 */
+	public MailSession smtp(Smtp value) {
+		this.smtp = value;
+		return this;
+	}
+
+	/**
+	 * Mail session server
+	 */
+	@Subresource
+	public Imap imap() {
+		return this.imap;
+	}
+
+	/**
+	 * Mail session server
+	 */
+	public MailSession imap(Imap value) {
+		this.imap = value;
+		return this;
 	}
 }

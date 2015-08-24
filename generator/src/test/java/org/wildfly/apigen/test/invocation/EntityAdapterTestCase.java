@@ -6,7 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.wildfly.apigen.invocation.EntityAdapter;
 import org.wildfly.apigen.test.AbstractTestCase;
-import org.wildfly.apigen.test.invocation.mail.MailSession;
+import org.wildfly.apigen.test.invocation.mail.Mail;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession;
 
 
 /**
@@ -18,14 +19,17 @@ import org.wildfly.apigen.test.invocation.mail.MailSession;
 public class EntityAdapterTestCase extends AbstractTestCase {
 
 
+    private Mail mail;
     private MailSession mailSession;
 
     @Before
     public void fixture() {
+        mail = new Mail();
         mailSession = new MailSession("TestMail");
         mailSession.debug(true);
         mailSession.from("john@doe.com");
         mailSession.jndiName("java:/mail/Test");
+        mail.mailSessions(mailSession);
     }
 
     @Test
@@ -41,6 +45,13 @@ public class EntityAdapterTestCase extends AbstractTestCase {
         Assert.assertTrue(session.from().equals("john@doe.com"));
         Assert.assertTrue(session.jndiName().equals("java:/mail/Test"));
 
-//        System.out.println(modelNode);
+        System.out.println(modelNode);
+    }
+
+    @Test
+    public void testComplexResourceMarshalling() throws Exception {
+        EntityAdapter<Mail> adapter = new EntityAdapter<>(Mail.class);
+        ModelNode node = adapter.fromEntity(mail);
+        System.out.println(node);
     }
 }
