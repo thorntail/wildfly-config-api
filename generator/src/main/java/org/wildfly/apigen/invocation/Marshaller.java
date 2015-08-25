@@ -1,10 +1,10 @@
 package org.wildfly.apigen.invocation;
 
+import org.jboss.as.controller.PathAddress;
+import org.jboss.as.controller.PathElement;
 import org.jboss.dmr.ModelNode;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.Index;
-import org.jboss.jandex.MethodInfo;
+import org.jboss.jandex.*;
+import org.wildfly.apigen.model.AddressTemplate;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,23 +13,52 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
+
 /**
  * @author Lance Ball
  */
 public class Marshaller {
 
-    public static LinkedList<ModelNode> marshal(Object root) throws Exception {
-        return appendNode(root, new LinkedList<ModelNode>());
-    }
-
     private static HashMap<Class<?>, EntityAdapter<?>> adapters = new HashMap<>();
     private static HashMap<Class<?>, Optional<Subresource>> subresources = new HashMap<>();
 
+    public static LinkedList<ModelNode> marshal(Object root) throws Exception {
+        return appendNode(root, PathAddress.EMPTY_ADDRESS, new LinkedList<>());
+    }
+
     @SuppressWarnings("unchecked")
-    private static LinkedList<ModelNode> appendNode(Object node, LinkedList<ModelNode> list) throws Exception {
-        EntityAdapter adapter = adapterFor(node.getClass());
-        list.add(adapter.fromEntity(node));
-        return marshalSubresources(node, list);
+    private static LinkedList<ModelNode> appendNode(Object entity, PathAddress address, LinkedList<ModelNode> list) throws Exception {
+        final PathAddress resourceAddress = resourceAddress(entity, address);
+        list.add(addressNodeFor(resourceAddress));
+        EntityAdapter adapter = adapterFor(entity.getClass());
+        list.add(adapter.fromEntity(entity));
+        return marshalSubresources(entity, resourceAddress, list);
+    }
+
+    private static PathAddress resourceAddress(Object resource, PathAddress pathAddress) {
+        final Class<?> entityClass = resource.getClass();
+
+        Index index = IndexFactory.createIndex(entityClass);
+        ClassInfo clazz = index.getClassByName(DotName.createSimple(entityClass.getName()));
+
+        for (AnnotationInstance annotation :  clazz.classAnnotations()) {
+            if (annotation.name().equals(IndexFactory.ADDRESS_META)) {
+                AddressTemplate address = AddressTemplate.of(annotation.value().asString());
+                pathAddress = pathAddress.append(address.getResourceType(), address.getResourceName());
+                return pathAddress;
+            }
+        }
+        throw new RuntimeException("");
+    }
+
+    private static ModelNode addressNodeFor(PathAddress address) {
+        ModelNode node = new ModelNode();
+        node.get(OP_ADDR).set(address.toModelNode());
+        node.get(OP).set(ADD);
+        return node;
     }
 
     private static synchronized EntityAdapter adapterFor(Class<?> type) {
@@ -53,7 +82,7 @@ public class Marshaller {
         return subresources.get(type);
     }
 
-    private static LinkedList<ModelNode> marshalSubresources(Object parent, LinkedList<ModelNode> list) {
+    private static LinkedList<ModelNode> marshalSubresources(Object parent, PathAddress address, LinkedList<ModelNode> list) {
         try {
             Optional<Subresource> optional = subresourcesFor(parent);
 
@@ -70,7 +99,7 @@ public class Marshaller {
                         List<?> resourceList = (List<?>) subresourceMethod.invoke(subresources);
 
                         for (Object o : resourceList) {
-                            appendNode(o, list);
+                            appendNode(o, address, list);
                         }
                     }
                 }
