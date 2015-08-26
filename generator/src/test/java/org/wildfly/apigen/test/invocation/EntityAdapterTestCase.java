@@ -29,7 +29,7 @@ public class EntityAdapterTestCase extends AbstractTestCase {
         mailSession.debug(true);
         mailSession.from("john@doe.com");
         mailSession.jndiName("java:/mail/Test");
-        mail.mailSessions(mailSession);
+        mail.mailSession(mailSession);
     }
 
     @Test

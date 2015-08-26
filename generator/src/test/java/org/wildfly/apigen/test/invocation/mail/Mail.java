@@ -1,11 +1,11 @@
 package org.wildfly.apigen.test.invocation.mail;
 
-import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.Implicit;
+import org.wildfly.apigen.invocation.Address;
+import org.wildfly.apigen.invocation.Binding;
+import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession;
-
-import java.util.List;
 /**
  * The mail subsystem
  */
@@ -24,7 +24,6 @@ public class Mail {
 		return this.key;
 	}
 
-	@Subresource
 	public MailResources subresources() {
 		return this.subresources;
 	}
@@ -44,7 +43,7 @@ public class Mail {
 	 * @param value The MailSession to add
 	 * @return this
 	 */
-	public Mail mailSessions(MailSession value) {
+	public Mail mailSession(MailSession value) {
 		this.subresources.mailSessions.add(value);
 		return this;
 	}

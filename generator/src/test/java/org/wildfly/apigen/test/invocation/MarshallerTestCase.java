@@ -31,8 +31,8 @@ public class MarshallerTestCase extends AbstractTestCase {
         mailSession.debug(true);
         mailSession.from("sparky@rainbow.com");
         mailSession.jndiName("java:/mail/Test");
-        mail.mailSessions(mailSession);
-        mailSession.customs(new Custom("CUSTOM").username("elmer").password("fudd"));
+        mail.mailSession(mailSession);
+        mailSession.custom(new Custom("CUSTOM").username("elmer").password("fudd"));
     }
 
     @Test

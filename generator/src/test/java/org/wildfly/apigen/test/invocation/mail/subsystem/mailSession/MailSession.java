@@ -80,7 +80,6 @@ public class MailSession {
 		return this;
 	}
 
-	@Subresource
 	public MailSessionResources subresources() {
 		return this.subresources;
 	}
@@ -100,7 +99,7 @@ public class MailSession {
 	 * @param value The Custom to add
 	 * @return this
 	 */
-	public MailSession customs(Custom value) {
+	public MailSession custom(Custom value) {
 		this.subresources.customs.add(value);
 		return this;
 	}

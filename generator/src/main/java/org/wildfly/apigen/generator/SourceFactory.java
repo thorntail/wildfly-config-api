@@ -206,6 +206,7 @@ public class SourceFactory {
                     CaseFormat.LOWER_CAMEL,
                     Keywords.escape(childClassName)
             );
+            String singularName = propName;
             if (!propName.endsWith("s")) { propName += "s"; }
 
             // Add a property and an initializer for this subresource to the class
@@ -247,7 +248,7 @@ public class SourceFactory {
                     .addTagValue("@return", "this");
             mutator.addParameter(childClassName, "value");
             mutator.setPublic()
-                    .setName(propName)
+                    .setName(singularName)
                     .setReturnType(javaClass.getName())
                     .setBody("this.subresources." + propName + ".add(value);\nreturn this;");
 
