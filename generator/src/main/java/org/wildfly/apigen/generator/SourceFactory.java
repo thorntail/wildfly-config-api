@@ -301,10 +301,7 @@ public class SourceFactory {
             final JavaClassSource childClass = scope.getGenerated(childAddress);
             javaClass.addImport(childClass);
 
-            String propName = CaseFormat.UPPER_CAMEL.to(
-                    CaseFormat.LOWER_CAMEL,
-                    name.replace("-", "_").toLowerCase()
-            );
+            String propName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, name);
 
             javaClass.addField()
                     .setName(propName)
