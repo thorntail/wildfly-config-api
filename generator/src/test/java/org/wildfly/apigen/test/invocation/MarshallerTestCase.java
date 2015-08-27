@@ -9,7 +9,7 @@ import org.wildfly.apigen.invocation.Marshaller;
 import org.wildfly.apigen.test.AbstractTestCase;
 import org.wildfly.apigen.test.invocation.mail.Mail;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession;
-import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom.Custom;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +27,9 @@ public class MarshallerTestCase extends AbstractTestCase {
     @Before
     public void fixture() {
         mail = new Mail();
-        mailSession = new MailSession("Unicorn Mail");
-        mailSession.debug(true);
-        mailSession.from("sparky@rainbow.com");
-        mailSession.jndiName("java:/mail/Test");
-        mail.mailSession(mailSession);
-        mailSession.custom(new Custom("CUSTOM").username("elmer").password("fudd"));
+        mail.mailSession(new MailSession("smtpserver-name")
+                .jndiName("smtpserver-jndi-name")
+                .smtp(new Smtp().outboundSocketBindingRef("smtpserver-socket-binding-ref")));
     }
 
     @Test
@@ -46,6 +43,7 @@ public class MarshallerTestCase extends AbstractTestCase {
     @Test
     public void testModelNodeOutput() {
         // This is not so much a test as it is visual confirmation of a correctly configured model node chain for swarm
+        System.out.println("testModeNodeOutput");
         List<ModelNode> list = new ArrayList<>();
 
         ModelNode node = new ModelNode();
@@ -68,13 +66,6 @@ public class MarshallerTestCase extends AbstractTestCase {
         node.get(OP_ADDR).set(smtpServerAddress.append("mail-session", "smtpserver-name").append("server", "smtp").toModelNode());
         node.get(OP).set(ADD);
         node.get("outbound-socket-binding-ref").set("smtpserver-socket-binding-ref");
-        list.add(node);
-
-        node = new ModelNode();
-        node.get(OP_ADDR).set(PathAddress.pathAddress("socket-binding-group", "default-sockets").append("remote-destination-outbound-socket-binding", "smtpserver-socket-binding-ref").toModelNode());
-        node.get(OP).set(ADD);
-        node.get("host").set("hostname");
-        node.get("port").set("25");
         list.add(node);
 
         for (ModelNode n : list) {

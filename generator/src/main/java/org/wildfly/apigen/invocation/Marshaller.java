@@ -1,7 +1,6 @@
 package org.wildfly.apigen.invocation;
 
 import org.jboss.as.controller.PathAddress;
-import org.jboss.as.controller.PathElement;
 import org.jboss.dmr.ModelNode;
 import org.jboss.jandex.*;
 import org.wildfly.apigen.model.AddressTemplate;
@@ -13,9 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 
 /**
  * @author Lance Ball
@@ -32,9 +29,12 @@ public class Marshaller {
     @SuppressWarnings("unchecked")
     private static LinkedList<ModelNode> appendNode(Object entity, PathAddress address, LinkedList<ModelNode> list) throws Exception {
         final PathAddress resourceAddress = resourceAddress(entity, address);
-        list.add(addressNodeFor(resourceAddress));
+        final ModelNode modelNode = addressNodeFor(resourceAddress);
+
         EntityAdapter adapter = adapterFor(entity.getClass());
-        list.add(adapter.fromEntity(entity));
+        ModelNode node = adapter.fromEntity(entity, modelNode);
+
+        list.add(modelNode);
         return marshalSubresources(entity, resourceAddress, list);
     }
 
@@ -47,7 +47,20 @@ public class Marshaller {
         for (AnnotationInstance annotation :  clazz.classAnnotations()) {
             if (annotation.name().equals(IndexFactory.ADDRESS_META)) {
                 AddressTemplate address = AddressTemplate.of(annotation.value().asString());
-                pathAddress = pathAddress.append(address.getResourceType(), address.getResourceName());
+                String name = address.getResourceName();
+                if (name.equals("*") && clazz.method("getKey") != null) {
+                    try {
+                        name = (String) entityClass.getMethod("getKey").invoke(resource);
+                        if (name == null) name = address.getResourceName();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
+                }
+                pathAddress = pathAddress.append(address.getResourceType(), name);
                 return pathAddress;
             }
         }
@@ -82,8 +95,27 @@ public class Marshaller {
         return subresources.get(type);
     }
 
+    private static LinkedList<ModelNode> singletonSubresourcesFor(Object entity, PathAddress address) throws Exception {
+        final LinkedList<ModelNode> list = new LinkedList<>();
+        final Class<?> entityClass = entity.getClass();
+        Index index = IndexFactory.createIndex(entityClass);
+        ClassInfo clazz = index.getClassByName(DotName.createSimple(entityClass.getName()));
+        for (MethodInfo method : clazz.methods()) {
+            if (method.hasAnnotation(IndexFactory.SUBRESOURCE_META)) {
+                Method subresourceMethod = entityClass.getMethod(method.name());
+                final Object result = subresourceMethod.invoke(entity);
+                if (result != null) appendNode(result, address, list);
+            }
+        }
+        return list;
+    }
+
     private static LinkedList<ModelNode> marshalSubresources(Object parent, PathAddress address, LinkedList<ModelNode> list) {
         try {
+            // First handle singletons
+            list.addAll(singletonSubresourcesFor(parent, address));
+
+            // Now handle lists
             Optional<Subresource> optional = subresourcesFor(parent);
 
             if (optional.isPresent()) {
@@ -106,6 +138,7 @@ public class Marshaller {
             }
         } catch (Exception e) {
             System.err.println("Error getting subresources for " + parent.getClass().getSimpleName());
+            e.printStackTrace();
         }
         return list;
     }

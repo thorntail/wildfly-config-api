@@ -8,6 +8,7 @@ import org.jboss.jandex.Index;
 import org.jboss.jandex.MethodInfo;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.List;
@@ -169,9 +170,10 @@ public class EntityAdapter<T> {
      */
     @SuppressWarnings("unchecked")
     public ModelNode fromEntity(T entity) throws Exception {
+        return fromEntity(entity, new ModelNode());
+    }
 
-        ModelNode modelMode = new ModelNode();
-
+    public ModelNode fromEntity(T entity, ModelNode modelNode) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         ClassInfo clazz = index.getClassByName(DotName.createSimple(getType().getCanonicalName()));
         for (MethodInfo method : clazz.methods()) {
 
@@ -205,14 +207,14 @@ public class EntityAdapter<T> {
                         ModelType dmrType = Types.resolveModelType(propertyType);
 
                         if (dmrType == ModelType.LIST) {
-                            new ListTypeAdapter().toDmr(modelMode, detypedName, (List) propertyValue);
+                            new ListTypeAdapter().toDmr(modelNode, detypedName, (List) propertyValue);
 
                         } else if (dmrType == ModelType.OBJECT) {
                             // only Map<String,String> supported
-                            new MapTypeAdapter().toDmr(modelMode, detypedName, (Map) propertyValue);
+                            new MapTypeAdapter().toDmr(modelNode, detypedName, (Map) propertyValue);
 
                         } else {
-                            new SimpleTypeAdapter().toDmr(modelMode, detypedName, dmrType, propertyValue);
+                            new SimpleTypeAdapter().toDmr(modelNode, detypedName, dmrType, propertyValue);
                         }
                     } catch (RuntimeException e) {
                         throw new RuntimeException("Failed to adopt value " + propertyType.getName(), e);
@@ -222,8 +224,7 @@ public class EntityAdapter<T> {
             }
 
         }
-
-        return modelMode;
+        return modelNode;
     }
 }
 
