@@ -110,7 +110,6 @@ public class SourceFactory {
 
         desc.getAttributes().forEach(
                 att -> {
-                    //System.err.println("Attribute value: " + att.getValue());
                     ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
                     Optional<String> resolvedType = Types.resolveJavaTypeName(modelType);
 
@@ -148,7 +147,7 @@ public class SourceFactory {
                         } catch (Exception e) {
                             log.log(Level.ERROR, "Failed to process " + metaData.getAddress() + ", attribute " + att.getName(), e);
                         }
-                    }
+                    } //else System.err.println(att.getValue());
                 }
         );
 
@@ -297,7 +296,7 @@ public class SourceFactory {
             String[] split = singletonName.split("=");
             String type = split[0];
             String name = split[1];
-            final AddressTemplate childAddress = resourceMetaData.getAddress().append(type+"="+name);
+            final AddressTemplate childAddress = resourceMetaData.getAddress().append(type + "=" + name);
             final JavaClassSource childClass = scope.getGenerated(childAddress);
             javaClass.addImport(childClass);
 

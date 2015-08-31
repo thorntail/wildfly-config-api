@@ -116,6 +116,12 @@ public class Types<T> {
         {
             result = Optional.of("java.lang.Double");
         }
+        else if (ModelType.OBJECT == modelType) {
+            result = Optional.of("java.util.Map");
+        }
+        else if (ModelType.LIST == modelType) {
+            result = Optional.of("java.util.List");
+        }
         else
         {
             logger.warning("Unsupported type "+modelType);
