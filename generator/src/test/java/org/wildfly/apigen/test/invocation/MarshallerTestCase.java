@@ -19,7 +19,9 @@ import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 
@@ -77,25 +79,43 @@ public class MarshallerTestCase extends AbstractTestCase {
     @Test
     public void testLoggingMarshalling() throws Exception {
         Logging logging = new Logging();
+
+        // Simple support for ModelType.LIST
         final ArrayList<Object> rootHandlers = new ArrayList<>();
         rootHandlers.add("root-handler-one");
         rootHandlers.add("root-handler-two");
+
+        // Simple support for ModelType.OBJECT
+        final HashMap<String, String> file = new HashMap();
+        file.put("path", "/path/to/some/log");
+        file.put("relative-to", "jboss.server.log.dir");
+
+        final HashMap<String, String> formatterProperties = new HashMap<>();
+        formatterProperties.put("metaData", "someKey=someValue,otherKey=otherValue");
+
+        final HashMap<String, String> handlerProperties = new HashMap<>();
+        handlerProperties.put("one-key", "one-key-value-expression");
+        handlerProperties.put("two-key", "two-key-value-expression");
+
         logging.patternFormatter(
                 new PatternFormatter("pattern-formatter-name")
                         .pattern("pattern-formatter-pattern"))
                 .customFormatter(new CustomFormatter("custom-formatter-name")
                         .module("formatter-module")
-                        .attributeClass("FormatterClassName"))
+                        .attributeClass("FormatterClassName")
+                        .properties(formatterProperties))
                 .consoleHandler(new ConsoleHandler("CONSOLE")
                         .level("INFO")
                         .namedFormatter("formatter-name"))
                 .fileHandler(new FileHandler("file-handler-name")
                         .level("INFO")
-                        .namedFormatter("formatter-name"))
+                        .namedFormatter("formatter-name")
+                        .file(file))
                 .customHandler(new CustomHandler("custom-handler-name")
                         .module("custom-handler-module")
                         .attributeClass("HandlerClassName")
-                        .level("INFO"))
+                        .level("INFO")
+                        .properties(handlerProperties))
                 .root(new Root().level("INFO")
                         .handlers(rootHandlers));
         List<ModelNode> list = Marshaller.marshal(logging);
