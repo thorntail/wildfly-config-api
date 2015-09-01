@@ -115,10 +115,6 @@ public class SourceFactory {
 
                     if (resolvedType.isPresent()) {
 
-                        if (ModelType.LIST == modelType) {
-                            System.err.println(att.getValue());
-                        }
-
                         // attributes
                         try {
                             final String name = Types.javaAttributeName(att.getName());
