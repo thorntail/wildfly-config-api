@@ -111,9 +111,13 @@ public class SourceFactory {
         desc.getAttributes().forEach(
                 att -> {
                     ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
-                    Optional<String> resolvedType = Types.resolveJavaTypeName(modelType);
+                    Optional<String> resolvedType = Types.resolveJavaTypeName(modelType, att.getValue());
 
                     if (resolvedType.isPresent()) {
+
+                        if (ModelType.LIST == modelType) {
+                            System.err.println(att.getValue());
+                        }
 
                         // attributes
                         try {

@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
+
 /**
  * @author Heiko Braun
  * @since 29/07/15
@@ -92,7 +94,7 @@ public class Types<T> {
         return result;
     }
 */
-    public static Optional<String> resolveJavaTypeName(ModelType modelType) {
+    public static Optional<String> resolveJavaTypeName(ModelType modelType, ModelNode value) {
 
         Optional<String> result = Optional.empty();
 
@@ -120,7 +122,19 @@ public class Types<T> {
             result = Optional.of("java.util.Map");
         }
         else if (ModelType.LIST == modelType) {
-            result = Optional.of("java.util.List");
+            String templatedType = "<?>";
+
+            final ModelNode valueTypeNode = value.get("value-type");
+            if (valueTypeNode.getType() == ModelType.OBJECT) {
+                templatedType = "<java.util.Map>";
+            } else {
+                final ModelType type = valueTypeNode.asType();
+                if (type == ModelType.STRING) {
+                    templatedType = "<String>";
+                }
+            }
+
+            result = Optional.of("java.util.List"+templatedType);
         }
         else
         {
