@@ -10,8 +10,8 @@
     <version>19</version>
   </parent>
 
-  <groupId>org.wildfly</groupId>
-  <artifactId>api-gen-parent</artifactId>
+  <groupId>org.wildfly.configuration</groupId>
+  <artifactId>configuration-parent</artifactId>
   <version>0.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -27,7 +27,7 @@
 
   <modules>
     <module>generator</module>
-    <module>config-lib</module>
+    <module>wildfly-config-api</module>
   </modules>
 
   <repositories>
