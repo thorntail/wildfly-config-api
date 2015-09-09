@@ -7,10 +7,7 @@ import org.wildfly.apigen.model.AddressTemplate;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 
@@ -32,9 +29,8 @@ public class Marshaller {
         final ModelNode modelNode = addressNodeFor(resourceAddress);
 
         EntityAdapter adapter = adapterFor(entity.getClass());
-        ModelNode node = adapter.fromEntity(entity, modelNode);
+        list.add( adapter.fromEntity(entity, modelNode) );
 
-        list.add(modelNode);
         return marshalSubresources(entity, resourceAddress, list);
     }
 
@@ -64,7 +60,7 @@ public class Marshaller {
                 return pathAddress;
             }
         }
-        throw new RuntimeException("");
+        throw new RuntimeException("Cannot determine resource address for " + resource);
     }
 
     private static ModelNode addressNodeFor(PathAddress address) {
@@ -97,17 +93,16 @@ public class Marshaller {
 
     private static LinkedList<ModelNode> singletonSubresourcesFor(Object entity, PathAddress address) throws Exception {
         final LinkedList<ModelNode> list = new LinkedList<>();
-        final Class<?> entityClass = entity.getClass();
-        Index index = IndexFactory.createIndex(entityClass);
-        ClassInfo clazz = index.getClassByName(DotName.createSimple(entityClass.getName()));
-        for (MethodInfo method : clazz.methods()) {
-            if (method.hasAnnotation(IndexFactory.SUBRESOURCE_META)) {
-                Method subresourceMethod = entityClass.getMethod(method.name());
-                final Object result = subresourceMethod.invoke(entity);
-                if (result != null) appendNode(result, address, list);
-            }
+        for(Method target : orderedSubresources(entity)) {
+            final Object result = target.invoke(entity);
+            if (result != null) appendNode(result, address, list);
         }
         return list;
+    }
+
+    private static List<Method> orderedSubresources(Object parent) throws NoSuchMethodException {
+        final Class<?> parentClass = parent.getClass();
+        return new SubresourceFilter(parentClass).invoke();
     }
 
     private static LinkedList<ModelNode> marshalSubresources(Object parent, PathAddress address, LinkedList<ModelNode> list) {
@@ -119,20 +114,12 @@ public class Marshaller {
             Optional<Subresource> optional = subresourcesFor(parent);
 
             if (optional.isPresent()) {
-                Class<?> subresourceType = optional.get().type;
                 Object subresources = optional.get().invoke();
 
-                // Index the annotations on the subresources type
-                Index index = IndexFactory.createIndex(subresourceType);
-                ClassInfo clazz = index.getClassByName(DotName.createSimple(subresourceType.getName()));
-                for (MethodInfo method : clazz.methods()) {
-                    if (method.hasAnnotation(IndexFactory.SUBRESOURCE_META)) {
-                        Method subresourceMethod = subresourceType.getMethod(method.name());
-                        List<?> resourceList = (List<?>) subresourceMethod.invoke(subresources);
-
-                        for (Object o : resourceList) {
-                            appendNode(o, address, list);
-                        }
+                for(Method target : orderedSubresources(subresources)) {
+                    List<?> resourceList = (List<?>) target.invoke(subresources);
+                    for (Object o : resourceList) {
+                        appendNode(o, address, list);
                     }
                 }
             }
@@ -159,5 +146,6 @@ public class Marshaller {
         }
 
     }
+
 }
 
