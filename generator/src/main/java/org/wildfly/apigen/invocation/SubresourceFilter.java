@@ -40,7 +40,6 @@ class SubresourceFilter {
 
     public List<Method> invoke() throws NoSuchMethodException {
         ArrayList methods = new ArrayList();
-        final DotName simple = DotName.createSimple(parentClass.getName());
         ClassInfo clazz = index.getClassByName(DotName.createSimple(parentClass.getName()));
         for (MethodInfo method : clazz.methods()) {
             if (method.hasAnnotation(IndexFactory.SUBRESOURCE_META)) {
