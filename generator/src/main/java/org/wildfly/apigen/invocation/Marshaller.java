@@ -40,27 +40,44 @@ public class Marshaller {
         Index index = IndexFactory.createIndex(entityClass);
         ClassInfo clazz = index.getClassByName(DotName.createSimple(entityClass.getName()));
 
+        PathAddress address = getPathElements(resource, pathAddress, entityClass, clazz);
+        if (address != null) return address;
+        throw new RuntimeException("Cannot determine resource address for " + resource);
+    }
+
+    private static PathAddress getPathElements(Object resource, PathAddress pathAddress, Class<?> entityClass, ClassInfo clazz) {
         for (AnnotationInstance annotation :  clazz.classAnnotations()) {
             if (annotation.name().equals(IndexFactory.ADDRESS_META)) {
                 AddressTemplate address = AddressTemplate.of(annotation.value().asString());
                 String name = address.getResourceName();
-                if (name.equals("*") && clazz.method("getKey") != null) {
+
+                if (name.equals("*")) {
                     try {
-                        name = (String) entityClass.getMethod("getKey").invoke(resource);
+                        Method keyMethod = entityClass.getMethod("getKey");
+                        name = (String) keyMethod.invoke(resource);
                         if (name == null) name = address.getResourceName();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                    } catch (NoSuchMethodException e) {
+                        // Caught if the entity does not have a getKey method
+                        // e.printStackTrace();
                     } catch (InvocationTargetException e) {
                         e.printStackTrace();
-                    } catch (NoSuchMethodException e) {
+                    } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
                 }
+
                 pathAddress = pathAddress.append(address.getResourceType(), name);
                 return pathAddress;
             }
         }
-        throw new RuntimeException("Cannot determine resource address for " + resource);
+        if (clazz.superName() != null) {
+            // go up the object hierarchy looking for the annotation,
+            // just in case our API objects are subclassed
+            Index index = IndexFactory.createIndex(resource.getClass().getSuperclass());
+            ClassInfo superClazz = index.getClassByName(clazz.superName());
+            return getPathElements(resource, pathAddress, entityClass, superClazz);
+        }
+        return null;
     }
 
     private static ModelNode addressNodeFor(PathAddress address) {

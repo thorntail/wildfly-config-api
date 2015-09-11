@@ -31,53 +31,8 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 public class MarshallerTestCase extends AbstractTestCase {
 
     @Test
-    public void testMarshalling() throws Exception {
-        Mail mail = new Mail();
-        mail.mailSession(new MailSession("smtpserver-name")
-                .jndiName("smtpserver-jndi-name")
-                .smtp(new Smtp().outboundSocketBindingRef("smtpserver-socket-binding-ref")));
-        List<ModelNode> list = Marshaller.marshal(mail);
-//        for (ModelNode node : list) {
-//            System.out.println(node);
-//        }
-    }
-
-    @Test
-    public void testModelNodeOutput() {
-        // This is not so much a test as it is visual confirmation of a correctly configured model node chain for swarm
-        PathAddress smtpServerAddress = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, "mail"));
-
-        List<ModelNode> list = new ArrayList<>();
-
-        ModelNode node = new ModelNode();
-        node.get(OP_ADDR).set(EXTENSION, "org.jboss.as.mail");
-        node.get(OP).set(ADD);
-        list.add(node);
-
-        node = new ModelNode();
-        node.get(OP_ADDR).set(smtpServerAddress.toModelNode());
-        node.get(OP).set(ADD);
-        list.add(node);
-
-        node = new ModelNode();
-        node.get(OP_ADDR).set(smtpServerAddress.append("mail-session", "smtpserver-name").toModelNode());
-        node.get(OP).set(ADD);
-        node.get("jndi-name").set("smtpserver-jndi-name");
-        list.add(node);
-
-        node = new ModelNode();
-        node.get(OP_ADDR).set(smtpServerAddress.append("mail-session", "smtpserver-name").append("server", "smtp").toModelNode());
-        node.get(OP).set(ADD);
-        node.get("outbound-socket-binding-ref").set("smtpserver-socket-binding-ref");
-        list.add(node);
-
-//        for (ModelNode n : list) {
-//            System.out.println(n);
-//        }
-    }
-
-    @Test
     public void testLoggingMarshalling() throws Exception {
+//        System.out.println("----< LOGGING MARSHALLING >----");
         Logging logging = new Logging();
 
         // Simple support for ModelType.LIST
@@ -119,14 +74,14 @@ public class MarshallerTestCase extends AbstractTestCase {
                 .root(new Root().level("INFO")
                         .handlers(rootHandlers));
         List<ModelNode> list = Marshaller.marshal(logging);
-        for (ModelNode n : list) {
-            System.out.println(n);
-        }
+//        for (ModelNode n : list) {
+//            System.out.println(n);
+//        }
     }
 
     @Test
     public void testLoggingFraction() {
-        System.out.println("----< LOGGING FRACTION >----");
+//        System.out.println("----< LOGGING FRACTION >----");
         // This is not so much a test as it is visual confirmation of a correctly configured model node chain for swarm
         final PathAddress loggingAddress = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, "logging"));
         List<ModelNode> list = new ArrayList<>();
@@ -207,8 +162,62 @@ public class MarshallerTestCase extends AbstractTestCase {
         node.get("level").set("INFO");
         list.add(node);
 
+//        for (ModelNode n : list) {
+//            System.out.println(n);
+//        }
+    }
+
+    @Test
+    public void testMailFraction() {
+        System.out.println("----< MAIL FRACTION >----");
+        // This is not so much a test as it is visual confirmation of a correctly configured model node chain for swarm
+        PathAddress smtpServerAddress = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, "mail"));
+        List<ModelNode> list = new ArrayList<>();
+
+        ModelNode node = new ModelNode();
+        node.get(OP_ADDR).set(smtpServerAddress.toModelNode());
+        node.get(OP).set(ADD);
+        list.add(node);
+
+        node = new ModelNode();
+        node.get(OP_ADDR).set(smtpServerAddress.append("mail-session", "smtp-server-name").toModelNode());
+        node.get(OP).set(ADD);
+        node.get("jndi-name").set("smtp-server-jndi-name");
+        list.add(node);
+
+        node = new ModelNode();
+        node.get(OP_ADDR).set(smtpServerAddress.append("mail-session", "smtp-server-name").append("server", "smtp").toModelNode());
+        node.get(OP).set(ADD);
+        node.get("outbound-socket-binding-ref").set("smtp-server-outbound-socket-binding-ref");
+        list.add(node);
+
+        node = new ModelNode();
+        node.get(OP_ADDR).set(PathAddress.pathAddress("socket-binding-group", "default-sockets").append("remote-destination-outbound-socket-binding", "smtp-server-outbound-socket-binding-ref").toModelNode());
+        node.get(OP).set(ADD);
+        node.get("host").set("smtp-server-host");
+        node.get("port").set("521");
+        list.add(node);
+
         for (ModelNode n : list) {
             System.out.println(n);
         }
+    }
+
+    @Test
+    public void testMailMarshalling() throws Exception {
+        System.out.println("----< MAIL MARSHALLING >----");
+        final Mail mail = new Mail();
+        final MailSession mailSession = new MailSession("smtp-server-name")
+                .smtp(new Smtp().outboundSocketBindingRef("smtp-server-outbound-socket-binding-ref"))
+                .jndiName("smtp-server-jndi-name");
+
+        mail.mailSession( mailSession );
+
+        List<ModelNode> list = Marshaller.marshal(mail);
+
+        for (ModelNode n : list) {
+            System.out.println(n);
+        }
+
     }
 }

@@ -39,12 +39,20 @@ class SubresourceFilter {
     }
 
     public List<Method> invoke() throws NoSuchMethodException {
+        return __invoke(parentClass, index, comparator);
+    }
+
+    private static List<Method> __invoke(Class<?> clazz, Index index, Comparator<Method> comparator) throws NoSuchMethodException {
         ArrayList methods = new ArrayList();
-        ClassInfo clazz = index.getClassByName(DotName.createSimple(parentClass.getName()));
-        for (MethodInfo method : clazz.methods()) {
+        ClassInfo clazzInfo = index.getClassByName(DotName.createSimple(clazz.getName()));
+        for (MethodInfo method : clazzInfo.methods()) {
             if (method.hasAnnotation(IndexFactory.SUBRESOURCE_META)) {
-                methods.add(parentClass.getMethod(method.name()));
+                methods.add(clazz.getMethod(method.name()));
             }
+        }
+        if (clazzInfo.superName() != null && clazz.getSuperclass() != java.lang.Object.class) {
+            index = IndexFactory.createIndex(clazz.getSuperclass());
+            return __invoke(clazz.getSuperclass(), index, comparator);
         }
         Collections.sort(methods, comparator);
         return methods;
