@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class EntityAdapter<T> {
 
-    private final Class<?> type;
+    private Class<?> type;
     private Index index;
 
     public EntityAdapter(Class<?> type) {
@@ -174,7 +174,20 @@ public class EntityAdapter<T> {
     }
 
     public ModelNode fromEntity(T entity, ModelNode modelNode) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        ClassInfo clazz = index.getClassByName(DotName.createSimple(getType().getCanonicalName()));
+        ClassInfo clazz = null;
+
+        Class<?> currentType = getType();
+
+        while (clazz == null ) {
+            clazz = index.getClassByName(DotName.createSimple(currentType.getCanonicalName()));
+
+            if ( clazz == null ) {
+                currentType = currentType.getSuperclass();
+                if ( currentType == null ) {
+                    throw new RuntimeException( "Unable to determine ClassInfo" );
+                }
+            }
+        }
         for (MethodInfo method : clazz.methods()) {
 
             if (method.hasAnnotation(IndexFactory.BINDING_META)) {

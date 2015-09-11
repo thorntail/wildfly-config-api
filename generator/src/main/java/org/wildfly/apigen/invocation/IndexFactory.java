@@ -25,10 +25,14 @@ public class IndexFactory {
         if (index == null) {
             try {
                 Indexer indexer = new Indexer();
-                String className = type.getName().replace(".","/") + ".class";
-                InputStream stream = type.getClassLoader()
-                        .getResourceAsStream(className);
-                indexer.index(stream);
+                Class<?> currentType = type;
+                while ( currentType != null ) {
+                    String className = currentType.getName().replace(".", "/") + ".class";
+                    InputStream stream = type.getClassLoader()
+                            .getResourceAsStream(className);
+                    indexer.index(stream);
+                    currentType = currentType.getSuperclass();
+                }
                 index = indexer.complete();
                 indices.put(type, index);
             } catch (IOException e) {

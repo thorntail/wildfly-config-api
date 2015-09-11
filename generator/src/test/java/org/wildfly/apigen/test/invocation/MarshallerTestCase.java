@@ -30,10 +30,18 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
  */
 public class MarshallerTestCase extends AbstractTestCase {
 
+    public static class LoggingSubclass extends Logging {
+
+    }
+
+    public static class MailSubclass extends Mail {
+
+    }
+
     @Test
     public void testLoggingMarshalling() throws Exception {
 //        System.out.println("----< LOGGING MARSHALLING >----");
-        Logging logging = new Logging();
+        Logging logging = new LoggingSubclass();
 
         // Simple support for ModelType.LIST
         final ArrayList<Object> rootHandlers = new ArrayList<>();
@@ -206,7 +214,7 @@ public class MarshallerTestCase extends AbstractTestCase {
     @Test
     public void testMailMarshalling() throws Exception {
         System.out.println("----< MAIL MARSHALLING >----");
-        final Mail mail = new Mail();
+        final Mail mail = new MailSubclass();
         final MailSession mailSession = new MailSession("smtp-server-name")
                 .smtp(new Smtp().outboundSocketBindingRef("smtp-server-outbound-socket-binding-ref"))
                 .jndiName("smtp-server-jndi-name");
