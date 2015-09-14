@@ -7,6 +7,7 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.Index;
 import org.jboss.jandex.MethodInfo;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -196,7 +197,9 @@ public class EntityAdapter<T> {
                 Class<?> propertyType = target.getReturnType();
                 Object propertyValue = target.invoke(entity);
 
-                Binding binding = target.getDeclaredAnnotation(Binding.class);
+                Binding binding = target.getAnnotation(Binding.class);
+                System.err.println("Binding for " + target.getName() + " on " + clazz.name() + ": " + binding);
+                for (Annotation a : target.getDeclaredAnnotations()) System.err.println("ANNOTATION " + a);
                 String detypedName = binding.detypedName();
 
 
