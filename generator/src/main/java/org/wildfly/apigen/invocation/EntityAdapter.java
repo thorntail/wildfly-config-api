@@ -2,11 +2,9 @@ package org.wildfly.apigen.invocation;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.Index;
-import org.jboss.jandex.MethodInfo;
+import org.jboss.jandex.*;
 
+import javax.lang.model.element.AnnotationValue;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -197,11 +195,9 @@ public class EntityAdapter<T> {
                 Class<?> propertyType = target.getReturnType();
                 Object propertyValue = target.invoke(entity);
 
-                Binding binding = target.getAnnotation(Binding.class);
-                System.err.println("Binding for " + target.getName() + " on " + clazz.name() + ": " + binding);
-                for (Annotation a : target.getDeclaredAnnotations()) System.err.println("ANNOTATION " + a);
-                String detypedName = binding.detypedName();
-
+                AnnotationInstance ann = method.annotation(DotName.createSimple(Binding.class.getName()));
+                org.jboss.jandex.AnnotationValue annValue = ann.value("detypedName");
+                String detypedName = annValue.asString();
 
             /*// EXPRESSIONS
             if(property.doesSupportExpression())

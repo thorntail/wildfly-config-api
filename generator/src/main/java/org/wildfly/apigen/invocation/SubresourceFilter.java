@@ -61,7 +61,8 @@ class SubresourceFilter {
     private class LoggingComparator implements Comparator<Method> {
         @Override
         public int compare(Method o1, Method o2) {
-            return o1.getName().contains("Handler") ? 1 : -1;
+            if (o1.getName().contains("Handler") || o1.getName().contains("Root")) return 1;
+            return -1;
         }
     }
 

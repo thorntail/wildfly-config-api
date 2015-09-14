@@ -177,7 +177,7 @@ public class MarshallerTestCase extends AbstractTestCase {
 
     @Test
     public void testMailFraction() {
-        System.out.println("----< MAIL FRACTION >----");
+//        System.out.println("----< MAIL FRACTION >----");
         // This is not so much a test as it is visual confirmation of a correctly configured model node chain for swarm
         PathAddress smtpServerAddress = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, "mail"));
         List<ModelNode> list = new ArrayList<>();
@@ -206,14 +206,14 @@ public class MarshallerTestCase extends AbstractTestCase {
         node.get("port").set("521");
         list.add(node);
 
-        for (ModelNode n : list) {
-            System.out.println(n);
-        }
+//        for (ModelNode n : list) {
+//            System.out.println(n);
+//        }
     }
 
     @Test
     public void testMailMarshalling() throws Exception {
-        System.out.println("----< MAIL MARSHALLING >----");
+//        System.out.println("----< MAIL MARSHALLING >----");
         final Mail mail = new MailSubclass();
         final MailSession mailSession = new MailSession("smtp-server-name")
                 .smtp(new Smtp().outboundSocketBindingRef("smtp-server-outbound-socket-binding-ref"))
@@ -223,9 +223,9 @@ public class MarshallerTestCase extends AbstractTestCase {
 
         List<ModelNode> list = Marshaller.marshal(mail);
 
-        for (ModelNode n : list) {
-            System.out.println(n);
-        }
+//        for (ModelNode n : list) {
+//            System.out.println(n);
+//        }
 
     }
 }

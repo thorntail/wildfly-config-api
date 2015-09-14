@@ -124,10 +124,7 @@ public class Marshaller {
 
     private static LinkedList<ModelNode> marshalSubresources(Object parent, PathAddress address, LinkedList<ModelNode> list) {
         try {
-            // First handle singletons
-            list.addAll(singletonSubresourcesFor(parent, address));
-
-            // Now handle lists
+            // Handle lists
             Optional<Subresource> optional = subresourcesFor(parent);
 
             if (optional.isPresent()) {
@@ -140,6 +137,8 @@ public class Marshaller {
                     }
                 }
             }
+            // Then handle singletons
+            list.addAll(singletonSubresourcesFor(parent, address));
         } catch (Exception e) {
             System.err.println("Error getting subresources for " + parent.getClass().getSimpleName());
             e.printStackTrace();
