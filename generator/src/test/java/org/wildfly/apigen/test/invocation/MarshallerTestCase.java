@@ -7,6 +7,9 @@ import org.jboss.dmr.ValueExpression;
 import org.junit.Test;
 import org.wildfly.apigen.invocation.Marshaller;
 import org.wildfly.apigen.test.AbstractTestCase;
+import org.wildfly.apigen.test.invocation.datasources.Datasources;
+import org.wildfly.apigen.test.invocation.datasources.subsystem.dataSource.DataSource;
+import org.wildfly.apigen.test.invocation.datasources.subsystem.jdbcDriver.JdbcDriver;
 import org.wildfly.apigen.test.invocation.logging.Logging;
 import org.wildfly.apigen.test.invocation.logging.subsystem.consoleHandler.ConsoleHandler;
 import org.wildfly.apigen.test.invocation.logging.subsystem.customFormatter.CustomFormatter;
@@ -228,4 +231,71 @@ public class MarshallerTestCase extends AbstractTestCase {
 //        }
 
     }
+
+    @Test
+    public void testDatasourcesFraction() throws Exception {
+        System.out.println("----< DATASOURCE FRACTION >----");
+        PathAddress datasourcesAddress = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, "datasources"));
+        List<ModelNode> list = new ArrayList<>();
+
+        ModelNode node = new ModelNode();
+        node.get(OP_ADDR).set(datasourcesAddress.toModelNode());
+        node.get(OP).set(ADD);
+        list.add(node);
+
+        node = new ModelNode();
+        node.get(OP_ADDR).set(datasourcesAddress.append("jdbc-driver", "jdbcDriverName").toModelNode());
+        node.get(OP).set(ADD);
+        node.get("driver-name").set("jdbc-driver-name");
+        node.get("driver-datasource-class-name").set("DatasourceClassName");
+        node.get("driver-xa-datasource-class-name").set("XaDatasourceClassName");
+        node.get("driver-module-name").set("ModuleName");
+        node.get("module-slot").set("moduleSlot");
+        list.add(node);
+
+        node = new ModelNode();
+        node.get(OP_ADDR).set(datasourcesAddress.append("data-source", "dataSourceName").toModelNode());
+        node.get(OP).set(ADD);
+
+        node.get("enabled").set(true);
+        node.get("jndi-name").set("datasourceJndiName");
+        node.get("use-java-context").set(true);
+        node.get("connection-url").set("datasourceConnectionUrl");
+        node.get("driver-name").set("datasourceDriver");
+
+        node.get("user-name").set("datasourceUsername");
+        node.get("password").set("datasourcePassword");
+        list.add(node);
+
+        for (ModelNode n : list) {
+            System.out.println(n);
+        }
+    }
+
+    @Test
+    public void testDatasourceMarshalling() throws Exception {
+        System.out.println("----< DATASOURCE MARSHALLING >----");
+        Datasources datasources = new Datasources();
+        datasources.jdbcDriver(new JdbcDriver("jdbcDriverName")
+                                    .driverName("jdbcDriverName")
+                                    .driverDatasourceClassName("DatasourceClassName")
+                                    .driverXaDatasourceClassName("XaDatasourceClassName")
+                                    .driverModuleName("ModuleName")
+                                    .moduleSlot("ModuleSlot"));
+        datasources.dataSource(new DataSource("dataSourceName")
+                                    .enabled(true)
+                                    .jndiName("datasourceJndiName")
+                                    .useJavaContext(true)
+                                    .connectionUrl("datasourceConnectionUrl")
+                                    .driverName("datasourceDriver")
+                                    .userName("datasourceUsername")
+                                    .password("datasourcePassword"));
+
+        List<ModelNode> list = Marshaller.marshal(datasources);
+
+        for (ModelNode n : list) {
+            System.out.println(n);
+        }
+    }
+
 }
