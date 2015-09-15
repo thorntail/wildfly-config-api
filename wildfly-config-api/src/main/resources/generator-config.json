@@ -25,6 +25,11 @@
         {
             "sourceAddress": "/subsystem=bean-validation",
             "targetPackage": "org.wildfly.swarm.config.bean.validation"
+        },
+        {
+            "sourceAddress": "/subsystem=io",
+            "targetPackage": "org.wildfly.swarm.config.io"
         }
+
     ]
 }
