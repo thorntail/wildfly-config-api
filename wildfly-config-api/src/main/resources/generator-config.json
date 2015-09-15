@@ -21,6 +21,10 @@
         {
             "sourceAddress": "/subsystem=ejb3",
             "targetPackage": "org.wildfly.swarm.config.ejb3"
+        },
+        {
+            "sourceAddress": "/subsystem=bean-validation",
+            "targetPackage": "org.wildfly.swarm.config.bean.validation"
         }
     ]
 }
