@@ -50,7 +50,7 @@ public class SourceFactory {
         // base class
         JavaClassSource javaClass =  Roaster.parse(
                 JavaClassSource.class,
-                "public class " + className + " {}"
+                "public class " + className + "<T extends " + className + "> {}"
         );
 
         // resource name
@@ -138,8 +138,9 @@ public class SourceFactory {
                             mutator.addParameter(resolvedType.get(), "value");
                             mutator.setPublic()
                                     .setName(name)
-                                    .setReturnType(className)
-                                    .setBody("this." + name + " = value;\nreturn this;");
+                                    .setReturnType("T")
+                                    .setBody("this." + name + " = value;\nreturn (T) this;")
+                                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
                             AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
                             bindingMeta.setName("Binding");
@@ -236,8 +237,9 @@ public class SourceFactory {
             listMutator.addParameter(propType, "value");
             listMutator.setPublic()
                     .setName(propName)
-                    .setReturnType(javaClass.getName())
-                    .setBody("this.subresources." + propName + ".addAll(value);\nreturn this;");
+                    .setReturnType("T")
+                    .setBody("this.subresources." + propName + ".addAll(value);\nreturn (T) this;")
+                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that takes a single resource. Mutators are added to the containing class
             final MethodSource<JavaClassSource> mutator = javaClass.addMethod();
@@ -248,8 +250,9 @@ public class SourceFactory {
             mutator.addParameter(childClassName, "value");
             mutator.setPublic()
                     .setName(singularName)
-                    .setReturnType(javaClass.getName())
-                    .setBody("this.subresources." + propName + ".add(value);\nreturn this;");
+                    .setReturnType("T")
+                    .setBody("this.subresources." + propName + ".add(value);\nreturn (T) this;")
+                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             final AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
             subresourceMeta.setName("Subresource");
@@ -327,8 +330,9 @@ public class SourceFactory {
             mutator.addParameter(childClass, "value");
             mutator.setPublic()
                     .setName(propName)
-                    .setReturnType(javaClass.getName())
-                    .setBody("this." + propName + "=value;\nreturn this;");
+                    .setReturnType("T")
+                    .setBody("this." + propName + "=value;\nreturn (T) this;")
+                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
         }
     }
