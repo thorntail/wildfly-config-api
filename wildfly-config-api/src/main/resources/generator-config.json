@@ -29,6 +29,14 @@
         {
             "sourceAddress": "/subsystem=io",
             "targetPackage": "org.wildfly.swarm.config.io"
+        },
+        {
+            "sourceAddress": "/subsystem=ee",
+            "targetPackage": "org.wildfly.swarm.config.ee"
+        },
+        {
+            "sourceAddress": "/subsystem=jaxrs",
+            "targetPackage": "org.wildfly.swarm.config.jaxrs"
         }
 
     ]
