@@ -53,6 +53,14 @@
         {
             "sourceAddress": "/subsystem=naming",
             "targetPackage": "org.wildfly.swarm.config.naming"
+        },
+        {
+            "sourceAddress": "/subsystem=remoting",
+            "targetPackage": "org.wildfly.swarm.config.remoting"
+        },
+        {
+            "sourceAddress": "/subsystem=weld",
+            "targetPackage": "org.wildfly.swarm.config.weld"
         }
     ]
 }
