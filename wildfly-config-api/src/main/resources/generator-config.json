@@ -37,6 +37,10 @@
         {
             "sourceAddress": "/subsystem=jaxrs",
             "targetPackage": "org.wildfly.swarm.config.jaxrs"
+        },
+        {
+            "sourceAddress": "/subsystem=jca",
+            "targetPackage": "org.wildfly.swarm.config.jca"
         }
 
     ]
