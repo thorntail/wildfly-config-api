@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class CollectionTypeExample {
         return key;
     }
 
-    @Binding(detypedName = "mapAttribute")
+    @ModelNodeBinding(detypedName = "mapAttribute")
     public Map<String,String> properties() {
         Map<String, String> map = new HashMap<>();
         map.put("a", "b");
@@ -34,7 +34,7 @@ public class CollectionTypeExample {
 
     }
 
-    @Binding(detypedName = "listAttribute")
+    @ModelNodeBinding(detypedName = "listAttribute")
     public List<Integer> items() {
         List<Integer> list = new ArrayList<>();
         list.add(1);

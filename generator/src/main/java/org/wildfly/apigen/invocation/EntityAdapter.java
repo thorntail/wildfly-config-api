@@ -4,8 +4,6 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.jandex.*;
 
-import javax.lang.model.element.AnnotationValue;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -123,7 +121,7 @@ public class EntityAdapter<T> {
                 Method getter = entity.getClass().getMethod(method.name());
                 Class<?> propertyType = getter.getReturnType();
 
-                Binding binding = getter.getDeclaredAnnotation(Binding.class);
+                ModelNodeBinding binding = getter.getDeclaredAnnotation(ModelNodeBinding.class);
                 String detypedName = binding.detypedName();
 
                 ModelNode dmrPayload = actualPayload.get(detypedName);
@@ -195,7 +193,7 @@ public class EntityAdapter<T> {
                 Class<?> propertyType = target.getReturnType();
                 Object propertyValue = target.invoke(entity);
 
-                AnnotationInstance ann = method.annotation(DotName.createSimple(Binding.class.getName()));
+                AnnotationInstance ann = method.annotation(DotName.createSimple(ModelNodeBinding.class.getName()));
                 org.jboss.jandex.AnnotationValue annValue = ann.value("detypedName");
                 String detypedName = annValue.asString();
 

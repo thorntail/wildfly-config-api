@@ -2,7 +2,7 @@ package org.wildfly.apigen.test.invocation.datasources;
 
 import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.List;
 import java.util.Map;
 import org.wildfly.apigen.invocation.Subresource;
@@ -32,7 +32,7 @@ public class Datasources {
 	/**
 	 * List of JDBC drivers that have been installed in the runtime
 	 */
-	@Binding(detypedName = "installed-drivers")
+	@ModelNodeBinding(detypedName = "installed-drivers")
 	public List<Map> installedDrivers() {
 		return this.installedDrivers;
 	}

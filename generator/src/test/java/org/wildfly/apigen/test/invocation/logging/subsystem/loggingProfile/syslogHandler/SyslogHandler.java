@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.syslogHandler;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 /**
  * Defines a syslog handler.
  */
@@ -29,7 +29,7 @@ public class SyslogHandler {
 	/**
 	 * The app name used when formatting the message in RFC5424 format. By default the app name is "java".
 	 */
-	@Binding(detypedName = "app-name")
+	@ModelNodeBinding(detypedName = "app-name")
 	public String appName() {
 		return this.appName;
 	}
@@ -45,7 +45,7 @@ public class SyslogHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	@Binding(detypedName = "enabled")
+	@ModelNodeBinding(detypedName = "enabled")
 	public Boolean enabled() {
 		return this.enabled;
 	}
@@ -61,7 +61,7 @@ public class SyslogHandler {
 	/**
 	 * Facility as defined by RFC-5424 (http://tools.ietf.org/html/rfc5424)and RFC-3164 (http://tools.ietf.org/html/rfc3164).
 	 */
-	@Binding(detypedName = "facility")
+	@ModelNodeBinding(detypedName = "facility")
 	public String facility() {
 		return this.facility;
 	}
@@ -77,7 +77,7 @@ public class SyslogHandler {
 	/**
 	 * The name of the host the messages are being sent from. For example the name of the host the application server is running on.
 	 */
-	@Binding(detypedName = "hostname")
+	@ModelNodeBinding(detypedName = "hostname")
 	public String hostname() {
 		return this.hostname;
 	}
@@ -93,7 +93,7 @@ public class SyslogHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	@Binding(detypedName = "level")
+	@ModelNodeBinding(detypedName = "level")
 	public String level() {
 		return this.level;
 	}
@@ -109,7 +109,7 @@ public class SyslogHandler {
 	/**
 	 * The port the syslog server is listening on.
 	 */
-	@Binding(detypedName = "port")
+	@ModelNodeBinding(detypedName = "port")
 	public Integer port() {
 		return this.port;
 	}
@@ -125,7 +125,7 @@ public class SyslogHandler {
 	/**
 	 * The address of the syslog server.
 	 */
-	@Binding(detypedName = "server-address")
+	@ModelNodeBinding(detypedName = "server-address")
 	public String serverAddress() {
 		return this.serverAddress;
 	}
@@ -141,7 +141,7 @@ public class SyslogHandler {
 	/**
 	 * Formats the log message according to the RFC specification.
 	 */
-	@Binding(detypedName = "syslog-format")
+	@ModelNodeBinding(detypedName = "syslog-format")
 	public String syslogFormat() {
 		return this.syslogFormat;
 	}

@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.datasources.subsystem.xaDataSource.xaDatasourceProperties;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 /**
  * List of xa-datasource-property
  */
@@ -22,7 +22,7 @@ public class XaDatasourceProperties {
 	/**
 	 * Specifies a property value to assign to the XADataSource implementation class. Each property is identified by the name attribute and the property value is given by the xa-datasource-property element content. The property is mapped onto the XADataSource implementation by looking for a JavaBeans style getter method for the property name. If found, the value of the property is set using the JavaBeans setter with the element text translated to the true property type using the java.beans.PropertyEditor
 	 */
-	@Binding(detypedName = "value")
+	@ModelNodeBinding(detypedName = "value")
 	public String value() {
 		return this.value;
 	}

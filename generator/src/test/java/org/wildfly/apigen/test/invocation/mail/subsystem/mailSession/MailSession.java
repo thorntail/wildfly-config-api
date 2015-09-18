@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom.Custom;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Imap;
@@ -35,7 +35,7 @@ public class MailSession {
 	/**
 	 * Enables JavaMail debugging
 	 */
-	@Binding(detypedName = "debug")
+	@ModelNodeBinding(detypedName = "debug")
 	public Boolean debug() {
 		return this.debug;
 	}
@@ -51,7 +51,7 @@ public class MailSession {
 	/**
 	 * From address that is used as default from, if not set when sending
 	 */
-	@Binding(detypedName = "from")
+	@ModelNodeBinding(detypedName = "from")
 	public String from() {
 		return this.from;
 	}
@@ -67,7 +67,7 @@ public class MailSession {
 	/**
 	 * JNDI name to where mail session should be bound
 	 */
-	@Binding(detypedName = "jndi-name")
+	@ModelNodeBinding(detypedName = "jndi-name")
 	public String jndiName() {
 		return this.jndiName;
 	}

@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.datasources.subsystem.jdbcDriver;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 /**
  * Service that make a JDBC driver available for use in the runtime
  */
@@ -33,7 +33,7 @@ public class JdbcDriver {
 	/**
 	 * The name of the deployment unit from which the driver was loaded
 	 */
-	@Binding(detypedName = "deployment-name")
+	@ModelNodeBinding(detypedName = "deployment-name")
 	public String deploymentName() {
 		return this.deploymentName;
 	}
@@ -49,7 +49,7 @@ public class JdbcDriver {
 	/**
 	 * The fully qualified class name of the java.sql.Driver implementation
 	 */
-	@Binding(detypedName = "driver-class-name")
+	@ModelNodeBinding(detypedName = "driver-class-name")
 	public String driverClassName() {
 		return this.driverClassName;
 	}
@@ -65,7 +65,7 @@ public class JdbcDriver {
 	/**
 	 * The fully qualified class name of the javax.sql.DataSource implementation
 	 */
-	@Binding(detypedName = "driver-datasource-class-name")
+	@ModelNodeBinding(detypedName = "driver-datasource-class-name")
 	public String driverDatasourceClassName() {
 		return this.driverDatasourceClassName;
 	}
@@ -81,7 +81,7 @@ public class JdbcDriver {
 	/**
 	 * The driver's major version number
 	 */
-	@Binding(detypedName = "driver-major-version")
+	@ModelNodeBinding(detypedName = "driver-major-version")
 	public Integer driverMajorVersion() {
 		return this.driverMajorVersion;
 	}
@@ -97,7 +97,7 @@ public class JdbcDriver {
 	/**
 	 * The driver's minor version number
 	 */
-	@Binding(detypedName = "driver-minor-version")
+	@ModelNodeBinding(detypedName = "driver-minor-version")
 	public Integer driverMinorVersion() {
 		return this.driverMinorVersion;
 	}
@@ -113,7 +113,7 @@ public class JdbcDriver {
 	/**
 	 * The name of the module from which the driver was loaded, if it was loaded from the module path
 	 */
-	@Binding(detypedName = "driver-module-name")
+	@ModelNodeBinding(detypedName = "driver-module-name")
 	public String driverModuleName() {
 		return this.driverModuleName;
 	}
@@ -129,7 +129,7 @@ public class JdbcDriver {
 	/**
 	 * Defines the JDBC driver the datasource should use. It is a symbolic name matching the the name of installed driver. In case the driver is deployed as jar, the name is the name of deployment unit
 	 */
-	@Binding(detypedName = "driver-name")
+	@ModelNodeBinding(detypedName = "driver-name")
 	public String driverName() {
 		return this.driverName;
 	}
@@ -145,7 +145,7 @@ public class JdbcDriver {
 	/**
 	 * The fully qualified class name of the javax.sql.XADataSource implementation
 	 */
-	@Binding(detypedName = "driver-xa-datasource-class-name")
+	@ModelNodeBinding(detypedName = "driver-xa-datasource-class-name")
 	public String driverXaDatasourceClassName() {
 		return this.driverXaDatasourceClassName;
 	}
@@ -161,7 +161,7 @@ public class JdbcDriver {
 	/**
 	 * Whether or not the driver is JDBC compliant
 	 */
-	@Binding(detypedName = "jdbc-compliant")
+	@ModelNodeBinding(detypedName = "jdbc-compliant")
 	public Boolean jdbcCompliant() {
 		return this.jdbcCompliant;
 	}
@@ -177,7 +177,7 @@ public class JdbcDriver {
 	/**
 	 * The slot of the module from which the driver was loaded, if it was loaded from the module path
 	 */
-	@Binding(detypedName = "module-slot")
+	@ModelNodeBinding(detypedName = "module-slot")
 	public String moduleSlot() {
 		return this.moduleSlot;
 	}
@@ -193,7 +193,7 @@ public class JdbcDriver {
 	/**
 	 * Domain Profile in which driver is defined. Null in case of standalone server
 	 */
-	@Binding(detypedName = "profile")
+	@ModelNodeBinding(detypedName = "profile")
 	public String profile() {
 		return this.profile;
 	}
@@ -209,7 +209,7 @@ public class JdbcDriver {
 	/**
 	 * XA datasource class
 	 */
-	@Binding(detypedName = "xa-datasource-class")
+	@ModelNodeBinding(detypedName = "xa-datasource-class")
 	public String xaDatasourceClass() {
 		return this.xaDatasourceClass;
 	}

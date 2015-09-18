@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.periodicSizeRotatingFileHandler;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.Map;
 /**
  * Defines a handler which writes to a file, rotating the log after a time period derived from the given suffix string or after the size of the file grows beyond a certain point and keeping a fixed number of backups. The suffix should be in a format understood by the java.text.SimpleDateFormat. Any backups rotated by the suffix will not be purged during a size rotation.
@@ -36,7 +36,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Specify whether to append to the target file.
 	 */
-	@Binding(detypedName = "append")
+	@ModelNodeBinding(detypedName = "append")
 	public Boolean append() {
 		return this.append;
 	}
@@ -52,7 +52,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Automatically flush after each write.
 	 */
-	@Binding(detypedName = "autoflush")
+	@ModelNodeBinding(detypedName = "autoflush")
 	public Boolean autoflush() {
 		return this.autoflush;
 	}
@@ -68,7 +68,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	@Binding(detypedName = "enabled")
+	@ModelNodeBinding(detypedName = "enabled")
 	public Boolean enabled() {
 		return this.enabled;
 	}
@@ -84,7 +84,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The character encoding used by this Handler.
 	 */
-	@Binding(detypedName = "encoding")
+	@ModelNodeBinding(detypedName = "encoding")
 	public String encoding() {
 		return this.encoding;
 	}
@@ -100,7 +100,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The file description consisting of the path and optional relative to path.
 	 */
-	@Binding(detypedName = "file")
+	@ModelNodeBinding(detypedName = "file")
 	public Map file() {
 		return this.file;
 	}
@@ -116,7 +116,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	@Binding(detypedName = "filter-spec")
+	@ModelNodeBinding(detypedName = "filter-spec")
 	public String filterSpec() {
 		return this.filterSpec;
 	}
@@ -132,7 +132,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	@Binding(detypedName = "formatter")
+	@ModelNodeBinding(detypedName = "formatter")
 	public String formatter() {
 		return this.formatter;
 	}
@@ -148,7 +148,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	@Binding(detypedName = "level")
+	@ModelNodeBinding(detypedName = "level")
 	public String level() {
 		return this.level;
 	}
@@ -164,7 +164,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The maximum number of backups to keep.
 	 */
-	@Binding(detypedName = "max-backup-index")
+	@ModelNodeBinding(detypedName = "max-backup-index")
 	public Integer maxBackupIndex() {
 		return this.maxBackupIndex;
 	}
@@ -180,7 +180,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The name of the handler.
 	 */
-	@Binding(detypedName = "name")
+	@ModelNodeBinding(detypedName = "name")
 	public String name() {
 		return this.name;
 	}
@@ -196,7 +196,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The name of the defined formatter to be used on the handler.
 	 */
-	@Binding(detypedName = "named-formatter")
+	@ModelNodeBinding(detypedName = "named-formatter")
 	public String namedFormatter() {
 		return this.namedFormatter;
 	}
@@ -212,7 +212,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Indicates the file should be rotated each time the file attribute is changed. This always happens when at initialization time.
 	 */
-	@Binding(detypedName = "rotate-on-boot")
+	@ModelNodeBinding(detypedName = "rotate-on-boot")
 	public Boolean rotateOnBoot() {
 		return this.rotateOnBoot;
 	}
@@ -228,7 +228,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The size at which to rotate the log file.
 	 */
-	@Binding(detypedName = "rotate-size")
+	@ModelNodeBinding(detypedName = "rotate-size")
 	public String rotateSize() {
 		return this.rotateSize;
 	}
@@ -244,7 +244,7 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Set the suffix string.  The string is in a format which can be understood by java.text.SimpleDateFormat. The period of the rotation is automatically calculated based on the suffix.
 	 */
-	@Binding(detypedName = "suffix")
+	@ModelNodeBinding(detypedName = "suffix")
 	public String suffix() {
 		return this.suffix;
 	}

@@ -6,11 +6,10 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaDocSource;
-import org.jboss.forge.roaster.model.source.JavaEnumSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.jboss.logmanager.Level;
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.apigen.invocation.Types;
@@ -96,7 +95,7 @@ public class SourceFactory {
         // imports
         javaClass.addImport(Implicit.class);
         javaClass.addImport(Address.class);
-        javaClass.addImport(Binding.class);
+        javaClass.addImport(ModelNodeBinding.class);
 
 
         AnnotationSource<JavaClassSource> addressMeta = javaClass.addAnnotation();
@@ -143,7 +142,7 @@ public class SourceFactory {
                                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
                             AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
-                            bindingMeta.setName("Binding");
+                            bindingMeta.setName("ModelNodeBinding");
                             bindingMeta.setStringValue("detypedName", att.getName());
                         } catch (Exception e) {
                             log.log(Level.ERROR, "Failed to process " + metaData.getAddress() + ", attribute " + att.getName(), e);

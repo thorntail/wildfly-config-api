@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface Binding {
+public @interface ModelNodeBinding {
 
     /**
      * The name of the DMR attribute

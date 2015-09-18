@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.periodicRotatingFileHandler;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.Map;
 /**
  * Defines a handler which writes to a file, rotating the log after a time period derived from the given suffix string, which should be in a format understood by java.text.SimpleDateFormat.
@@ -33,7 +33,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * Specify whether to append to the target file.
 	 */
-	@Binding(detypedName = "append")
+	@ModelNodeBinding(detypedName = "append")
 	public Boolean append() {
 		return this.append;
 	}
@@ -49,7 +49,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * Automatically flush after each write.
 	 */
-	@Binding(detypedName = "autoflush")
+	@ModelNodeBinding(detypedName = "autoflush")
 	public Boolean autoflush() {
 		return this.autoflush;
 	}
@@ -65,7 +65,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	@Binding(detypedName = "enabled")
+	@ModelNodeBinding(detypedName = "enabled")
 	public Boolean enabled() {
 		return this.enabled;
 	}
@@ -81,7 +81,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The character encoding used by this Handler.
 	 */
-	@Binding(detypedName = "encoding")
+	@ModelNodeBinding(detypedName = "encoding")
 	public String encoding() {
 		return this.encoding;
 	}
@@ -97,7 +97,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The file description consisting of the path and optional relative to path.
 	 */
-	@Binding(detypedName = "file")
+	@ModelNodeBinding(detypedName = "file")
 	public Map file() {
 		return this.file;
 	}
@@ -113,7 +113,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	@Binding(detypedName = "filter-spec")
+	@ModelNodeBinding(detypedName = "filter-spec")
 	public String filterSpec() {
 		return this.filterSpec;
 	}
@@ -129,7 +129,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	@Binding(detypedName = "formatter")
+	@ModelNodeBinding(detypedName = "formatter")
 	public String formatter() {
 		return this.formatter;
 	}
@@ -145,7 +145,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	@Binding(detypedName = "level")
+	@ModelNodeBinding(detypedName = "level")
 	public String level() {
 		return this.level;
 	}
@@ -161,7 +161,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The name of the handler.
 	 */
-	@Binding(detypedName = "name")
+	@ModelNodeBinding(detypedName = "name")
 	public String name() {
 		return this.name;
 	}
@@ -177,7 +177,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The name of the defined formatter to be used on the handler.
 	 */
-	@Binding(detypedName = "named-formatter")
+	@ModelNodeBinding(detypedName = "named-formatter")
 	public String namedFormatter() {
 		return this.namedFormatter;
 	}
@@ -193,7 +193,7 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * Set the suffix string.  The string is in a format which can be understood by java.text.SimpleDateFormat. The period of the rotation is automatically calculated based on the suffix.
 	 */
-	@Binding(detypedName = "suffix")
+	@ModelNodeBinding(detypedName = "suffix")
 	public String suffix() {
 		return this.suffix;
 	}

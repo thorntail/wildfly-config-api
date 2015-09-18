@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class IndexFactory {
     public final static DotName IMPLICIT_META = DotName.createSimple(Implicit.class.getCanonicalName());
-    public final static DotName BINDING_META = DotName.createSimple(Binding.class.getCanonicalName());
+    public final static DotName BINDING_META = DotName.createSimple(ModelNodeBinding.class.getCanonicalName());
     public final static DotName ADDRESS_META = DotName.createSimple(Address.class.getCanonicalName());
     public final static DotName SUBRESOURCE_META = DotName.createSimple(Subresource.class.getCanonicalName());
 

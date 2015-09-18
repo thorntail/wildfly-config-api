@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.datasources.subsystem.dataSource;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.Map;
 import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
@@ -83,7 +83,7 @@ public class DataSource {
 	/**
 	 * The allocation retry element indicates the number of times that allocating a connection should be tried before throwing an exception
 	 */
-	@Binding(detypedName = "allocation-retry")
+	@ModelNodeBinding(detypedName = "allocation-retry")
 	public Integer allocationRetry() {
 		return this.allocationRetry;
 	}
@@ -99,7 +99,7 @@ public class DataSource {
 	/**
 	 * The allocation retry wait millis element specifies the amount of time, in milliseconds, to wait between retrying to allocate a connection
 	 */
-	@Binding(detypedName = "allocation-retry-wait-millis")
+	@ModelNodeBinding(detypedName = "allocation-retry-wait-millis")
 	public Long allocationRetryWaitMillis() {
 		return this.allocationRetryWaitMillis;
 	}
@@ -115,7 +115,7 @@ public class DataSource {
 	/**
 	 * Specifies if multiple users will access the datasource through the getConnection(user, password) method and hence if the internal pool type should account for that
 	 */
-	@Binding(detypedName = "allow-multiple-users")
+	@ModelNodeBinding(detypedName = "allow-multiple-users")
 	public Boolean allowMultipleUsers() {
 		return this.allowMultipleUsers;
 	}
@@ -131,7 +131,7 @@ public class DataSource {
 	/**
 	 * An element to specify that connections should be validated on a background thread versus being validated prior to use. Changing this value can be done only on disabled datasource,  requires a server restart otherwise.
 	 */
-	@Binding(detypedName = "background-validation")
+	@ModelNodeBinding(detypedName = "background-validation")
 	public Boolean backgroundValidation() {
 		return this.backgroundValidation;
 	}
@@ -147,7 +147,7 @@ public class DataSource {
 	/**
 	 * The background-validation-millis element specifies the amount of time, in milliseconds, that background validation will run. Changing this value can be done only on disabled datasource,  requires a server restart otherwise
 	 */
-	@Binding(detypedName = "background-validation-millis")
+	@ModelNodeBinding(detypedName = "background-validation-millis")
 	public Long backgroundValidationMillis() {
 		return this.backgroundValidationMillis;
 	}
@@ -163,7 +163,7 @@ public class DataSource {
 	/**
 	 * The blocking-timeout-millis element specifies the maximum time, in milliseconds, to block while waiting for a connection before throwing an exception. Note that this blocks only while waiting for locking a connection, and will never throw an exception if creating a new connection takes an inordinately long time
 	 */
-	@Binding(detypedName = "blocking-timeout-wait-millis")
+	@ModelNodeBinding(detypedName = "blocking-timeout-wait-millis")
 	public Long blockingTimeoutWaitMillis() {
 		return this.blockingTimeoutWaitMillis;
 	}
@@ -179,7 +179,7 @@ public class DataSource {
 	/**
 	 * Class defining the policy for decrementing connections in the pool
 	 */
-	@Binding(detypedName = "capacity-decrementer-class")
+	@ModelNodeBinding(detypedName = "capacity-decrementer-class")
 	public String capacityDecrementerClass() {
 		return this.capacityDecrementerClass;
 	}
@@ -195,7 +195,7 @@ public class DataSource {
 	/**
 	 * Properties to be injected in class defining the policy for decrementing connections in the pool
 	 */
-	@Binding(detypedName = "capacity-decrementer-properties")
+	@ModelNodeBinding(detypedName = "capacity-decrementer-properties")
 	public Map capacityDecrementerProperties() {
 		return this.capacityDecrementerProperties;
 	}
@@ -211,7 +211,7 @@ public class DataSource {
 	/**
 	 * Class defining the policy for incrementing connections in the pool
 	 */
-	@Binding(detypedName = "capacity-incrementer-class")
+	@ModelNodeBinding(detypedName = "capacity-incrementer-class")
 	public String capacityIncrementerClass() {
 		return this.capacityIncrementerClass;
 	}
@@ -227,7 +227,7 @@ public class DataSource {
 	/**
 	 * Properties to be injected in class defining the policy for incrementing connections in the pool
 	 */
-	@Binding(detypedName = "capacity-incrementer-properties")
+	@ModelNodeBinding(detypedName = "capacity-incrementer-properties")
 	public Map capacityIncrementerProperties() {
 		return this.capacityIncrementerProperties;
 	}
@@ -243,7 +243,7 @@ public class DataSource {
 	/**
 	 * Specify an SQL statement to check validity of a pool connection. This may be called when managed connection is obtained from the pool
 	 */
-	@Binding(detypedName = "check-valid-connection-sql")
+	@ModelNodeBinding(detypedName = "check-valid-connection-sql")
 	public String checkValidConnectionSql() {
 		return this.checkValidConnectionSql;
 	}
@@ -259,7 +259,7 @@ public class DataSource {
 	/**
 	 * Enable the use of CMR. This feature means that a local resource can reliably participate in an XA transaction.
 	 */
-	@Binding(detypedName = "connectable")
+	@ModelNodeBinding(detypedName = "connectable")
 	public Boolean connectable() {
 		return this.connectable;
 	}
@@ -275,7 +275,7 @@ public class DataSource {
 	/**
 	 * Speciefies class name extending org.jboss.jca.adapters.jdbc.spi.listener.ConnectionListener that provides a possible to listen for connection activation and passivation in order to perform actions before the connection is returned to the application or returned to the pool.
 	 */
-	@Binding(detypedName = "connection-listener-class")
+	@ModelNodeBinding(detypedName = "connection-listener-class")
 	public String connectionListenerClass() {
 		return this.connectionListenerClass;
 	}
@@ -291,7 +291,7 @@ public class DataSource {
 	/**
 	 * Properties to be injected in class specidied in connection-listener-class
 	 */
-	@Binding(detypedName = "connection-listener-property")
+	@ModelNodeBinding(detypedName = "connection-listener-property")
 	public Map connectionListenerProperty() {
 		return this.connectionListenerProperty;
 	}
@@ -307,7 +307,7 @@ public class DataSource {
 	/**
 	 * The connection-properties element allows you to pass in arbitrary connection properties to the Driver.connect(url, props) method
 	 */
-	@Binding(detypedName = "connection-properties")
+	@ModelNodeBinding(detypedName = "connection-properties")
 	public String connectionProperties() {
 		return this.connectionProperties;
 	}
@@ -323,7 +323,7 @@ public class DataSource {
 	/**
 	 * The JDBC driver connection URL
 	 */
-	@Binding(detypedName = "connection-url")
+	@ModelNodeBinding(detypedName = "connection-url")
 	public String connectionUrl() {
 		return this.connectionUrl;
 	}
@@ -339,7 +339,7 @@ public class DataSource {
 	/**
 	 * The fully qualified name of the JDBC datasource class
 	 */
-	@Binding(detypedName = "datasource-class")
+	@ModelNodeBinding(detypedName = "datasource-class")
 	public String datasourceClass() {
 		return this.datasourceClass;
 	}
@@ -355,7 +355,7 @@ public class DataSource {
 	/**
 	 * The fully qualified name of the JDBC driver class
 	 */
-	@Binding(detypedName = "driver-class")
+	@ModelNodeBinding(detypedName = "driver-class")
 	public String driverClass() {
 		return this.driverClass;
 	}
@@ -371,7 +371,7 @@ public class DataSource {
 	/**
 	 * Defines the JDBC driver the datasource should use. It is a symbolic name matching the the name of installed driver. In case the driver is deployed as jar, the name is the name of deployment unit
 	 */
-	@Binding(detypedName = "driver-name")
+	@ModelNodeBinding(detypedName = "driver-name")
 	public String driverName() {
 		return this.driverName;
 	}
@@ -387,7 +387,7 @@ public class DataSource {
 	/**
 	 * Specifies if the datasource should be enabled. Note this attribute will not be supported runtime in next versions.
 	 */
-	@Binding(detypedName = "enabled")
+	@ModelNodeBinding(detypedName = "enabled")
 	public Boolean enabled() {
 		return this.enabled;
 	}
@@ -403,7 +403,7 @@ public class DataSource {
 	/**
 	 * An org.jboss.jca.adapters.jdbc.ExceptionSorter that provides an isExceptionFatal(SQLException) method to validate if an exception should broadcast an error
 	 */
-	@Binding(detypedName = "exception-sorter-class-name")
+	@ModelNodeBinding(detypedName = "exception-sorter-class-name")
 	public String exceptionSorterClassName() {
 		return this.exceptionSorterClassName;
 	}
@@ -419,7 +419,7 @@ public class DataSource {
 	/**
 	 * The exception sorter properties
 	 */
-	@Binding(detypedName = "exception-sorter-properties")
+	@ModelNodeBinding(detypedName = "exception-sorter-properties")
 	public Map exceptionSorterProperties() {
 		return this.exceptionSorterProperties;
 	}
@@ -435,7 +435,7 @@ public class DataSource {
 	/**
 	 * Specifies how the pool should be flush in case of an error. Valid values are: FailingConnectionOnly (default), IdleConnections and EntirePool
 	 */
-	@Binding(detypedName = "flush-strategy")
+	@ModelNodeBinding(detypedName = "flush-strategy")
 	public String flushStrategy() {
 		return this.flushStrategy;
 	}
@@ -451,7 +451,7 @@ public class DataSource {
 	/**
 	 * The idle-timeout-minutes elements specifies the maximum time, in minutes, a connection may be idle before being closed. The actual maximum time depends also on the IdleRemover scan time, which is half of the smallest idle-timeout-minutes value of any pool. Changing this value can be done only on disabled datasource, requires a server restart otherwise.
 	 */
-	@Binding(detypedName = "idle-timeout-minutes")
+	@ModelNodeBinding(detypedName = "idle-timeout-minutes")
 	public Long idleTimeoutMinutes() {
 		return this.idleTimeoutMinutes;
 	}
@@ -467,7 +467,7 @@ public class DataSource {
 	/**
 	 * The initial-pool-size element indicates the initial number of connections a pool should hold.
 	 */
-	@Binding(detypedName = "initial-pool-size")
+	@ModelNodeBinding(detypedName = "initial-pool-size")
 	public Integer initialPoolSize() {
 		return this.initialPoolSize;
 	}
@@ -483,7 +483,7 @@ public class DataSource {
 	/**
 	 * Specifies the JNDI name for the datasource
 	 */
-	@Binding(detypedName = "jndi-name")
+	@ModelNodeBinding(detypedName = "jndi-name")
 	public String jndiName() {
 		return this.jndiName;
 	}
@@ -499,7 +499,7 @@ public class DataSource {
 	/**
 	 * Enable JTA integration
 	 */
-	@Binding(detypedName = "jta")
+	@ModelNodeBinding(detypedName = "jta")
 	public Boolean jta() {
 		return this.jta;
 	}
@@ -515,7 +515,7 @@ public class DataSource {
 	/**
 	 * The max-pool-size element specifies the maximum number of connections for a pool. No more connections will be created in each sub-pool
 	 */
-	@Binding(detypedName = "max-pool-size")
+	@ModelNodeBinding(detypedName = "max-pool-size")
 	public Integer maxPoolSize() {
 		return this.maxPoolSize;
 	}
@@ -531,7 +531,7 @@ public class DataSource {
 	/**
 	 * The min-pool-size element specifies the minimum number of connections for a pool
 	 */
-	@Binding(detypedName = "min-pool-size")
+	@ModelNodeBinding(detypedName = "min-pool-size")
 	public Integer minPoolSize() {
 		return this.minPoolSize;
 	}
@@ -547,7 +547,7 @@ public class DataSource {
 	/**
 	 * Specifies an SQL statement to execute whenever a connection is added to the connection pool
 	 */
-	@Binding(detypedName = "new-connection-sql")
+	@ModelNodeBinding(detypedName = "new-connection-sql")
 	public String newConnectionSql() {
 		return this.newConnectionSql;
 	}
@@ -563,7 +563,7 @@ public class DataSource {
 	/**
 	 * Specifies the password used when creating a new connection
 	 */
-	@Binding(detypedName = "password")
+	@ModelNodeBinding(detypedName = "password")
 	public String password() {
 		return this.password;
 	}
@@ -579,7 +579,7 @@ public class DataSource {
 	/**
 	 * Should the pool be prefilled. Changing this value can be done only on disabled datasource, requires a server restart otherwise.
 	 */
-	@Binding(detypedName = "pool-prefill")
+	@ModelNodeBinding(detypedName = "pool-prefill")
 	public Boolean poolPrefill() {
 		return this.poolPrefill;
 	}
@@ -595,7 +595,7 @@ public class DataSource {
 	/**
 	 * Specifies if the min-pool-size should be considered strictly
 	 */
-	@Binding(detypedName = "pool-use-strict-min")
+	@ModelNodeBinding(detypedName = "pool-use-strict-min")
 	public Boolean poolUseStrictMin() {
 		return this.poolUseStrictMin;
 	}
@@ -611,7 +611,7 @@ public class DataSource {
 	/**
 	 * The number of prepared statements per connection in an LRU cache
 	 */
-	@Binding(detypedName = "prepared-statements-cache-size")
+	@ModelNodeBinding(detypedName = "prepared-statements-cache-size")
 	public Long preparedStatementsCacheSize() {
 		return this.preparedStatementsCacheSize;
 	}
@@ -627,7 +627,7 @@ public class DataSource {
 	/**
 	 * Any configured query timeout in seconds. If not provided no timeout will be set
 	 */
-	@Binding(detypedName = "query-timeout")
+	@ModelNodeBinding(detypedName = "query-timeout")
 	public Long queryTimeout() {
 		return this.queryTimeout;
 	}
@@ -643,7 +643,7 @@ public class DataSource {
 	/**
 	 * The fully qualified class name of the reauthentication plugin implementation
 	 */
-	@Binding(detypedName = "reauth-plugin-class-name")
+	@ModelNodeBinding(detypedName = "reauth-plugin-class-name")
 	public String reauthPluginClassName() {
 		return this.reauthPluginClassName;
 	}
@@ -659,7 +659,7 @@ public class DataSource {
 	/**
 	 * The properties for the reauthentication plugin
 	 */
-	@Binding(detypedName = "reauth-plugin-properties")
+	@ModelNodeBinding(detypedName = "reauth-plugin-properties")
 	public Map reauthPluginProperties() {
 		return this.reauthPluginProperties;
 	}
@@ -675,7 +675,7 @@ public class DataSource {
 	/**
 	 * Specifies the security domain which defines the javax.security.auth.Subject that are used to distinguish connections in the pool
 	 */
-	@Binding(detypedName = "security-domain")
+	@ModelNodeBinding(detypedName = "security-domain")
 	public String securityDomain() {
 		return this.securityDomain;
 	}
@@ -691,7 +691,7 @@ public class DataSource {
 	/**
 	 * Whether to set the query timeout based on the time remaining until transaction timeout. Any configured query timeout will be used if there is no transaction
 	 */
-	@Binding(detypedName = "set-tx-query-timeout")
+	@ModelNodeBinding(detypedName = "set-tx-query-timeout")
 	public Boolean setTxQueryTimeout() {
 		return this.setTxQueryTimeout;
 	}
@@ -707,7 +707,7 @@ public class DataSource {
 	/**
 	 * Whether to share prepared statements, i.e. whether asking for same statement twice without closing uses the same underlying prepared statement
 	 */
-	@Binding(detypedName = "share-prepared-statements")
+	@ModelNodeBinding(detypedName = "share-prepared-statements")
 	public Boolean sharePreparedStatements() {
 		return this.sharePreparedStatements;
 	}
@@ -723,7 +723,7 @@ public class DataSource {
 	/**
 	 * Enable spying of SQL statements
 	 */
-	@Binding(detypedName = "spy")
+	@ModelNodeBinding(detypedName = "spy")
 	public Boolean spy() {
 		return this.spy;
 	}
@@ -739,7 +739,7 @@ public class DataSource {
 	/**
 	 * An org.jboss.jca.adapters.jdbc.StaleConnectionChecker that provides an isStaleConnection(SQLException) method which if it returns true will wrap the exception in an org.jboss.jca.adapters.jdbc.StaleConnectionException
 	 */
-	@Binding(detypedName = "stale-connection-checker-class-name")
+	@ModelNodeBinding(detypedName = "stale-connection-checker-class-name")
 	public String staleConnectionCheckerClassName() {
 		return this.staleConnectionCheckerClassName;
 	}
@@ -755,7 +755,7 @@ public class DataSource {
 	/**
 	 * The stale connection checker properties
 	 */
-	@Binding(detypedName = "stale-connection-checker-properties")
+	@ModelNodeBinding(detypedName = "stale-connection-checker-properties")
 	public Map staleConnectionCheckerProperties() {
 		return this.staleConnectionCheckerProperties;
 	}
@@ -771,7 +771,7 @@ public class DataSource {
 	/**
 	 * define if runtime statistics is enabled or not.
 	 */
-	@Binding(detypedName = "statistics-enabled")
+	@ModelNodeBinding(detypedName = "statistics-enabled")
 	public Boolean statisticsEnabled() {
 		return this.statisticsEnabled;
 	}
@@ -787,7 +787,7 @@ public class DataSource {
 	/**
 	 * Whether to check for unclosed statements when a connection is returned to the pool, result sets are closed, a statement is closed or return to the prepared statement cache. Valid values are: "false" - do not track statements, "true" - track statements and result sets and warn when they are not closed, "nowarn" - track statements but do not warn about them being unclosed
 	 */
-	@Binding(detypedName = "track-statements")
+	@ModelNodeBinding(detypedName = "track-statements")
 	public String trackStatements() {
 		return this.trackStatements;
 	}
@@ -803,7 +803,7 @@ public class DataSource {
 	/**
 	 * Defines if IronJacamar should track connection handles across transaction boundaries
 	 */
-	@Binding(detypedName = "tracking")
+	@ModelNodeBinding(detypedName = "tracking")
 	public Boolean tracking() {
 		return this.tracking;
 	}
@@ -819,7 +819,7 @@ public class DataSource {
 	/**
 	 * Set the java.sql.Connection transaction isolation level. Valid values are: TRANSACTION_READ_UNCOMMITTED, TRANSACTION_READ_COMMITTED, TRANSACTION_REPEATABLE_READ, TRANSACTION_SERIALIZABLE and TRANSACTION_NONE
 	 */
-	@Binding(detypedName = "transaction-isolation")
+	@ModelNodeBinding(detypedName = "transaction-isolation")
 	public String transactionIsolation() {
 		return this.transactionIsolation;
 	}
@@ -835,7 +835,7 @@ public class DataSource {
 	/**
 	 * Specifies the delimiter for URLs in connection-url for HA datasources
 	 */
-	@Binding(detypedName = "url-delimiter")
+	@ModelNodeBinding(detypedName = "url-delimiter")
 	public String urlDelimiter() {
 		return this.urlDelimiter;
 	}
@@ -851,7 +851,7 @@ public class DataSource {
 	/**
 	 * A class that implements org.jboss.jca.adapters.jdbc.URLSelectorStrategy
 	 */
-	@Binding(detypedName = "url-selector-strategy-class-name")
+	@ModelNodeBinding(detypedName = "url-selector-strategy-class-name")
 	public String urlSelectorStrategyClassName() {
 		return this.urlSelectorStrategyClassName;
 	}
@@ -867,7 +867,7 @@ public class DataSource {
 	/**
 	 * Enable the use of a cached connection manager
 	 */
-	@Binding(detypedName = "use-ccm")
+	@ModelNodeBinding(detypedName = "use-ccm")
 	public Boolean useCcm() {
 		return this.useCcm;
 	}
@@ -883,7 +883,7 @@ public class DataSource {
 	/**
 	 * Whether to fail a connection allocation on the first try if it is invalid (true) or keep trying until the pool is exhausted of all potential connections (false)
 	 */
-	@Binding(detypedName = "use-fast-fail")
+	@ModelNodeBinding(detypedName = "use-fast-fail")
 	public Boolean useFastFail() {
 		return this.useFastFail;
 	}
@@ -899,7 +899,7 @@ public class DataSource {
 	/**
 	 * Setting this to false will bind the datasource into global JNDI
 	 */
-	@Binding(detypedName = "use-java-context")
+	@ModelNodeBinding(detypedName = "use-java-context")
 	public Boolean useJavaContext() {
 		return this.useJavaContext;
 	}
@@ -915,7 +915,7 @@ public class DataSource {
 	/**
 	 * Any configured timeout for internal locks on the resource adapter objects in seconds
 	 */
-	@Binding(detypedName = "use-try-lock")
+	@ModelNodeBinding(detypedName = "use-try-lock")
 	public Long useTryLock() {
 		return this.useTryLock;
 	}
@@ -931,7 +931,7 @@ public class DataSource {
 	/**
 	 * Specify the user name used when creating a new connection
 	 */
-	@Binding(detypedName = "user-name")
+	@ModelNodeBinding(detypedName = "user-name")
 	public String userName() {
 		return this.userName;
 	}
@@ -947,7 +947,7 @@ public class DataSource {
 	/**
 	 * An org.jboss.jca.adapters.jdbc.ValidConnectionChecker that provides an isValidConnection(Connection) method to validate a connection. If an exception is returned that means the connection is invalid. This overrides the check-valid-connection-sql element
 	 */
-	@Binding(detypedName = "valid-connection-checker-class-name")
+	@ModelNodeBinding(detypedName = "valid-connection-checker-class-name")
 	public String validConnectionCheckerClassName() {
 		return this.validConnectionCheckerClassName;
 	}
@@ -963,7 +963,7 @@ public class DataSource {
 	/**
 	 * The valid connection checker properties
 	 */
-	@Binding(detypedName = "valid-connection-checker-properties")
+	@ModelNodeBinding(detypedName = "valid-connection-checker-properties")
 	public Map validConnectionCheckerProperties() {
 		return this.validConnectionCheckerProperties;
 	}
@@ -979,7 +979,7 @@ public class DataSource {
 	/**
 	 * The validate-on-match element specifies if connection validation should be done when a connection factory attempts to match a managed connection. This is typically exclusive to the use of background validation
 	 */
-	@Binding(detypedName = "validate-on-match")
+	@ModelNodeBinding(detypedName = "validate-on-match")
 	public Boolean validateOnMatch() {
 		return this.validateOnMatch;
 	}

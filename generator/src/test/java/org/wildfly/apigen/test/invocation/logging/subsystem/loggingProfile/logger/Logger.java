@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.logger;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.List;
 /**
  * Defines a logger category.
@@ -27,7 +27,7 @@ public class Logger {
 	/**
 	 * Specifies the category for the logger.
 	 */
-	@Binding(detypedName = "category")
+	@ModelNodeBinding(detypedName = "category")
 	public String category() {
 		return this.category;
 	}
@@ -43,7 +43,7 @@ public class Logger {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	@Binding(detypedName = "filter-spec")
+	@ModelNodeBinding(detypedName = "filter-spec")
 	public String filterSpec() {
 		return this.filterSpec;
 	}
@@ -59,7 +59,7 @@ public class Logger {
 	/**
 	 * The handlers associated with the logger.
 	 */
-	@Binding(detypedName = "handlers")
+	@ModelNodeBinding(detypedName = "handlers")
 	public List handlers() {
 		return this.handlers;
 	}
@@ -75,7 +75,7 @@ public class Logger {
 	/**
 	 * The log level specifying which message levels will be logged by the logger. Message levels lower than this value will be discarded.
 	 */
-	@Binding(detypedName = "level")
+	@ModelNodeBinding(detypedName = "level")
 	public String level() {
 		return this.level;
 	}
@@ -91,7 +91,7 @@ public class Logger {
 	/**
 	 * Specifies whether or not this logger should send its output to it's parent Logger.
 	 */
-	@Binding(detypedName = "use-parent-handlers")
+	@ModelNodeBinding(detypedName = "use-parent-handlers")
 	public Boolean useParentHandlers() {
 		return this.useParentHandlers;
 	}

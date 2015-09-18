@@ -49,6 +49,10 @@
         {
             "sourceAddress": "/subsystem=jsf",
             "targetPackage": "org.wildfly.swarm.config.jsf"
+        },
+        {
+            "sourceAddress": "/subsystem=naming",
+            "targetPackage": "org.wildfly.swarm.config.naming"
         }
     ]
 }

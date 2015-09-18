@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.asyncHandler;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.List;
 /**
  * Defines a handler which writes to the sub-handlers in an asynchronous thread. Used for handlers which introduce a substantial amount of lag.
@@ -29,7 +29,7 @@ public class AsyncHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	@Binding(detypedName = "enabled")
+	@ModelNodeBinding(detypedName = "enabled")
 	public Boolean enabled() {
 		return this.enabled;
 	}
@@ -45,7 +45,7 @@ public class AsyncHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	@Binding(detypedName = "filter-spec")
+	@ModelNodeBinding(detypedName = "filter-spec")
 	public String filterSpec() {
 		return this.filterSpec;
 	}
@@ -61,7 +61,7 @@ public class AsyncHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this handler. Message levels lower than this value will be discarded.
 	 */
-	@Binding(detypedName = "level")
+	@ModelNodeBinding(detypedName = "level")
 	public String level() {
 		return this.level;
 	}
@@ -77,7 +77,7 @@ public class AsyncHandler {
 	/**
 	 * The name of the handler.
 	 */
-	@Binding(detypedName = "name")
+	@ModelNodeBinding(detypedName = "name")
 	public String name() {
 		return this.name;
 	}
@@ -93,7 +93,7 @@ public class AsyncHandler {
 	/**
 	 * Specify what action to take when the overflowing.  The valid options are 'block' and 'discard'
 	 */
-	@Binding(detypedName = "overflow-action")
+	@ModelNodeBinding(detypedName = "overflow-action")
 	public String overflowAction() {
 		return this.overflowAction;
 	}
@@ -109,7 +109,7 @@ public class AsyncHandler {
 	/**
 	 * The queue length to use before flushing writing
 	 */
-	@Binding(detypedName = "queue-length")
+	@ModelNodeBinding(detypedName = "queue-length")
 	public Integer queueLength() {
 		return this.queueLength;
 	}
@@ -125,7 +125,7 @@ public class AsyncHandler {
 	/**
 	 * The Handlers associated with this async handler.
 	 */
-	@Binding(detypedName = "subhandlers")
+	@ModelNodeBinding(detypedName = "subhandlers")
 	public List subhandlers() {
 		return this.subhandlers;
 	}

@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.customFormatter;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.Map;
 /**
  * A custom formatter to be used with handlers. Note that most log records are formatted in the printf format. Formatters may require invocation of the org.jboss.logmanager.ExtLogRecord#getFormattedMessage() for the message to be properly formatted.
@@ -25,7 +25,7 @@ public class CustomFormatter {
 	/**
 	 * The logging handler class to be used.
 	 */
-	@Binding(detypedName = "class")
+	@ModelNodeBinding(detypedName = "class")
 	public String attributeClass() {
 		return this.attributeClass;
 	}
@@ -41,7 +41,7 @@ public class CustomFormatter {
 	/**
 	 * The module that the logging handler depends on.
 	 */
-	@Binding(detypedName = "module")
+	@ModelNodeBinding(detypedName = "module")
 	public String module() {
 		return this.module;
 	}
@@ -57,7 +57,7 @@ public class CustomFormatter {
 	/**
 	 * Defines the properties used for the logging handler. All properties must be accessible via a setter method.
 	 */
-	@Binding(detypedName = "properties")
+	@ModelNodeBinding(detypedName = "properties")
 	public Map properties() {
 		return this.properties;
 	}

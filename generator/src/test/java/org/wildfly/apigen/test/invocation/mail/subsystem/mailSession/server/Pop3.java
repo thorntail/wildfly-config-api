@@ -2,7 +2,7 @@ package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server;
 
 import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 /**
  * Mail session server
  */
@@ -28,7 +28,7 @@ public class Pop3 {
 	/**
 	 * Outbound Socket binding to mail server
 	 */
-	@Binding(detypedName = "outbound-socket-binding-ref")
+	@ModelNodeBinding(detypedName = "outbound-socket-binding-ref")
 	public String outboundSocketBindingRef() {
 		return this.outboundSocketBindingRef;
 	}
@@ -44,7 +44,7 @@ public class Pop3 {
 	/**
 	 * Password to authenticate on server
 	 */
-	@Binding(detypedName = "password")
+	@ModelNodeBinding(detypedName = "password")
 	public String password() {
 		return this.password;
 	}
@@ -60,7 +60,7 @@ public class Pop3 {
 	/**
 	 * Does server require SSL?
 	 */
-	@Binding(detypedName = "ssl")
+	@ModelNodeBinding(detypedName = "ssl")
 	public Boolean ssl() {
 		return this.ssl;
 	}
@@ -76,7 +76,7 @@ public class Pop3 {
 	/**
 	 * Does server require TLS?
 	 */
-	@Binding(detypedName = "tls")
+	@ModelNodeBinding(detypedName = "tls")
 	public Boolean tls() {
 		return this.tls;
 	}
@@ -92,7 +92,7 @@ public class Pop3 {
 	/**
 	 * Username to authenticate on server
 	 */
-	@Binding(detypedName = "username")
+	@ModelNodeBinding(detypedName = "username")
 	public String username() {
 		return this.username;
 	}

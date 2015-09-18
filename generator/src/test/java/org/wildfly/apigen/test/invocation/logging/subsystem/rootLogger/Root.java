@@ -2,7 +2,7 @@ package org.wildfly.apigen.test.invocation.logging.subsystem.rootLogger;
 
 import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.Map;
 import java.util.List;
 /**
@@ -29,7 +29,7 @@ public class Root {
 	/**
 	 * Defines a simple filter type.
 	 */
-	@Binding(detypedName = "filter")
+	@ModelNodeBinding(detypedName = "filter")
 	public Map filter() {
 		return this.filter;
 	}
@@ -45,7 +45,7 @@ public class Root {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	@Binding(detypedName = "filter-spec")
+	@ModelNodeBinding(detypedName = "filter-spec")
 	public String filterSpec() {
 		return this.filterSpec;
 	}
@@ -61,7 +61,7 @@ public class Root {
 	/**
 	 * The handlers associated with the root logger.
 	 */
-	@Binding(detypedName = "handlers")
+	@ModelNodeBinding(detypedName = "handlers")
 	public List handlers() {
 		return this.handlers;
 	}
@@ -77,7 +77,7 @@ public class Root {
 	/**
 	 * The log level specifying which message levels will be logged by the root logger. Message levels lower than this value will be discarded.
 	 */
-	@Binding(detypedName = "level")
+	@ModelNodeBinding(detypedName = "level")
 	public String level() {
 		return this.level;
 	}

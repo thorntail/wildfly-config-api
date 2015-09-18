@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.datasources.subsystem.dataSource.connectionProperties;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 /**
  * The connection-properties element allows you to pass in arbitrary connection properties to the Driver.connect(url, props) method
  */
@@ -22,7 +22,7 @@ public class ConnectionProperties {
 	/**
 	 * Each connection-property specifies a string name/value pair with the property name coming from the name attribute and the value coming from the element content
 	 */
-	@Binding(detypedName = "value")
+	@ModelNodeBinding(detypedName = "value")
 	public String value() {
 		return this.value;
 	}

@@ -8,7 +8,7 @@ import org.jboss.jandex.Indexer;
 import org.jboss.jandex.MethodInfo;
 import org.junit.Test;
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.swarm.config.datasources.subsystem.dataSource.DataSource;
 import org.wildfly.swarm.config.datasources.subsystem.dataSource.connectionProperties.ConnectionProperties;
@@ -57,7 +57,7 @@ public class BindingMetaDataTestCase {
 
         ClassInfo clazz = index.getClassByName(DotName.createSimple(DataSource.class.getCanonicalName()));
 
-        DotName bindingMeta = DotName.createSimple(Binding.class.getCanonicalName());
+        DotName bindingMeta = DotName.createSimple(ModelNodeBinding.class.getCanonicalName());
         DotName addressMeta = DotName.createSimple(Address.class.getCanonicalName());
         DotName subresourceMeta = DotName.createSimple(Subresource.class.getCanonicalName());
 

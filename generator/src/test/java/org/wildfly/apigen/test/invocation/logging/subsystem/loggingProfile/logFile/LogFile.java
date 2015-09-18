@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.logFile;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 /**
  * Log files that are available to be read.
  */
@@ -25,7 +25,7 @@ public class LogFile {
 	/**
 	 * The size of the log file in bytes.
 	 */
-	@Binding(detypedName = "file-size")
+	@ModelNodeBinding(detypedName = "file-size")
 	public Long fileSize() {
 		return this.fileSize;
 	}
@@ -41,7 +41,7 @@ public class LogFile {
 	/**
 	 * The date, in milliseconds, the file was last modified.
 	 */
-	@Binding(detypedName = "last-modified-time")
+	@ModelNodeBinding(detypedName = "last-modified-time")
 	public Long lastModifiedTime() {
 		return this.lastModifiedTime;
 	}
@@ -57,7 +57,7 @@ public class LogFile {
 	/**
 	 * The date, in ISO 8601 format, the file was last modified.
 	 */
-	@Binding(detypedName = "last-modified-timestamp")
+	@ModelNodeBinding(detypedName = "last-modified-timestamp")
 	public String lastModifiedTimestamp() {
 		return this.lastModifiedTimestamp;
 	}
@@ -73,7 +73,7 @@ public class LogFile {
 	/**
 	 * Provides the server log as a response attachment. The response result value is the unique id of the attachment.
 	 */
-	@Binding(detypedName = "stream")
+	@ModelNodeBinding(detypedName = "stream")
 	public Long stream() {
 		return this.stream;
 	}

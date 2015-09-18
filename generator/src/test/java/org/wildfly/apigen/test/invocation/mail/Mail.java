@@ -2,7 +2,7 @@ package org.wildfly.apigen.test.invocation.mail;
 
 import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+
 import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession;

@@ -2,7 +2,7 @@ package org.wildfly.apigen.test.invocation.logging;
 
 import org.wildfly.apigen.invocation.Implicit;
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.apigen.test.invocation.logging.subsystem.periodicRotatingFileHandler.PeriodicRotatingFileHandler;
@@ -43,7 +43,7 @@ public class Logging {
 	/**
 	 * Indicates whether or not logging API dependencies should be added to deployments during the deployment process. A value of true will add the dependencies to the deployment. A value of false will skip the deployment from being processed for logging API dependencies.
 	 */
-	@Binding(detypedName = "add-logging-api-dependencies")
+	@ModelNodeBinding(detypedName = "add-logging-api-dependencies")
 	public Boolean addLoggingApiDependencies() {
 		return this.addLoggingApiDependencies;
 	}
@@ -59,7 +59,7 @@ public class Logging {
 	/**
 	 * Indicates whether or not deployments should use a logging configuration file found in the deployment to configure the log manager. If set to true and a logging configuration file was found in the deployments META-INF or WEB-INF/classes directory, then a log manager will be configured with those settings. If set false the servers logging configuration will be used regardless of any logging configuration files supplied in the deployment.
 	 */
-	@Binding(detypedName = "use-deployment-logging-config")
+	@ModelNodeBinding(detypedName = "use-deployment-logging-config")
 	public Boolean useDeploymentLoggingConfig() {
 		return this.useDeploymentLoggingConfig;
 	}

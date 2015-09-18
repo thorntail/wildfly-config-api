@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.customHandler;
 
 import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.Binding;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.Map;
 /**
  * Defines a custom logging handler. The custom handler must extend java.util.logging.Handler.
@@ -32,7 +32,7 @@ public class CustomHandler {
 	/**
 	 * The logging handler class to be used.
 	 */
-	@Binding(detypedName = "class")
+	@ModelNodeBinding(detypedName = "class")
 	public String attributeClass() {
 		return this.attributeClass;
 	}
@@ -48,7 +48,7 @@ public class CustomHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	@Binding(detypedName = "enabled")
+	@ModelNodeBinding(detypedName = "enabled")
 	public Boolean enabled() {
 		return this.enabled;
 	}
@@ -64,7 +64,7 @@ public class CustomHandler {
 	/**
 	 * The character encoding used by this Handler.
 	 */
-	@Binding(detypedName = "encoding")
+	@ModelNodeBinding(detypedName = "encoding")
 	public String encoding() {
 		return this.encoding;
 	}
@@ -80,7 +80,7 @@ public class CustomHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	@Binding(detypedName = "filter-spec")
+	@ModelNodeBinding(detypedName = "filter-spec")
 	public String filterSpec() {
 		return this.filterSpec;
 	}
@@ -96,7 +96,7 @@ public class CustomHandler {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	@Binding(detypedName = "formatter")
+	@ModelNodeBinding(detypedName = "formatter")
 	public String formatter() {
 		return this.formatter;
 	}
@@ -112,7 +112,7 @@ public class CustomHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	@Binding(detypedName = "level")
+	@ModelNodeBinding(detypedName = "level")
 	public String level() {
 		return this.level;
 	}
@@ -128,7 +128,7 @@ public class CustomHandler {
 	/**
 	 * The module that the logging handler depends on.
 	 */
-	@Binding(detypedName = "module")
+	@ModelNodeBinding(detypedName = "module")
 	public String module() {
 		return this.module;
 	}
@@ -144,7 +144,7 @@ public class CustomHandler {
 	/**
 	 * The name of the handler.
 	 */
-	@Binding(detypedName = "name")
+	@ModelNodeBinding(detypedName = "name")
 	public String name() {
 		return this.name;
 	}
@@ -160,7 +160,7 @@ public class CustomHandler {
 	/**
 	 * The name of the defined formatter to be used on the handler.
 	 */
-	@Binding(detypedName = "named-formatter")
+	@ModelNodeBinding(detypedName = "named-formatter")
 	public String namedFormatter() {
 		return this.namedFormatter;
 	}
@@ -176,7 +176,7 @@ public class CustomHandler {
 	/**
 	 * Defines the properties used for the logging handler. All properties must be accessible via a setter method.
 	 */
-	@Binding(detypedName = "properties")
+	@ModelNodeBinding(detypedName = "properties")
 	public Map properties() {
 		return this.properties;
 	}
