@@ -61,6 +61,10 @@
         {
             "sourceAddress": "/subsystem=weld",
             "targetPackage": "org.wildfly.swarm.config.weld"
+        },
+        {
+            "sourceAddress": "/subsystem=undertow",
+            "targetPackage": "org.wildfly.swarm.config.undertow"
         }
     ]
 }
