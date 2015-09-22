@@ -2,7 +2,7 @@ package org.wildfly.apigen.invocation;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
-import org.jboss.jandex.MethodInfo;
+import org.jboss.dmr.ValueExpression;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -22,7 +22,9 @@ public class SimpleTypeAdapter {
     {
         if(type.equals(ModelType.STRING))
         {
-            target.set((String) propValue);
+            String value = propValue.toString();
+            if (value.startsWith("${") && value.endsWith("}")) value = new ValueExpression(value).resolveString();
+            target.set(value);
         }
         else if(type.equals(ModelType.INT))
         {

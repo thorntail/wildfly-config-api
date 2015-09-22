@@ -45,13 +45,22 @@ public class EntityAdapterTestCase extends AbstractTestCase {
         Assert.assertTrue(session.from().equals("john@doe.com"));
         Assert.assertTrue(session.jndiName().equals("java:/mail/Test"));
 
-        System.out.println(modelNode);
+//        System.out.println(modelNode);
     }
 
     @Test
     public void testComplexResourceMarshalling() throws Exception {
         EntityAdapter<Mail> adapter = new EntityAdapter<>(Mail.class);
         ModelNode node = adapter.fromEntity(mail);
-        System.out.println(node);
+//        System.out.println(node);
+    }
+
+    @Test
+    public void testValueExpressions() throws Exception {
+        System.setProperty("mail.test.jndi.name", "java:/mail/ValueTest");
+        mailSession.jndiName("${mail.test.jndi.name}");
+        EntityAdapter<MailSession> adapter = new EntityAdapter<>(MailSession.class);
+        ModelNode node = adapter.fromEntity(mailSession);
+        Assert.assertEquals("java:/mail/ValueTest", node.get("jndi-name").asString());
     }
 }
