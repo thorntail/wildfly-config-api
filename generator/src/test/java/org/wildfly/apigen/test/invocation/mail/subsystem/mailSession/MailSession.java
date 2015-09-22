@@ -2,18 +2,18 @@ package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession;
 
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.ModelNodeBinding;
+import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom.Custom;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Imap;
-import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Pop3;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Pop3;
 
-import java.util.List;
 /**
  * Mail session definition
  */
 @Address("/subsystem=mail/mail-session=*")
-public class MailSession {
+public class MailSession<T extends MailSession> {
 
 	private String key;
 	private Boolean debug;
@@ -43,9 +43,10 @@ public class MailSession {
 	/**
 	 * Enables JavaMail debugging
 	 */
-	public MailSession debug(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T debug(Boolean value) {
 		this.debug = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -59,9 +60,10 @@ public class MailSession {
 	/**
 	 * From address that is used as default from, if not set when sending
 	 */
-	public MailSession from(String value) {
+	@SuppressWarnings("unchecked")
+	public T from(String value) {
 		this.from = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -75,9 +77,10 @@ public class MailSession {
 	/**
 	 * JNDI name to where mail session should be bound
 	 */
-	public MailSession jndiName(String value) {
+	@SuppressWarnings("unchecked")
+	public T jndiName(String value) {
 		this.jndiName = value;
-		return this;
+		return (T) this;
 	}
 
 	public MailSessionResources subresources() {
@@ -89,9 +92,10 @@ public class MailSession {
 	 * @return this
 	 * @param value List of Custom objects.
 	 */
-	public MailSession customs(List<Custom> value) {
+	@SuppressWarnings("unchecked")
+	public T customs(List<Custom> value) {
 		this.subresources.customs.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -99,9 +103,10 @@ public class MailSession {
 	 * @param value The Custom to add
 	 * @return this
 	 */
-	public MailSession custom(Custom value) {
+	@SuppressWarnings("unchecked")
+	public T custom(Custom value) {
 		this.subresources.customs.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -134,9 +139,10 @@ public class MailSession {
 	/**
 	 * Mail session server
 	 */
-	public MailSession pop3(Pop3 value) {
+	@SuppressWarnings("unchecked")
+	public T pop3(Pop3 value) {
 		this.pop3 = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -150,9 +156,10 @@ public class MailSession {
 	/**
 	 * Mail session server
 	 */
-	public MailSession smtp(Smtp value) {
+	@SuppressWarnings("unchecked")
+	public T smtp(Smtp value) {
 		this.smtp = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -166,8 +173,9 @@ public class MailSession {
 	/**
 	 * Mail session server
 	 */
-	public MailSession imap(Imap value) {
+	@SuppressWarnings("unchecked")
+	public T imap(Imap value) {
 		this.imap = value;
-		return this;
+		return (T) this;
 	}
 }

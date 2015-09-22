@@ -2,15 +2,17 @@ package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom;
 
 import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.ModelNodeBinding;
+import java.util.Map;
 /**
  * Mail session server
  */
 @Address("/subsystem=mail/mail-session=*/custom=*")
-public class Custom {
+public class Custom<T extends Custom> {
 
 	private String key;
 	private String outboundSocketBindingRef;
 	private String password;
+	private Map properties;
 	private Boolean ssl;
 	private Boolean tls;
 	private String username;
@@ -34,9 +36,10 @@ public class Custom {
 	/**
 	 * Outbound Socket binding to mail server
 	 */
-	public Custom outboundSocketBindingRef(String value) {
+	@SuppressWarnings("unchecked")
+	public T outboundSocketBindingRef(String value) {
 		this.outboundSocketBindingRef = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -50,9 +53,27 @@ public class Custom {
 	/**
 	 * Password to authenticate on server
 	 */
-	public Custom password(String value) {
+	@SuppressWarnings("unchecked")
+	public T password(String value) {
 		this.password = value;
-		return this;
+		return (T) this;
+	}
+
+	/**
+	 * JavaMail properties
+	 */
+	@ModelNodeBinding(detypedName = "properties")
+	public Map properties() {
+		return this.properties;
+	}
+
+	/**
+	 * JavaMail properties
+	 */
+	@SuppressWarnings("unchecked")
+	public T properties(Map value) {
+		this.properties = value;
+		return (T) this;
 	}
 
 	/**
@@ -66,9 +87,10 @@ public class Custom {
 	/**
 	 * Does server require SSL?
 	 */
-	public Custom ssl(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T ssl(Boolean value) {
 		this.ssl = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -82,9 +104,10 @@ public class Custom {
 	/**
 	 * Does server require TLS?
 	 */
-	public Custom tls(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T tls(Boolean value) {
 		this.tls = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -98,8 +121,9 @@ public class Custom {
 	/**
 	 * Username to authenticate on server
 	 */
-	public Custom username(String value) {
+	@SuppressWarnings("unchecked")
+	public T username(String value) {
 		this.username = value;
-		return this;
+		return (T) this;
 	}
 }

@@ -11,7 +11,7 @@ import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession
  */
 @Address("/subsystem=mail")
 @Implicit
-public class Mail {
+public class Mail<T extends Mail> {
 
 	private String key;
 	private MailResources subresources = new MailResources();
@@ -33,9 +33,10 @@ public class Mail {
 	 * @return this
 	 * @param value List of MailSession objects.
 	 */
-	public Mail mailSessions(List<MailSession> value) {
+	@SuppressWarnings("unchecked")
+	public T mailSessions(List<MailSession> value) {
 		this.subresources.mailSessions.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -43,9 +44,10 @@ public class Mail {
 	 * @param value The MailSession to add
 	 * @return this
 	 */
-	public Mail mailSession(MailSession value) {
+	@SuppressWarnings("unchecked")
+	public T mailSession(MailSession value) {
 		this.subresources.mailSessions.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**

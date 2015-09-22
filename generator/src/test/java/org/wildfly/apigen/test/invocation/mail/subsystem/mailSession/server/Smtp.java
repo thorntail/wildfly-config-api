@@ -8,7 +8,7 @@ import org.wildfly.apigen.invocation.ModelNodeBinding;
  */
 @Address("/subsystem=mail/mail-session=*/server=smtp")
 @Implicit
-public class Smtp {
+public class Smtp<T extends Smtp> {
 
 	private String key;
 	private String outboundSocketBindingRef;
@@ -36,9 +36,10 @@ public class Smtp {
 	/**
 	 * Outbound Socket binding to mail server
 	 */
-	public Smtp outboundSocketBindingRef(String value) {
+	@SuppressWarnings("unchecked")
+	public T outboundSocketBindingRef(String value) {
 		this.outboundSocketBindingRef = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -52,9 +53,10 @@ public class Smtp {
 	/**
 	 * Password to authenticate on server
 	 */
-	public Smtp password(String value) {
+	@SuppressWarnings("unchecked")
+	public T password(String value) {
 		this.password = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -68,9 +70,10 @@ public class Smtp {
 	/**
 	 * Does server require SSL?
 	 */
-	public Smtp ssl(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T ssl(Boolean value) {
 		this.ssl = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -84,9 +87,10 @@ public class Smtp {
 	/**
 	 * Does server require TLS?
 	 */
-	public Smtp tls(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T tls(Boolean value) {
 		this.tls = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -100,8 +104,9 @@ public class Smtp {
 	/**
 	 * Username to authenticate on server
 	 */
-	public Smtp username(String value) {
+	@SuppressWarnings("unchecked")
+	public T username(String value) {
 		this.username = value;
-		return this;
+		return (T) this;
 	}
 }

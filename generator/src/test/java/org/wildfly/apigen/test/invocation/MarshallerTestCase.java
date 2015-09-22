@@ -37,8 +37,10 @@ public class MarshallerTestCase extends AbstractTestCase {
 
     }
 
-    public static class MailSubclass extends Mail {
-
+    public static class MailSubclass extends Mail<MailSubclass> {
+        public static long someSubclassMethod() {
+            return 42L;
+        }
     }
 
     @Test
@@ -216,8 +218,8 @@ public class MarshallerTestCase extends AbstractTestCase {
 
     @Test
     public void testMailMarshalling() throws Exception {
-//        System.out.println("----< MAIL MARSHALLING >----");
-        final Mail mail = new MailSubclass();
+        System.out.println("----< MAIL MARSHALLING >----");
+        final MailSubclass mail = new MailSubclass();
         final MailSession mailSession = new MailSession("smtp-server-name")
                 .smtp(new Smtp().outboundSocketBindingRef("smtp-server-outbound-socket-binding-ref"))
                 .jndiName("smtp-server-jndi-name");
@@ -226,9 +228,9 @@ public class MarshallerTestCase extends AbstractTestCase {
 
         List<ModelNode> list = Marshaller.marshal(mail);
 
-//        for (ModelNode n : list) {
-//            System.out.println(n);
-//        }
+        for (ModelNode n : list) {
+            System.out.println(n);
+        }
 
     }
 
