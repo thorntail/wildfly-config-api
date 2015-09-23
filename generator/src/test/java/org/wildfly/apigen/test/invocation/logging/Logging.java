@@ -5,26 +5,27 @@ import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
-import org.wildfly.apigen.test.invocation.logging.subsystem.periodicRotatingFileHandler.PeriodicRotatingFileHandler;
-import org.wildfly.apigen.test.invocation.logging.subsystem.logger.Logger;
+import org.wildfly.apigen.invocation.ModelNodeSubresources;
 import org.wildfly.apigen.test.invocation.logging.subsystem.asyncHandler.AsyncHandler;
+import org.wildfly.apigen.test.invocation.logging.subsystem.consoleHandler.ConsoleHandler;
+import org.wildfly.apigen.test.invocation.logging.subsystem.customHandler.CustomHandler;
 import org.wildfly.apigen.test.invocation.logging.subsystem.fileHandler.FileHandler;
-import org.wildfly.apigen.test.invocation.logging.subsystem.sizeRotatingFileHandler.SizeRotatingFileHandler;
+import org.wildfly.apigen.test.invocation.logging.subsystem.logger.Logger;
+import org.wildfly.apigen.test.invocation.logging.subsystem.patternFormatter.PatternFormatter;
+import org.wildfly.apigen.test.invocation.logging.subsystem.periodicSizeRotatingFileHandler.PeriodicSizeRotatingFileHandler;
 import org.wildfly.apigen.test.invocation.logging.subsystem.syslogHandler.SyslogHandler;
+import org.wildfly.apigen.test.invocation.logging.subsystem.periodicRotatingFileHandler.PeriodicRotatingFileHandler;
+import org.wildfly.apigen.test.invocation.logging.subsystem.sizeRotatingFileHandler.SizeRotatingFileHandler;
 import org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.LoggingProfile;
 import org.wildfly.apigen.test.invocation.logging.subsystem.customFormatter.CustomFormatter;
-import org.wildfly.apigen.test.invocation.logging.subsystem.periodicSizeRotatingFileHandler.PeriodicSizeRotatingFileHandler;
-import org.wildfly.apigen.test.invocation.logging.subsystem.consoleHandler.ConsoleHandler;
 import org.wildfly.apigen.test.invocation.logging.subsystem.logFile.LogFile;
-import org.wildfly.apigen.test.invocation.logging.subsystem.patternFormatter.PatternFormatter;
-import org.wildfly.apigen.test.invocation.logging.subsystem.customHandler.CustomHandler;
 import org.wildfly.apigen.test.invocation.logging.subsystem.rootLogger.Root;
 /**
  * The configuration of the logging subsystem.
  */
 @Address("/subsystem=logging")
 @Implicit
-public class Logging {
+public class Logging<T extends Logging> {
 
 	private String key;
 	private Boolean addLoggingApiDependencies;
@@ -51,9 +52,10 @@ public class Logging {
 	/**
 	 * Indicates whether or not logging API dependencies should be added to deployments during the deployment process. A value of true will add the dependencies to the deployment. A value of false will skip the deployment from being processed for logging API dependencies.
 	 */
-	public Logging addLoggingApiDependencies(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T addLoggingApiDependencies(Boolean value) {
 		this.addLoggingApiDependencies = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -67,9 +69,10 @@ public class Logging {
 	/**
 	 * Indicates whether or not deployments should use a logging configuration file found in the deployment to configure the log manager. If set to true and a logging configuration file was found in the deployments META-INF or WEB-INF/classes directory, then a log manager will be configured with those settings. If set false the servers logging configuration will be used regardless of any logging configuration files supplied in the deployment.
 	 */
-	public Logging useDeploymentLoggingConfig(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T useDeploymentLoggingConfig(Boolean value) {
 		this.useDeploymentLoggingConfig = value;
-		return this;
+		return (T) this;
 	}
 
 	public LoggingResources subresources() {
@@ -81,10 +84,11 @@ public class Logging {
 	 * @return this
 	 * @param value List of PeriodicRotatingFileHandler objects.
 	 */
-	public Logging periodicRotatingFileHandlers(
+	@SuppressWarnings("unchecked")
+	public T periodicRotatingFileHandlers(
 			List<PeriodicRotatingFileHandler> value) {
 		this.subresources.periodicRotatingFileHandlers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -92,9 +96,10 @@ public class Logging {
 	 * @param value The PeriodicRotatingFileHandler to add
 	 * @return this
 	 */
-	public Logging periodicRotatingFileHandler(PeriodicRotatingFileHandler value) {
+	@SuppressWarnings("unchecked")
+	public T periodicRotatingFileHandler(PeriodicRotatingFileHandler value) {
 		this.subresources.periodicRotatingFileHandlers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -102,9 +107,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of Logger objects.
 	 */
-	public Logging loggers(List<Logger> value) {
+	@SuppressWarnings("unchecked")
+	public T loggers(List<Logger> value) {
 		this.subresources.loggers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -112,9 +118,10 @@ public class Logging {
 	 * @param value The Logger to add
 	 * @return this
 	 */
-	public Logging logger(Logger value) {
+	@SuppressWarnings("unchecked")
+	public T logger(Logger value) {
 		this.subresources.loggers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -122,9 +129,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of AsyncHandler objects.
 	 */
-	public Logging asyncHandlers(List<AsyncHandler> value) {
+	@SuppressWarnings("unchecked")
+	public T asyncHandlers(List<AsyncHandler> value) {
 		this.subresources.asyncHandlers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -132,9 +140,10 @@ public class Logging {
 	 * @param value The AsyncHandler to add
 	 * @return this
 	 */
-	public Logging asyncHandler(AsyncHandler value) {
+	@SuppressWarnings("unchecked")
+	public T asyncHandler(AsyncHandler value) {
 		this.subresources.asyncHandlers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -142,9 +151,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of FileHandler objects.
 	 */
-	public Logging fileHandlers(List<FileHandler> value) {
+	@SuppressWarnings("unchecked")
+	public T fileHandlers(List<FileHandler> value) {
 		this.subresources.fileHandlers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -152,9 +162,10 @@ public class Logging {
 	 * @param value The FileHandler to add
 	 * @return this
 	 */
-	public Logging fileHandler(FileHandler value) {
+	@SuppressWarnings("unchecked")
+	public T fileHandler(FileHandler value) {
 		this.subresources.fileHandlers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -162,9 +173,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of SizeRotatingFileHandler objects.
 	 */
-	public Logging sizeRotatingFileHandlers(List<SizeRotatingFileHandler> value) {
+	@SuppressWarnings("unchecked")
+	public T sizeRotatingFileHandlers(List<SizeRotatingFileHandler> value) {
 		this.subresources.sizeRotatingFileHandlers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -172,9 +184,10 @@ public class Logging {
 	 * @param value The SizeRotatingFileHandler to add
 	 * @return this
 	 */
-	public Logging sizeRotatingFileHandler(SizeRotatingFileHandler value) {
+	@SuppressWarnings("unchecked")
+	public T sizeRotatingFileHandler(SizeRotatingFileHandler value) {
 		this.subresources.sizeRotatingFileHandlers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -182,9 +195,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of SyslogHandler objects.
 	 */
-	public Logging syslogHandlers(List<SyslogHandler> value) {
+	@SuppressWarnings("unchecked")
+	public T syslogHandlers(List<SyslogHandler> value) {
 		this.subresources.syslogHandlers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -192,9 +206,10 @@ public class Logging {
 	 * @param value The SyslogHandler to add
 	 * @return this
 	 */
-	public Logging syslogHandler(SyslogHandler value) {
+	@SuppressWarnings("unchecked")
+	public T syslogHandler(SyslogHandler value) {
 		this.subresources.syslogHandlers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -202,9 +217,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of LoggingProfile objects.
 	 */
-	public Logging loggingProfiles(List<LoggingProfile> value) {
+	@SuppressWarnings("unchecked")
+	public T loggingProfiles(List<LoggingProfile> value) {
 		this.subresources.loggingProfiles.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -212,9 +228,10 @@ public class Logging {
 	 * @param value The LoggingProfile to add
 	 * @return this
 	 */
-	public Logging loggingProfile(LoggingProfile value) {
+	@SuppressWarnings("unchecked")
+	public T loggingProfile(LoggingProfile value) {
 		this.subresources.loggingProfiles.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -222,9 +239,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of CustomFormatter objects.
 	 */
-	public Logging customFormatters(List<CustomFormatter> value) {
+	@SuppressWarnings("unchecked")
+	public T customFormatters(List<CustomFormatter> value) {
 		this.subresources.customFormatters.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -232,9 +250,10 @@ public class Logging {
 	 * @param value The CustomFormatter to add
 	 * @return this
 	 */
-	public Logging customFormatter(CustomFormatter value) {
+	@SuppressWarnings("unchecked")
+	public T customFormatter(CustomFormatter value) {
 		this.subresources.customFormatters.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -242,10 +261,11 @@ public class Logging {
 	 * @return this
 	 * @param value List of PeriodicSizeRotatingFileHandler objects.
 	 */
-	public Logging periodicSizeRotatingFileHandlers(
+	@SuppressWarnings("unchecked")
+	public T periodicSizeRotatingFileHandlers(
 			List<PeriodicSizeRotatingFileHandler> value) {
 		this.subresources.periodicSizeRotatingFileHandlers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -253,10 +273,11 @@ public class Logging {
 	 * @param value The PeriodicSizeRotatingFileHandler to add
 	 * @return this
 	 */
-	public Logging periodicSizeRotatingFileHandler(
+	@SuppressWarnings("unchecked")
+	public T periodicSizeRotatingFileHandler(
 			PeriodicSizeRotatingFileHandler value) {
 		this.subresources.periodicSizeRotatingFileHandlers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -264,9 +285,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of ConsoleHandler objects.
 	 */
-	public Logging consoleHandlers(List<ConsoleHandler> value) {
+	@SuppressWarnings("unchecked")
+	public T consoleHandlers(List<ConsoleHandler> value) {
 		this.subresources.consoleHandlers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -274,9 +296,10 @@ public class Logging {
 	 * @param value The ConsoleHandler to add
 	 * @return this
 	 */
-	public Logging consoleHandler(ConsoleHandler value) {
+	@SuppressWarnings("unchecked")
+	public T consoleHandler(ConsoleHandler value) {
 		this.subresources.consoleHandlers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -284,9 +307,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of LogFile objects.
 	 */
-	public Logging logFiles(List<LogFile> value) {
+	@SuppressWarnings("unchecked")
+	public T logFiles(List<LogFile> value) {
 		this.subresources.logFiles.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -294,9 +318,10 @@ public class Logging {
 	 * @param value The LogFile to add
 	 * @return this
 	 */
-	public Logging logFile(LogFile value) {
+	@SuppressWarnings("unchecked")
+	public T logFile(LogFile value) {
 		this.subresources.logFiles.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -304,9 +329,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of PatternFormatter objects.
 	 */
-	public Logging patternFormatters(List<PatternFormatter> value) {
+	@SuppressWarnings("unchecked")
+	public T patternFormatters(List<PatternFormatter> value) {
 		this.subresources.patternFormatters.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -314,9 +340,10 @@ public class Logging {
 	 * @param value The PatternFormatter to add
 	 * @return this
 	 */
-	public Logging patternFormatter(PatternFormatter value) {
+	@SuppressWarnings("unchecked")
+	public T patternFormatter(PatternFormatter value) {
 		this.subresources.patternFormatters.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -324,9 +351,10 @@ public class Logging {
 	 * @return this
 	 * @param value List of CustomHandler objects.
 	 */
-	public Logging customHandlers(List<CustomHandler> value) {
+	@SuppressWarnings("unchecked")
+	public T customHandlers(List<CustomHandler> value) {
 		this.subresources.customHandlers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -334,14 +362,16 @@ public class Logging {
 	 * @param value The CustomHandler to add
 	 * @return this
 	 */
-	public Logging customHandler(CustomHandler value) {
+	@SuppressWarnings("unchecked")
+	public T customHandler(CustomHandler value) {
 		this.subresources.customHandlers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
 	 * Child mutators for Logging
 	 */
+	@ModelNodeSubresources
 	public class LoggingResources {
 		/**
 		 * Defines a handler which writes to a file, rotating the log after a time period derived from the given suffix string, which should be in a format understood by java.text.SimpleDateFormat.
@@ -525,8 +555,9 @@ public class Logging {
 	/**
 	 * Defines the root logger for this log context.
 	 */
-	public Logging root(Root value) {
+	@SuppressWarnings("unchecked")
+	public T root(Root value) {
 		this.root = value;
-		return this;
+		return (T) this;
 	}
 }

@@ -6,16 +6,16 @@ import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.List;
 import java.util.Map;
 import org.wildfly.apigen.invocation.Subresource;
-import org.wildfly.apigen.test.invocation.datasources.subsystem.dataSource.DataSource;
+import org.wildfly.apigen.invocation.ModelNodeSubresources;
 import org.wildfly.apigen.test.invocation.datasources.subsystem.jdbcDriver.JdbcDriver;
 import org.wildfly.apigen.test.invocation.datasources.subsystem.xaDataSource.XaDataSource;
-
+import org.wildfly.apigen.test.invocation.datasources.subsystem.dataSource.DataSource;
 /**
  * The data-sources subsystem, used to declare JDBC data-sources
  */
 @Address("/subsystem=datasources")
 @Implicit
-public class Datasources {
+public class Datasources<T extends Datasources> {
 
 	private String key;
 	private List<java.util.Map> installedDrivers;
@@ -40,9 +40,10 @@ public class Datasources {
 	/**
 	 * List of JDBC drivers that have been installed in the runtime
 	 */
-	public Datasources installedDrivers(List<java.util.Map> value) {
+	@SuppressWarnings("unchecked")
+	public T installedDrivers(List<java.util.Map> value) {
 		this.installedDrivers = value;
-		return this;
+		return (T) this;
 	}
 
 	public DatasourcesResources subresources() {
@@ -54,9 +55,10 @@ public class Datasources {
 	 * @return this
 	 * @param value List of JdbcDriver objects.
 	 */
-	public Datasources jdbcDrivers(List<JdbcDriver> value) {
+	@SuppressWarnings("unchecked")
+	public T jdbcDrivers(List<JdbcDriver> value) {
 		this.subresources.jdbcDrivers.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -64,9 +66,10 @@ public class Datasources {
 	 * @param value The JdbcDriver to add
 	 * @return this
 	 */
-	public Datasources jdbcDriver(JdbcDriver value) {
+	@SuppressWarnings("unchecked")
+	public T jdbcDriver(JdbcDriver value) {
 		this.subresources.jdbcDrivers.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -74,9 +77,10 @@ public class Datasources {
 	 * @return this
 	 * @param value List of XaDataSource objects.
 	 */
-	public Datasources xaDataSources(List<XaDataSource> value) {
+	@SuppressWarnings("unchecked")
+	public T xaDataSources(List<XaDataSource> value) {
 		this.subresources.xaDataSources.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -84,9 +88,10 @@ public class Datasources {
 	 * @param value The XaDataSource to add
 	 * @return this
 	 */
-	public Datasources xaDataSource(XaDataSource value) {
+	@SuppressWarnings("unchecked")
+	public T xaDataSource(XaDataSource value) {
 		this.subresources.xaDataSources.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -94,9 +99,10 @@ public class Datasources {
 	 * @return this
 	 * @param value List of DataSource objects.
 	 */
-	public Datasources dataSources(List<DataSource> value) {
+	@SuppressWarnings("unchecked")
+	public T dataSources(List<DataSource> value) {
 		this.subresources.dataSources.addAll(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -104,14 +110,16 @@ public class Datasources {
 	 * @param value The DataSource to add
 	 * @return this
 	 */
-	public Datasources dataSource(DataSource value) {
+	@SuppressWarnings("unchecked")
+	public T dataSource(DataSource value) {
 		this.subresources.dataSources.add(value);
-		return this;
+		return (T) this;
 	}
 
 	/**
 	 * Child mutators for Datasources
 	 */
+	@ModelNodeSubresources
 	public class DatasourcesResources {
 		/**
 		 * Service that make a JDBC driver available for use in the runtime

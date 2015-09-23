@@ -10,12 +10,12 @@ import java.util.List;
  */
 @Address("/subsystem=logging/root-logger=ROOT")
 @Implicit
-public class Root {
+public class Root<T extends Root> {
 
 	private String key;
 	private Map filter;
 	private String filterSpec;
-	private List handlers;
+	private List<String> handlers;
 	private String level;
 
 	public Root() {
@@ -37,9 +37,10 @@ public class Root {
 	/**
 	 * Defines a simple filter type.
 	 */
-	public Root filter(Map value) {
+	@SuppressWarnings("unchecked")
+	public T filter(Map value) {
 		this.filter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -53,25 +54,27 @@ public class Root {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	public Root filterSpec(String value) {
+	@SuppressWarnings("unchecked")
+	public T filterSpec(String value) {
 		this.filterSpec = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
 	 * The handlers associated with the root logger.
 	 */
 	@ModelNodeBinding(detypedName = "handlers")
-	public List handlers() {
+	public List<String> handlers() {
 		return this.handlers;
 	}
 
 	/**
 	 * The handlers associated with the root logger.
 	 */
-	public Root handlers(List value) {
+	@SuppressWarnings("unchecked")
+	public T handlers(List<String> value) {
 		this.handlers = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -85,8 +88,9 @@ public class Root {
 	/**
 	 * The log level specifying which message levels will be logged by the root logger. Message levels lower than this value will be discarded.
 	 */
-	public Root level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 }

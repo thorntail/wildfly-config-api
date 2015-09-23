@@ -4,11 +4,11 @@ import org.wildfly.apigen.invocation.Address;
 import org.wildfly.apigen.invocation.ModelNodeBinding;
 import java.util.List;
 import org.wildfly.apigen.invocation.Subresource;
+import org.wildfly.apigen.invocation.ModelNodeSubresources;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom.Custom;
-import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Imap;
-import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Pop3;
-
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Imap;
 /**
  * Mail session definition
  */
@@ -112,6 +112,7 @@ public class MailSession<T extends MailSession> {
 	/**
 	 * Child mutators for MailSession
 	 */
+	@ModelNodeSubresources
 	public class MailSessionResources {
 		/**
 		 * Mail session server

@@ -7,7 +7,7 @@ import java.util.Map;
  * Defines a custom logging handler. The custom handler must extend java.util.logging.Handler.
  */
 @Address("/subsystem=logging/logging-profile=*/custom-handler=*")
-public class CustomHandler {
+public class CustomHandler<T extends CustomHandler> {
 
 	private String key;
 	private String attributeClass;
@@ -40,9 +40,10 @@ public class CustomHandler {
 	/**
 	 * The logging handler class to be used.
 	 */
-	public CustomHandler attributeClass(String value) {
+	@SuppressWarnings("unchecked")
+	public T attributeClass(String value) {
 		this.attributeClass = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -56,9 +57,10 @@ public class CustomHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	public CustomHandler enabled(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T enabled(Boolean value) {
 		this.enabled = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -72,9 +74,10 @@ public class CustomHandler {
 	/**
 	 * The character encoding used by this Handler.
 	 */
-	public CustomHandler encoding(String value) {
+	@SuppressWarnings("unchecked")
+	public T encoding(String value) {
 		this.encoding = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -88,9 +91,10 @@ public class CustomHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	public CustomHandler filterSpec(String value) {
+	@SuppressWarnings("unchecked")
+	public T filterSpec(String value) {
 		this.filterSpec = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -104,9 +108,10 @@ public class CustomHandler {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	public CustomHandler formatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T formatter(String value) {
 		this.formatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -120,9 +125,10 @@ public class CustomHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	public CustomHandler level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -136,9 +142,10 @@ public class CustomHandler {
 	/**
 	 * The module that the logging handler depends on.
 	 */
-	public CustomHandler module(String value) {
+	@SuppressWarnings("unchecked")
+	public T module(String value) {
 		this.module = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -152,9 +159,10 @@ public class CustomHandler {
 	/**
 	 * The name of the handler.
 	 */
-	public CustomHandler name(String value) {
+	@SuppressWarnings("unchecked")
+	public T name(String value) {
 		this.name = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -168,9 +176,10 @@ public class CustomHandler {
 	/**
 	 * The name of the defined formatter to be used on the handler.
 	 */
-	public CustomHandler namedFormatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T namedFormatter(String value) {
 		this.namedFormatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -184,8 +193,9 @@ public class CustomHandler {
 	/**
 	 * Defines the properties used for the logging handler. All properties must be accessible via a setter method.
 	 */
-	public CustomHandler properties(Map value) {
+	@SuppressWarnings("unchecked")
+	public T properties(Map value) {
 		this.properties = value;
-		return this;
+		return (T) this;
 	}
 }

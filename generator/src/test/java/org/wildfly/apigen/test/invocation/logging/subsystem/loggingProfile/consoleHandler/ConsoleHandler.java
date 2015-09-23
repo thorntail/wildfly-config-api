@@ -6,7 +6,7 @@ import org.wildfly.apigen.invocation.ModelNodeBinding;
  * Defines a handler which writes to the console.
  */
 @Address("/subsystem=logging/logging-profile=*/console-handler=*")
-public class ConsoleHandler {
+public class ConsoleHandler<T extends ConsoleHandler> {
 
 	private String key;
 	private Boolean autoflush;
@@ -38,9 +38,10 @@ public class ConsoleHandler {
 	/**
 	 * Automatically flush after each write.
 	 */
-	public ConsoleHandler autoflush(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T autoflush(Boolean value) {
 		this.autoflush = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -54,9 +55,10 @@ public class ConsoleHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	public ConsoleHandler enabled(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T enabled(Boolean value) {
 		this.enabled = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -70,9 +72,10 @@ public class ConsoleHandler {
 	/**
 	 * The character encoding used by this Handler.
 	 */
-	public ConsoleHandler encoding(String value) {
+	@SuppressWarnings("unchecked")
+	public T encoding(String value) {
 		this.encoding = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -86,9 +89,10 @@ public class ConsoleHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	public ConsoleHandler filterSpec(String value) {
+	@SuppressWarnings("unchecked")
+	public T filterSpec(String value) {
 		this.filterSpec = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -102,9 +106,10 @@ public class ConsoleHandler {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	public ConsoleHandler formatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T formatter(String value) {
 		this.formatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -118,9 +123,10 @@ public class ConsoleHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	public ConsoleHandler level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -134,9 +140,10 @@ public class ConsoleHandler {
 	/**
 	 * The name of the handler.
 	 */
-	public ConsoleHandler name(String value) {
+	@SuppressWarnings("unchecked")
+	public T name(String value) {
 		this.name = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -150,9 +157,10 @@ public class ConsoleHandler {
 	/**
 	 * The name of the defined formatter to be used on the handler.
 	 */
-	public ConsoleHandler namedFormatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T namedFormatter(String value) {
 		this.namedFormatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -166,8 +174,9 @@ public class ConsoleHandler {
 	/**
 	 * Defines the target of the console handler. The value can be System.out, System.err or console.
 	 */
-	public ConsoleHandler target(String value) {
+	@SuppressWarnings("unchecked")
+	public T target(String value) {
 		this.target = value;
-		return this;
+		return (T) this;
 	}
 }

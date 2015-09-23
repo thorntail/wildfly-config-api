@@ -6,7 +6,7 @@ import org.wildfly.apigen.invocation.ModelNodeBinding;
  * Service that make a JDBC driver available for use in the runtime
  */
 @Address("/subsystem=datasources/jdbc-driver=*")
-public class JdbcDriver {
+public class JdbcDriver<T extends JdbcDriver> {
 
 	private String key;
 	private String deploymentName;
@@ -41,9 +41,10 @@ public class JdbcDriver {
 	/**
 	 * The name of the deployment unit from which the driver was loaded
 	 */
-	public JdbcDriver deploymentName(String value) {
+	@SuppressWarnings("unchecked")
+	public T deploymentName(String value) {
 		this.deploymentName = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -57,9 +58,10 @@ public class JdbcDriver {
 	/**
 	 * The fully qualified class name of the java.sql.Driver implementation
 	 */
-	public JdbcDriver driverClassName(String value) {
+	@SuppressWarnings("unchecked")
+	public T driverClassName(String value) {
 		this.driverClassName = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -73,9 +75,10 @@ public class JdbcDriver {
 	/**
 	 * The fully qualified class name of the javax.sql.DataSource implementation
 	 */
-	public JdbcDriver driverDatasourceClassName(String value) {
+	@SuppressWarnings("unchecked")
+	public T driverDatasourceClassName(String value) {
 		this.driverDatasourceClassName = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -89,9 +92,10 @@ public class JdbcDriver {
 	/**
 	 * The driver's major version number
 	 */
-	public JdbcDriver driverMajorVersion(Integer value) {
+	@SuppressWarnings("unchecked")
+	public T driverMajorVersion(Integer value) {
 		this.driverMajorVersion = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -105,9 +109,10 @@ public class JdbcDriver {
 	/**
 	 * The driver's minor version number
 	 */
-	public JdbcDriver driverMinorVersion(Integer value) {
+	@SuppressWarnings("unchecked")
+	public T driverMinorVersion(Integer value) {
 		this.driverMinorVersion = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -121,9 +126,10 @@ public class JdbcDriver {
 	/**
 	 * The name of the module from which the driver was loaded, if it was loaded from the module path
 	 */
-	public JdbcDriver driverModuleName(String value) {
+	@SuppressWarnings("unchecked")
+	public T driverModuleName(String value) {
 		this.driverModuleName = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -137,9 +143,10 @@ public class JdbcDriver {
 	/**
 	 * Defines the JDBC driver the datasource should use. It is a symbolic name matching the the name of installed driver. In case the driver is deployed as jar, the name is the name of deployment unit
 	 */
-	public JdbcDriver driverName(String value) {
+	@SuppressWarnings("unchecked")
+	public T driverName(String value) {
 		this.driverName = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -153,9 +160,10 @@ public class JdbcDriver {
 	/**
 	 * The fully qualified class name of the javax.sql.XADataSource implementation
 	 */
-	public JdbcDriver driverXaDatasourceClassName(String value) {
+	@SuppressWarnings("unchecked")
+	public T driverXaDatasourceClassName(String value) {
 		this.driverXaDatasourceClassName = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -169,9 +177,10 @@ public class JdbcDriver {
 	/**
 	 * Whether or not the driver is JDBC compliant
 	 */
-	public JdbcDriver jdbcCompliant(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T jdbcCompliant(Boolean value) {
 		this.jdbcCompliant = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -185,9 +194,10 @@ public class JdbcDriver {
 	/**
 	 * The slot of the module from which the driver was loaded, if it was loaded from the module path
 	 */
-	public JdbcDriver moduleSlot(String value) {
+	@SuppressWarnings("unchecked")
+	public T moduleSlot(String value) {
 		this.moduleSlot = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -201,9 +211,10 @@ public class JdbcDriver {
 	/**
 	 * Domain Profile in which driver is defined. Null in case of standalone server
 	 */
-	public JdbcDriver profile(String value) {
+	@SuppressWarnings("unchecked")
+	public T profile(String value) {
 		this.profile = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -217,8 +228,9 @@ public class JdbcDriver {
 	/**
 	 * XA datasource class
 	 */
-	public JdbcDriver xaDatasourceClass(String value) {
+	@SuppressWarnings("unchecked")
+	public T xaDatasourceClass(String value) {
 		this.xaDatasourceClass = value;
-		return this;
+		return (T) this;
 	}
 }

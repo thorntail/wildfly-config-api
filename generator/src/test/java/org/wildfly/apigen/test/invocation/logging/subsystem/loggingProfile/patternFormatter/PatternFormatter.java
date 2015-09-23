@@ -6,7 +6,7 @@ import org.wildfly.apigen.invocation.ModelNodeBinding;
  * A pattern formatter to be used with handlers.
  */
 @Address("/subsystem=logging/logging-profile=*/pattern-formatter=*")
-public class PatternFormatter {
+public class PatternFormatter<T extends PatternFormatter> {
 
 	private String key;
 	private String colorMap;
@@ -31,9 +31,10 @@ public class PatternFormatter {
 	/**
 	 * The color-map attribute allows for a comma delimited list of colors to be used for different levels with a pattern formatter. The format for the color mapping pattern is level-name:color-name.Valid Levels; severe, fatal, error, warn, warning, info, debug, trace, config, fine, finer, finest Valid Colors; black, green, red, yellow, blue, magenta, cyan, white, brightblack, brightred, brightgreen, brightblue, brightyellow, brightmagenta, brightcyan, brightwhite
 	 */
-	public PatternFormatter colorMap(String value) {
+	@SuppressWarnings("unchecked")
+	public T colorMap(String value) {
 		this.colorMap = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -47,8 +48,9 @@ public class PatternFormatter {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	public PatternFormatter pattern(String value) {
+	@SuppressWarnings("unchecked")
+	public T pattern(String value) {
 		this.pattern = value;
-		return this;
+		return (T) this;
 	}
 }

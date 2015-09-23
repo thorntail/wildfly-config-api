@@ -8,7 +8,7 @@ import java.util.List;
  * Defines a handler which writes to the sub-handlers in an asynchronous thread. Used for handlers which introduce a substantial amount of lag.
  */
 @Address("/subsystem=logging/async-handler=*")
-public class AsyncHandler {
+public class AsyncHandler<T extends AsyncHandler> {
 
 	private String key;
 	private Boolean enabled;
@@ -18,7 +18,7 @@ public class AsyncHandler {
 	private String name;
 	private String overflowAction;
 	private Integer queueLength;
-	private List subhandlers;
+	private List<String> subhandlers;
 
 	public AsyncHandler(String key) {
 		this.key = key;
@@ -39,9 +39,10 @@ public class AsyncHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	public AsyncHandler enabled(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T enabled(Boolean value) {
 		this.enabled = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -55,9 +56,10 @@ public class AsyncHandler {
 	/**
 	 * Defines a simple filter type.
 	 */
-	public AsyncHandler filter(Map value) {
+	@SuppressWarnings("unchecked")
+	public T filter(Map value) {
 		this.filter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -71,9 +73,10 @@ public class AsyncHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	public AsyncHandler filterSpec(String value) {
+	@SuppressWarnings("unchecked")
+	public T filterSpec(String value) {
 		this.filterSpec = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -87,9 +90,10 @@ public class AsyncHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this handler. Message levels lower than this value will be discarded.
 	 */
-	public AsyncHandler level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -103,9 +107,10 @@ public class AsyncHandler {
 	/**
 	 * The name of the handler.
 	 */
-	public AsyncHandler name(String value) {
+	@SuppressWarnings("unchecked")
+	public T name(String value) {
 		this.name = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -119,9 +124,10 @@ public class AsyncHandler {
 	/**
 	 * Specify what action to take when the overflowing.  The valid options are 'block' and 'discard'
 	 */
-	public AsyncHandler overflowAction(String value) {
+	@SuppressWarnings("unchecked")
+	public T overflowAction(String value) {
 		this.overflowAction = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -135,24 +141,26 @@ public class AsyncHandler {
 	/**
 	 * The queue length to use before flushing writing
 	 */
-	public AsyncHandler queueLength(Integer value) {
+	@SuppressWarnings("unchecked")
+	public T queueLength(Integer value) {
 		this.queueLength = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
 	 * The Handlers associated with this async handler.
 	 */
 	@ModelNodeBinding(detypedName = "subhandlers")
-	public List subhandlers() {
+	public List<String> subhandlers() {
 		return this.subhandlers;
 	}
 
 	/**
 	 * The Handlers associated with this async handler.
 	 */
-	public AsyncHandler subhandlers(List value) {
+	@SuppressWarnings("unchecked")
+	public T subhandlers(List<String> value) {
 		this.subhandlers = value;
-		return this;
+		return (T) this;
 	}
 }

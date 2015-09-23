@@ -7,7 +7,7 @@ import java.util.Map;
  * Defines a handler which writes to a file, rotating the log after the size of the file grows beyond a certain point and keeping a fixed number of backups.
  */
 @Address("/subsystem=logging/size-rotating-file-handler=*")
-public class SizeRotatingFileHandler {
+public class SizeRotatingFileHandler<T extends SizeRotatingFileHandler> {
 
 	private String key;
 	private Boolean append;
@@ -45,9 +45,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * Specify whether to append to the target file.
 	 */
-	public SizeRotatingFileHandler append(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T append(Boolean value) {
 		this.append = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -61,9 +62,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * Automatically flush after each write.
 	 */
-	public SizeRotatingFileHandler autoflush(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T autoflush(Boolean value) {
 		this.autoflush = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -77,9 +79,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	public SizeRotatingFileHandler enabled(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T enabled(Boolean value) {
 		this.enabled = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -93,9 +96,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * The character encoding used by this Handler.
 	 */
-	public SizeRotatingFileHandler encoding(String value) {
+	@SuppressWarnings("unchecked")
+	public T encoding(String value) {
 		this.encoding = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -109,9 +113,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * The file description consisting of the path and optional relative to path.
 	 */
-	public SizeRotatingFileHandler file(Map value) {
+	@SuppressWarnings("unchecked")
+	public T file(Map value) {
 		this.file = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -125,9 +130,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * Defines a simple filter type.
 	 */
-	public SizeRotatingFileHandler filter(Map value) {
+	@SuppressWarnings("unchecked")
+	public T filter(Map value) {
 		this.filter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -141,9 +147,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	public SizeRotatingFileHandler filterSpec(String value) {
+	@SuppressWarnings("unchecked")
+	public T filterSpec(String value) {
 		this.filterSpec = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -157,9 +164,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	public SizeRotatingFileHandler formatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T formatter(String value) {
 		this.formatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -173,9 +181,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	public SizeRotatingFileHandler level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -189,9 +198,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * The maximum number of backups to keep.
 	 */
-	public SizeRotatingFileHandler maxBackupIndex(Integer value) {
+	@SuppressWarnings("unchecked")
+	public T maxBackupIndex(Integer value) {
 		this.maxBackupIndex = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -205,9 +215,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * The name of the handler.
 	 */
-	public SizeRotatingFileHandler name(String value) {
+	@SuppressWarnings("unchecked")
+	public T name(String value) {
 		this.name = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -221,9 +232,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * The name of the defined formatter to be used on the handler.
 	 */
-	public SizeRotatingFileHandler namedFormatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T namedFormatter(String value) {
 		this.namedFormatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -237,9 +249,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * Indicates the file should be rotated each time the file attribute is changed. This always happens when at initialization time.
 	 */
-	public SizeRotatingFileHandler rotateOnBoot(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T rotateOnBoot(Boolean value) {
 		this.rotateOnBoot = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -253,9 +266,10 @@ public class SizeRotatingFileHandler {
 	/**
 	 * The size at which to rotate the log file.
 	 */
-	public SizeRotatingFileHandler rotateSize(String value) {
+	@SuppressWarnings("unchecked")
+	public T rotateSize(String value) {
 		this.rotateSize = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -269,8 +283,9 @@ public class SizeRotatingFileHandler {
 	/**
 	 * Set the suffix string. The string is in a format which can be understood by java.text.SimpleDateFormat. The suffix does not determine when the file should be rotated.
 	 */
-	public SizeRotatingFileHandler suffix(String value) {
+	@SuppressWarnings("unchecked")
+	public T suffix(String value) {
 		this.suffix = value;
-		return this;
+		return (T) this;
 	}
 }

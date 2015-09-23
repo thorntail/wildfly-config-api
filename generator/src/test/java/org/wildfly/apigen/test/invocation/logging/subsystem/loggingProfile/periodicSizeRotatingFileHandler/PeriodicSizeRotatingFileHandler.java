@@ -7,7 +7,7 @@ import java.util.Map;
  * Defines a handler which writes to a file, rotating the log after a time period derived from the given suffix string or after the size of the file grows beyond a certain point and keeping a fixed number of backups. The suffix should be in a format understood by the java.text.SimpleDateFormat. Any backups rotated by the suffix will not be purged during a size rotation.
  */
 @Address("/subsystem=logging/logging-profile=*/periodic-size-rotating-file-handler=*")
-public class PeriodicSizeRotatingFileHandler {
+public class PeriodicSizeRotatingFileHandler<T extends PeriodicSizeRotatingFileHandler> {
 
 	private String key;
 	private Boolean append;
@@ -44,9 +44,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Specify whether to append to the target file.
 	 */
-	public PeriodicSizeRotatingFileHandler append(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T append(Boolean value) {
 		this.append = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -60,9 +61,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Automatically flush after each write.
 	 */
-	public PeriodicSizeRotatingFileHandler autoflush(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T autoflush(Boolean value) {
 		this.autoflush = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -76,9 +78,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	public PeriodicSizeRotatingFileHandler enabled(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T enabled(Boolean value) {
 		this.enabled = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -92,9 +95,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The character encoding used by this Handler.
 	 */
-	public PeriodicSizeRotatingFileHandler encoding(String value) {
+	@SuppressWarnings("unchecked")
+	public T encoding(String value) {
 		this.encoding = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -108,9 +112,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The file description consisting of the path and optional relative to path.
 	 */
-	public PeriodicSizeRotatingFileHandler file(Map value) {
+	@SuppressWarnings("unchecked")
+	public T file(Map value) {
 		this.file = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -124,9 +129,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	public PeriodicSizeRotatingFileHandler filterSpec(String value) {
+	@SuppressWarnings("unchecked")
+	public T filterSpec(String value) {
 		this.filterSpec = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -140,9 +146,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	public PeriodicSizeRotatingFileHandler formatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T formatter(String value) {
 		this.formatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -156,9 +163,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	public PeriodicSizeRotatingFileHandler level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -172,9 +180,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The maximum number of backups to keep.
 	 */
-	public PeriodicSizeRotatingFileHandler maxBackupIndex(Integer value) {
+	@SuppressWarnings("unchecked")
+	public T maxBackupIndex(Integer value) {
 		this.maxBackupIndex = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -188,9 +197,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The name of the handler.
 	 */
-	public PeriodicSizeRotatingFileHandler name(String value) {
+	@SuppressWarnings("unchecked")
+	public T name(String value) {
 		this.name = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -204,9 +214,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The name of the defined formatter to be used on the handler.
 	 */
-	public PeriodicSizeRotatingFileHandler namedFormatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T namedFormatter(String value) {
 		this.namedFormatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -220,9 +231,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Indicates the file should be rotated each time the file attribute is changed. This always happens when at initialization time.
 	 */
-	public PeriodicSizeRotatingFileHandler rotateOnBoot(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T rotateOnBoot(Boolean value) {
 		this.rotateOnBoot = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -236,9 +248,10 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * The size at which to rotate the log file.
 	 */
-	public PeriodicSizeRotatingFileHandler rotateSize(String value) {
+	@SuppressWarnings("unchecked")
+	public T rotateSize(String value) {
 		this.rotateSize = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -252,8 +265,9 @@ public class PeriodicSizeRotatingFileHandler {
 	/**
 	 * Set the suffix string.  The string is in a format which can be understood by java.text.SimpleDateFormat. The period of the rotation is automatically calculated based on the suffix.
 	 */
-	public PeriodicSizeRotatingFileHandler suffix(String value) {
+	@SuppressWarnings("unchecked")
+	public T suffix(String value) {
 		this.suffix = value;
-		return this;
+		return (T) this;
 	}
 }

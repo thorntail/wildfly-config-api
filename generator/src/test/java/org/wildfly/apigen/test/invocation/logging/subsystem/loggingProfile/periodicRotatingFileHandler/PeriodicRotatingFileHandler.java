@@ -7,7 +7,7 @@ import java.util.Map;
  * Defines a handler which writes to a file, rotating the log after a time period derived from the given suffix string, which should be in a format understood by java.text.SimpleDateFormat.
  */
 @Address("/subsystem=logging/logging-profile=*/periodic-rotating-file-handler=*")
-public class PeriodicRotatingFileHandler {
+public class PeriodicRotatingFileHandler<T extends PeriodicRotatingFileHandler> {
 
 	private String key;
 	private Boolean append;
@@ -41,9 +41,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * Specify whether to append to the target file.
 	 */
-	public PeriodicRotatingFileHandler append(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T append(Boolean value) {
 		this.append = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -57,9 +58,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * Automatically flush after each write.
 	 */
-	public PeriodicRotatingFileHandler autoflush(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T autoflush(Boolean value) {
 		this.autoflush = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -73,9 +75,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	public PeriodicRotatingFileHandler enabled(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T enabled(Boolean value) {
 		this.enabled = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -89,9 +92,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The character encoding used by this Handler.
 	 */
-	public PeriodicRotatingFileHandler encoding(String value) {
+	@SuppressWarnings("unchecked")
+	public T encoding(String value) {
 		this.encoding = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -105,9 +109,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The file description consisting of the path and optional relative to path.
 	 */
-	public PeriodicRotatingFileHandler file(Map value) {
+	@SuppressWarnings("unchecked")
+	public T file(Map value) {
 		this.file = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -121,9 +126,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	public PeriodicRotatingFileHandler filterSpec(String value) {
+	@SuppressWarnings("unchecked")
+	public T filterSpec(String value) {
 		this.filterSpec = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -137,9 +143,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	public PeriodicRotatingFileHandler formatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T formatter(String value) {
 		this.formatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -153,9 +160,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	public PeriodicRotatingFileHandler level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -169,9 +177,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The name of the handler.
 	 */
-	public PeriodicRotatingFileHandler name(String value) {
+	@SuppressWarnings("unchecked")
+	public T name(String value) {
 		this.name = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -185,9 +194,10 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * The name of the defined formatter to be used on the handler.
 	 */
-	public PeriodicRotatingFileHandler namedFormatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T namedFormatter(String value) {
 		this.namedFormatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -201,8 +211,9 @@ public class PeriodicRotatingFileHandler {
 	/**
 	 * Set the suffix string.  The string is in a format which can be understood by java.text.SimpleDateFormat. The period of the rotation is automatically calculated based on the suffix.
 	 */
-	public PeriodicRotatingFileHandler suffix(String value) {
+	@SuppressWarnings("unchecked")
+	public T suffix(String value) {
 		this.suffix = value;
-		return this;
+		return (T) this;
 	}
 }

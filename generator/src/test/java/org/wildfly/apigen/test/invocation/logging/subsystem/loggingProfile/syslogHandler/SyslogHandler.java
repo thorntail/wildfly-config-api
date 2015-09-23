@@ -6,7 +6,7 @@ import org.wildfly.apigen.invocation.ModelNodeBinding;
  * Defines a syslog handler.
  */
 @Address("/subsystem=logging/logging-profile=*/syslog-handler=*")
-public class SyslogHandler {
+public class SyslogHandler<T extends SyslogHandler> {
 
 	private String key;
 	private String appName;
@@ -37,9 +37,10 @@ public class SyslogHandler {
 	/**
 	 * The app name used when formatting the message in RFC5424 format. By default the app name is "java".
 	 */
-	public SyslogHandler appName(String value) {
+	@SuppressWarnings("unchecked")
+	public T appName(String value) {
 		this.appName = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -53,9 +54,10 @@ public class SyslogHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	public SyslogHandler enabled(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T enabled(Boolean value) {
 		this.enabled = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -69,9 +71,10 @@ public class SyslogHandler {
 	/**
 	 * Facility as defined by RFC-5424 (http://tools.ietf.org/html/rfc5424)and RFC-3164 (http://tools.ietf.org/html/rfc3164).
 	 */
-	public SyslogHandler facility(String value) {
+	@SuppressWarnings("unchecked")
+	public T facility(String value) {
 		this.facility = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -85,9 +88,10 @@ public class SyslogHandler {
 	/**
 	 * The name of the host the messages are being sent from. For example the name of the host the application server is running on.
 	 */
-	public SyslogHandler hostname(String value) {
+	@SuppressWarnings("unchecked")
+	public T hostname(String value) {
 		this.hostname = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -101,9 +105,10 @@ public class SyslogHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	public SyslogHandler level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -117,9 +122,10 @@ public class SyslogHandler {
 	/**
 	 * The port the syslog server is listening on.
 	 */
-	public SyslogHandler port(Integer value) {
+	@SuppressWarnings("unchecked")
+	public T port(Integer value) {
 		this.port = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -133,9 +139,10 @@ public class SyslogHandler {
 	/**
 	 * The address of the syslog server.
 	 */
-	public SyslogHandler serverAddress(String value) {
+	@SuppressWarnings("unchecked")
+	public T serverAddress(String value) {
 		this.serverAddress = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -149,8 +156,9 @@ public class SyslogHandler {
 	/**
 	 * Formats the log message according to the RFC specification.
 	 */
-	public SyslogHandler syslogFormat(String value) {
+	@SuppressWarnings("unchecked")
+	public T syslogFormat(String value) {
 		this.syslogFormat = value;
-		return this;
+		return (T) this;
 	}
 }

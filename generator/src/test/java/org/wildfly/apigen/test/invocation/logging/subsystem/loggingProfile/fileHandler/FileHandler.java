@@ -7,7 +7,7 @@ import java.util.Map;
  * Defines a handler which writes to a file.
  */
 @Address("/subsystem=logging/logging-profile=*/file-handler=*")
-public class FileHandler {
+public class FileHandler<T extends FileHandler> {
 
 	private String key;
 	private Boolean append;
@@ -40,9 +40,10 @@ public class FileHandler {
 	/**
 	 * Specify whether to append to the target file.
 	 */
-	public FileHandler append(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T append(Boolean value) {
 		this.append = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -56,9 +57,10 @@ public class FileHandler {
 	/**
 	 * Automatically flush after each write.
 	 */
-	public FileHandler autoflush(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T autoflush(Boolean value) {
 		this.autoflush = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -72,9 +74,10 @@ public class FileHandler {
 	/**
 	 * If set to true the handler is enabled and functioning as normal, if set to false the handler is ignored when processing log messages.
 	 */
-	public FileHandler enabled(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T enabled(Boolean value) {
 		this.enabled = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -88,9 +91,10 @@ public class FileHandler {
 	/**
 	 * The character encoding used by this Handler.
 	 */
-	public FileHandler encoding(String value) {
+	@SuppressWarnings("unchecked")
+	public T encoding(String value) {
 		this.encoding = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -104,9 +108,10 @@ public class FileHandler {
 	/**
 	 * The file description consisting of the path and optional relative to path.
 	 */
-	public FileHandler file(Map value) {
+	@SuppressWarnings("unchecked")
+	public T file(Map value) {
 		this.file = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -120,9 +125,10 @@ public class FileHandler {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	public FileHandler filterSpec(String value) {
+	@SuppressWarnings("unchecked")
+	public T filterSpec(String value) {
 		this.filterSpec = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -136,9 +142,10 @@ public class FileHandler {
 	/**
 	 * Defines a pattern for the formatter.
 	 */
-	public FileHandler formatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T formatter(String value) {
 		this.formatter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -152,9 +159,10 @@ public class FileHandler {
 	/**
 	 * The log level specifying which message levels will be logged by this logger. Message levels lower than this value will be discarded.
 	 */
-	public FileHandler level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -168,9 +176,10 @@ public class FileHandler {
 	/**
 	 * The name of the handler.
 	 */
-	public FileHandler name(String value) {
+	@SuppressWarnings("unchecked")
+	public T name(String value) {
 		this.name = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -184,8 +193,9 @@ public class FileHandler {
 	/**
 	 * The name of the defined formatter to be used on the handler.
 	 */
-	public FileHandler namedFormatter(String value) {
+	@SuppressWarnings("unchecked")
+	public T namedFormatter(String value) {
 		this.namedFormatter = value;
-		return this;
+		return (T) this;
 	}
 }

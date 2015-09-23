@@ -7,7 +7,7 @@ import java.util.Map;
  * A custom formatter to be used with handlers. Note that most log records are formatted in the printf format. Formatters may require invocation of the org.jboss.logmanager.ExtLogRecord#getFormattedMessage() for the message to be properly formatted.
  */
 @Address("/subsystem=logging/custom-formatter=*")
-public class CustomFormatter {
+public class CustomFormatter<T extends CustomFormatter> {
 
 	private String key;
 	private String attributeClass;
@@ -33,9 +33,10 @@ public class CustomFormatter {
 	/**
 	 * The logging handler class to be used.
 	 */
-	public CustomFormatter attributeClass(String value) {
+	@SuppressWarnings("unchecked")
+	public T attributeClass(String value) {
 		this.attributeClass = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -49,9 +50,10 @@ public class CustomFormatter {
 	/**
 	 * The module that the logging handler depends on.
 	 */
-	public CustomFormatter module(String value) {
+	@SuppressWarnings("unchecked")
+	public T module(String value) {
 		this.module = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -65,8 +67,9 @@ public class CustomFormatter {
 	/**
 	 * Defines the properties used for the logging handler. All properties must be accessible via a setter method.
 	 */
-	public CustomFormatter properties(Map value) {
+	@SuppressWarnings("unchecked")
+	public T properties(Map value) {
 		this.properties = value;
-		return this;
+		return (T) this;
 	}
 }

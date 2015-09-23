@@ -8,13 +8,13 @@ import java.util.List;
  * Defines a logger category.
  */
 @Address("/subsystem=logging/logger=*")
-public class Logger {
+public class Logger<T extends Logger> {
 
 	private String key;
 	private String category;
 	private Map filter;
 	private String filterSpec;
-	private List handlers;
+	private List<String> handlers;
 	private String level;
 	private Boolean useParentHandlers;
 
@@ -37,9 +37,10 @@ public class Logger {
 	/**
 	 * Specifies the category for the logger.
 	 */
-	public Logger category(String value) {
+	@SuppressWarnings("unchecked")
+	public T category(String value) {
 		this.category = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -53,9 +54,10 @@ public class Logger {
 	/**
 	 * Defines a simple filter type.
 	 */
-	public Logger filter(Map value) {
+	@SuppressWarnings("unchecked")
+	public T filter(Map value) {
 		this.filter = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -69,25 +71,27 @@ public class Logger {
 	/**
 	 * A filter expression value to define a filter. Example for a filter that does not match a pattern: not(match("JBAS.*"))
 	 */
-	public Logger filterSpec(String value) {
+	@SuppressWarnings("unchecked")
+	public T filterSpec(String value) {
 		this.filterSpec = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
 	 * The handlers associated with the logger.
 	 */
 	@ModelNodeBinding(detypedName = "handlers")
-	public List handlers() {
+	public List<String> handlers() {
 		return this.handlers;
 	}
 
 	/**
 	 * The handlers associated with the logger.
 	 */
-	public Logger handlers(List value) {
+	@SuppressWarnings("unchecked")
+	public T handlers(List<String> value) {
 		this.handlers = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -101,9 +105,10 @@ public class Logger {
 	/**
 	 * The log level specifying which message levels will be logged by the logger. Message levels lower than this value will be discarded.
 	 */
-	public Logger level(String value) {
+	@SuppressWarnings("unchecked")
+	public T level(String value) {
 		this.level = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -117,8 +122,9 @@ public class Logger {
 	/**
 	 * Specifies whether or not this logger should send its output to it's parent Logger.
 	 */
-	public Logger useParentHandlers(Boolean value) {
+	@SuppressWarnings("unchecked")
+	public T useParentHandlers(Boolean value) {
 		this.useParentHandlers = value;
-		return this;
+		return (T) this;
 	}
 }

@@ -6,7 +6,7 @@ import org.wildfly.apigen.invocation.ModelNodeBinding;
  * Log files that are available to be read.
  */
 @Address("/subsystem=logging/log-file=*")
-public class LogFile {
+public class LogFile<T extends LogFile> {
 
 	private String key;
 	private Long fileSize;
@@ -33,9 +33,10 @@ public class LogFile {
 	/**
 	 * The size of the log file in bytes.
 	 */
-	public LogFile fileSize(Long value) {
+	@SuppressWarnings("unchecked")
+	public T fileSize(Long value) {
 		this.fileSize = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -49,9 +50,10 @@ public class LogFile {
 	/**
 	 * The date, in milliseconds, the file was last modified.
 	 */
-	public LogFile lastModifiedTime(Long value) {
+	@SuppressWarnings("unchecked")
+	public T lastModifiedTime(Long value) {
 		this.lastModifiedTime = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -65,9 +67,10 @@ public class LogFile {
 	/**
 	 * The date, in ISO 8601 format, the file was last modified.
 	 */
-	public LogFile lastModifiedTimestamp(String value) {
+	@SuppressWarnings("unchecked")
+	public T lastModifiedTimestamp(String value) {
 		this.lastModifiedTimestamp = value;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -81,8 +84,9 @@ public class LogFile {
 	/**
 	 * Provides the server log as a response attachment. The response result value is the unique id of the attachment.
 	 */
-	public LogFile stream(Long value) {
+	@SuppressWarnings("unchecked")
+	public T stream(Long value) {
 		this.stream = value;
-		return this;
+		return (T) this;
 	}
 }

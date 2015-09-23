@@ -6,7 +6,7 @@ import org.wildfly.apigen.invocation.ModelNodeBinding;
  * The connection-properties element allows you to pass in arbitrary connection properties to the Driver.connect(url, props) method
  */
 @Address("/subsystem=datasources/data-source=*/connection-properties=*")
-public class ConnectionProperties {
+public class ConnectionProperties<T extends ConnectionProperties> {
 
 	private String key;
 	private String value;
@@ -30,8 +30,9 @@ public class ConnectionProperties {
 	/**
 	 * Each connection-property specifies a string name/value pair with the property name coming from the name attribute and the value coming from the element content
 	 */
-	public ConnectionProperties value(String value) {
+	@SuppressWarnings("unchecked")
+	public T value(String value) {
 		this.value = value;
-		return this;
+		return (T) this;
 	}
 }
