@@ -27,10 +27,13 @@ public class IndexFactory {
                 Indexer indexer = new Indexer();
                 Class<?> currentType = type;
                 while ( currentType != null ) {
-                    String className = currentType.getName().replace(".", "/") + ".class";
-                    InputStream stream = type.getClassLoader()
-                            .getResourceAsStream(className);
-                    indexer.index(stream);
+                    if (currentType.getDeclaredAnnotation(Address.class) != null ||
+                            currentType.getDeclaredAnnotation(ModelNodeSubresources.class) != null) {
+                        String className = currentType.getName().replace(".", "/") + ".class";
+                        InputStream stream = type.getClassLoader()
+                                .getResourceAsStream(className);
+                        indexer.index(stream);
+                    }
                     currentType = currentType.getSuperclass();
                 }
                 index = indexer.complete();
