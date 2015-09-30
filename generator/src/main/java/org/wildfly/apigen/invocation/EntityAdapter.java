@@ -185,17 +185,19 @@ public class EntityAdapter<T> {
                 }
             }
         }
-        for (MethodInfo method : clazz.methods()) {
 
-            if (method.hasAnnotation(IndexFactory.BINDING_META)) {
+        while ( clazz != null ) {
+            for (MethodInfo method : clazz.methods()) {
 
-                Method target = entity.getClass().getMethod(method.name());
-                Class<?> propertyType = target.getReturnType();
-                Object propertyValue = target.invoke(entity);
+                if (method.hasAnnotation(IndexFactory.BINDING_META)) {
 
-                AnnotationInstance ann = method.annotation(DotName.createSimple(ModelNodeBinding.class.getName()));
-                org.jboss.jandex.AnnotationValue annValue = ann.value("detypedName");
-                String detypedName = annValue.asString();
+                    Method target = entity.getClass().getMethod(method.name());
+                    Class<?> propertyType = target.getReturnType();
+                    Object propertyValue = target.invoke(entity);
+
+                    AnnotationInstance ann = method.annotation(DotName.createSimple(ModelNodeBinding.class.getName()));
+                    org.jboss.jandex.AnnotationValue annValue = ann.value("detypedName");
+                    String detypedName = annValue.asString();
 
             /*// EXPRESSIONS
             if(property.doesSupportExpression())
@@ -211,28 +213,35 @@ public class EntityAdapter<T> {
                 }
             }*/
 
-                // VALUES
-                if (propertyValue != null) {
-                    try {
-                        ModelType dmrType = Types.resolveModelType(propertyType);
+                    // VALUES
+                    if (propertyValue != null) {
+                        try {
+                            ModelType dmrType = Types.resolveModelType(propertyType);
 
-                        if (dmrType == ModelType.LIST) {
-                            new ListTypeAdapter().toDmr(modelNode, detypedName, (List) propertyValue);
+                            if (dmrType == ModelType.LIST) {
+                                new ListTypeAdapter().toDmr(modelNode, detypedName, (List) propertyValue);
 
-                        } else if (dmrType == ModelType.OBJECT) {
-                            // only Map<String,String> supported
-                            new MapTypeAdapter().toDmr(modelNode, detypedName, (Map) propertyValue);
+                            } else if (dmrType == ModelType.OBJECT) {
+                                // only Map<String,String> supported
+                                new MapTypeAdapter().toDmr(modelNode, detypedName, (Map) propertyValue);
 
-                        } else {
-                            new SimpleTypeAdapter().toDmr(modelNode, detypedName, dmrType, propertyValue);
+                            } else {
+                                new SimpleTypeAdapter().toDmr(modelNode, detypedName, dmrType, propertyValue);
+                            }
+                        } catch (RuntimeException e) {
+                            throw new RuntimeException("Failed to adopt value " + propertyType.getName(), e);
                         }
-                    } catch (RuntimeException e) {
-                        throw new RuntimeException("Failed to adopt value " + propertyType.getName(), e);
                     }
+
                 }
-
             }
-
+            if ( currentType.getSuperclass() != null ) {
+                currentType = currentType.getSuperclass();
+                if ( currentType.equals( Object.class ) ) {
+                    break;
+                }
+            }
+            clazz = index.getClassByName( DotName.createSimple( currentType.getCanonicalName() ));
         }
         return modelNode;
     }
