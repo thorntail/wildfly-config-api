@@ -45,10 +45,6 @@ class SubresourceFilter {
     private static List<Method> __invoke(Class<?> clazz, Index index, Comparator<Method> comparator) throws NoSuchMethodException {
         ArrayList methods = new ArrayList();
         ClassInfo clazzInfo = index.getClassByName(DotName.createSimple(clazz.getName()));
-        if (clazzInfo == null) {
-            System.out.println("Index doesn't know about " + clazz.getName());
-            return Collections.emptyList();
-        }
         for (MethodInfo method : clazzInfo.methods()) {
             if (method.hasAnnotation(IndexFactory.SUBRESOURCE_META)) {
                 methods.add(clazz.getMethod(method.name()));

@@ -35,16 +35,10 @@ public class Marshaller {
     }
 
     private static PathAddress resourceAddress(Object resource, PathAddress pathAddress) {
-        Class<?> entityClass = resource.getClass();
+        final Class<?> entityClass = resource.getClass();
 
         Index index = IndexFactory.createIndex(entityClass);
-        ClassInfo clazz = null;
-
-        while(clazz == null) {
-            clazz = index.getClassByName(DotName.createSimple(entityClass.getName()));
-            entityClass = entityClass.getSuperclass();
-            if (entityClass == Object.class) break;
-        }
+        ClassInfo clazz = index.getClassByName(DotName.createSimple(entityClass.getName()));
 
         PathAddress address = getPathElements(resource, pathAddress, entityClass, clazz);
         if (address != null) return address;

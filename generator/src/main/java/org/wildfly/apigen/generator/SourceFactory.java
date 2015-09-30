@@ -8,7 +8,11 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaDocSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.jboss.logmanager.Level;
-import org.wildfly.apigen.invocation.*;
+import org.wildfly.apigen.invocation.Address;
+import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.apigen.invocation.Implicit;
+import org.wildfly.apigen.invocation.Subresource;
+import org.wildfly.apigen.invocation.Types;
 import org.wildfly.apigen.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
@@ -267,7 +271,6 @@ public class SourceFactory {
         subresourceClass.setPackage(resourceMetaData.get(ResourceMetaData.PKG));
         subresourceClass.getJavaDoc().setText("Child mutators for " + javaClass.getName());
         subresourceClass.setPublic();
-        subresourceClass.addAnnotation(ModelNodeSubresources.class);
 
         javaClass.addField()
                 .setPrivate()
@@ -283,7 +286,6 @@ public class SourceFactory {
 
         javaClass.addImport("java.util.List");
         javaClass.addImport(Subresource.class);
-        javaClass.addImport(ModelNodeSubresources.class);
         return subresourceClass;
     }
 
