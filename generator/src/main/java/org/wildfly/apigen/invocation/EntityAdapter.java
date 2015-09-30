@@ -3,6 +3,7 @@ package org.wildfly.apigen.invocation;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.jandex.*;
+import org.wildfly.config.runtime.ModelNodeBinding;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

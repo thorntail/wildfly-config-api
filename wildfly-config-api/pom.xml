@@ -14,18 +14,24 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>org.wildfly.configuration</groupId>
-            <artifactId>generator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+     <dependency>
+       <groupId>org.wildfly.configuration</groupId>
+       <artifactId>runtime</artifactId>
+       <version>${project.version}</version>
+     </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
-            <scope>test</scope>
-        </dependency>
+     <dependency>
+       <groupId>org.wildfly.configuration</groupId>
+       <artifactId>generator</artifactId>
+       <version>${project.version}</version>
+     </dependency>
+
+     <dependency>
+       <groupId>junit</groupId>
+       <artifactId>junit</artifactId>
+       <version>${version.junit}</version>
+       <scope>test</scope>
+    </dependency>
 
     </dependencies>
 

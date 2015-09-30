@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.patternFormatter;
 
-import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.ModelNodeBinding;
 /**
  * A pattern formatter to be used with handlers.
  */

@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.syslogHandler;
 
-import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.ModelNodeBinding;
 /**
  * Defines a syslog handler.
  */

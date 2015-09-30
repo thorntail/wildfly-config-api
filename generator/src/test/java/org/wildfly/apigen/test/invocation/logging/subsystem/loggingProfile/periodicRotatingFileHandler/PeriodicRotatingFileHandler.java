@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.periodicRotatingFileHandler;
 
-import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.ModelNodeBinding;
 import java.util.Map;
 /**
  * Defines a handler which writes to a file, rotating the log after a time period derived from the given suffix string, which should be in a format understood by java.text.SimpleDateFormat.

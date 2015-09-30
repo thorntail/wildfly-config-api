@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.datasources.subsystem.jdbcDriver;
 
-import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.ModelNodeBinding;
 /**
  * Service that make a JDBC driver available for use in the runtime
  */

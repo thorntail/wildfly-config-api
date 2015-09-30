@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.periodicSizeRotatingFileHandler;
 
-import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.ModelNodeBinding;
 import java.util.Map;
 /**
  * Defines a handler which writes to a file, rotating the log after a time period derived from the given suffix string or after the size of the file grows beyond a certain point and keeping a fixed number of backups. The suffix should be in a format understood by the java.text.SimpleDateFormat. Any backups rotated by the suffix will not be purged during a size rotation.

@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom;
 
-import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.ModelNodeBinding;
 import java.util.Map;
 /**
  * Mail session server

@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.customHandler;
 
-import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.ModelNodeBinding;
 import java.util.Map;
 /**
  * Defines a custom logging handler. The custom handler must extend java.util.logging.Handler.

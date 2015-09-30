@@ -1,8 +1,8 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.rootLogger;
 
-import org.wildfly.apigen.invocation.Implicit;
-import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.config.runtime.Implicit;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.ModelNodeBinding;
 import java.util.List;
 /**
  * Defines the root logger for this log context.

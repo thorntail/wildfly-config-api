@@ -3,6 +3,10 @@ package org.wildfly.apigen.invocation;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Index;
 import org.jboss.jandex.Indexer;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.Implicit;
+import org.wildfly.config.runtime.ModelNodeBinding;
+import org.wildfly.config.runtime.Subresource;
 
 import java.io.IOException;
 import java.io.InputStream;

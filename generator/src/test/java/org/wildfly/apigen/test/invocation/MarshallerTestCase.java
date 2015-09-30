@@ -45,7 +45,7 @@ public class MarshallerTestCase extends AbstractTestCase {
 
     @Test
     public void testLoggingMarshalling() throws Exception {
-//        System.out.println("----< LOGGING MARSHALLING >----");
+        System.out.println("----< LOGGING MARSHALLING >----");
         Logging logging = new LoggingSubclass();
 
         // Simple support for ModelType.LIST
@@ -87,9 +87,9 @@ public class MarshallerTestCase extends AbstractTestCase {
                 .root(new Root().level("INFO")
                         .handlers(rootHandlers));
         List<ModelNode> list = Marshaller.marshal(logging);
-//        for (ModelNode n : list) {
-//            System.out.println(n);
-//        }
+        for (ModelNode n : list) {
+            System.out.println(n);
+        }
     }
 
     @Test

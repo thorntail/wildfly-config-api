@@ -1,4 +1,4 @@
-package org.wildfly.apigen.invocation;
+package org.wildfly.config.runtime;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,15 +7,16 @@ import java.lang.annotation.Target;
 
 /**
  * @author Heiko Braun
+ * @date 4/19/11
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface Address {
+@Target({ElementType.METHOD})
+public @interface ModelNodeBinding {
 
     /**
-     * The resource address
+     * The name of the DMR attribute
      *
      * @return
      */
-    String value();
+    String detypedName();
 }

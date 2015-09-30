@@ -1,11 +1,11 @@
 package org.wildfly.apigen.test.invocation.datasources.subsystem.xaDataSource;
 
-import org.wildfly.apigen.invocation.Address;
-import org.wildfly.apigen.invocation.ModelNodeBinding;
+import org.wildfly.config.runtime.Address;
+import org.wildfly.config.runtime.ModelNodeBinding;
 import java.util.Map;
 import java.util.List;
-import org.wildfly.apigen.invocation.Subresource;
-import org.wildfly.apigen.invocation.ModelNodeSubresources;
+import org.wildfly.config.runtime.Subresource;
+import org.wildfly.config.runtime.ModelNodeSubresources;
 import org.wildfly.apigen.test.invocation.datasources.subsystem.xaDataSource.xaDatasourceProperties.XaDatasourceProperties;
 
 /**
