@@ -1,7 +1,6 @@
-package org.wildfly.apigen.invocation;
+package org.wildfly.apigen.generator;
 
 import org.jboss.as.controller.client.ModelControllerClient;
-import org.wildfly.apigen.generator.Config;
 
 /**
  * @author Heiko Braun

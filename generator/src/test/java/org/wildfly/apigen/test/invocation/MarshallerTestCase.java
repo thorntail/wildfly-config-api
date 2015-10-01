@@ -5,7 +5,7 @@ import org.jboss.as.controller.PathElement;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ValueExpression;
 import org.junit.Test;
-import org.wildfly.apigen.invocation.Marshaller;
+import org.wildfly.config.invocation.Marshaller;
 import org.wildfly.apigen.test.AbstractTestCase;
 import org.wildfly.apigen.test.invocation.datasources.Datasources;
 import org.wildfly.apigen.test.invocation.datasources.subsystem.dataSource.DataSource;
@@ -24,7 +24,6 @@ import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 
@@ -224,7 +223,7 @@ public class MarshallerTestCase extends AbstractTestCase {
                 .smtp(new Smtp().outboundSocketBindingRef("smtp-server-outbound-socket-binding-ref"))
                 .jndiName("smtp-server-jndi-name");
 
-        mail.mailSession( mailSession );
+        mail.mailSession(mailSession);
 
         List<ModelNode> list = Marshaller.marshal(mail);
 

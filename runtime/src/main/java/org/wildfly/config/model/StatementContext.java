@@ -1,4 +1,4 @@
-package org.wildfly.apigen.model;
+package org.wildfly.config.model;
 
 import java.util.LinkedList;
 

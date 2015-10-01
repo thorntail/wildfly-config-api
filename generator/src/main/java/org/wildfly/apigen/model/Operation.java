@@ -23,6 +23,7 @@ package org.wildfly.apigen.model;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.Property;
+import org.wildfly.config.model.ResourceAddress;
 
 import java.util.Collection;
 

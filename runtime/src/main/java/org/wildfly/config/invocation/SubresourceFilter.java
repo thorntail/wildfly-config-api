@@ -1,4 +1,4 @@
-package org.wildfly.apigen.invocation;
+package org.wildfly.config.invocation;
 
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;

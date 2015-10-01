@@ -4,7 +4,7 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.wildfly.apigen.invocation.EntityAdapter;
+import org.wildfly.config.invocation.EntityAdapter;
 import org.wildfly.apigen.test.AbstractTestCase;
 import org.wildfly.apigen.test.invocation.mail.Mail;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession;

@@ -1,4 +1,4 @@
-package org.wildfly.apigen.invocation;
+package org.wildfly.apigen.generator;
 
 import java.io.IOException;
 

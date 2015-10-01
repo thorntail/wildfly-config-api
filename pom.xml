@@ -33,7 +33,7 @@
   <modules>
     <module>runtime</module>
     <module>generator</module>
-    <module>wildfly-config-api</module>
+    <module>api</module>
   </modules>
 
   <repositories>

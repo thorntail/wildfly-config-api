@@ -1,4 +1,4 @@
-package org.wildfly.apigen.invocation;
+package org.wildfly.config.invocation;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;

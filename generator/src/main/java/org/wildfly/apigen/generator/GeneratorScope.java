@@ -1,9 +1,8 @@
 package org.wildfly.apigen.generator;
 
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.config.model.AddressTemplate;
 
-import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;

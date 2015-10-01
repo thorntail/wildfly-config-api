@@ -1,7 +1,7 @@
 package org.wildfly.apigen.operations;
 
 import org.jboss.dmr.ModelNode;
-import org.wildfly.apigen.model.StatementContext;
+import org.wildfly.config.model.StatementContext;
 
 /**
  * @author Heiko Braun

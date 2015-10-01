@@ -1,6 +1,6 @@
 package org.wildfly.apigen.model;
 
-import org.wildfly.apigen.model.StatementContext;
+import org.wildfly.config.model.StatementContext;
 
 import java.util.LinkedList;
 

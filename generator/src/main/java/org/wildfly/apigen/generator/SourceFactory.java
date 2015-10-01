@@ -12,8 +12,8 @@ import org.wildfly.config.runtime.Address;
 import org.wildfly.config.runtime.ModelNodeBinding;
 import org.wildfly.config.runtime.Implicit;
 import org.wildfly.config.runtime.Subresource;
-import org.wildfly.apigen.invocation.Types;
-import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.config.invocation.Types;
+import org.wildfly.config.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
 import java.util.Optional;
@@ -44,7 +44,7 @@ public class SourceFactory {
      */
     public static JavaClassSource createResourceAsClass(GeneratorScope scope, ResourceMetaData metaData) {
 
-        String className = Types.javaClassName(metaData);
+        String className = javaClassName(metaData);
 
         // base class
         JavaClassSource javaClass =  Roaster.parse(
@@ -116,7 +116,7 @@ public class SourceFactory {
 
                         // attributes
                         try {
-                            final String name = Types.javaAttributeName(att.getName());
+                            final String name = javaAttributeName(att.getName());
                             String attributeDescription = att.getValue().get(DESCRIPTION).asString();
 
                             javaClass.addField()
@@ -334,5 +334,23 @@ public class SourceFactory {
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
         }
+    }
+
+    public final static String javaClassName(ResourceMetaData metaData) {
+        String name;
+        if(metaData.getDescription().isSingleton())
+        {
+            name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL,  metaData.getDescription().getSingletonName().replace("-", "_"));
+        }
+        else
+        {
+            name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL,  metaData.getAddress().getResourceType().replace("-", "_"));
+        }
+        return name;
+
+    }
+
+    public final static String javaAttributeName(String dmr) {
+        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, Keywords.escape(dmr.replace("-", "_")));
     }
 }

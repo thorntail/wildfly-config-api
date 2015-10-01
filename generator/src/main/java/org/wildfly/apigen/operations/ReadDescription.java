@@ -1,10 +1,10 @@
 package org.wildfly.apigen.operations;
 
 import org.jboss.dmr.ModelNode;
-import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.config.model.AddressTemplate;
 import org.wildfly.apigen.model.Operation;
-import org.wildfly.apigen.model.ResourceAddress;
-import org.wildfly.apigen.model.StatementContext;
+import org.wildfly.config.model.ResourceAddress;
+import org.wildfly.config.model.StatementContext;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 

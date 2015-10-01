@@ -1,6 +1,6 @@
 package org.wildfly.apigen.generator;
 
-import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.config.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
 import java.util.Collections;

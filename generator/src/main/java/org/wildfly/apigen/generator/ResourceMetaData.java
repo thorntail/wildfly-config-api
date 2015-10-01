@@ -1,14 +1,10 @@
 package org.wildfly.apigen.generator;
 
-import org.jboss.dmr.ModelNode;
-import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.config.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * @author Heiko Braun

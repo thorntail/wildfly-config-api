@@ -11,7 +11,7 @@ import org.wildfly.apigen.generator.GeneratorScope;
 import org.wildfly.apigen.generator.MetaDataTraversal;
 import org.wildfly.apigen.generator.ResourceMetaData;
 import org.wildfly.apigen.generator.SourceFactory;
-import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.config.model.AddressTemplate;
 import org.wildfly.apigen.model.DefaultStatementContext;
 import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.operations.ReadDescription;

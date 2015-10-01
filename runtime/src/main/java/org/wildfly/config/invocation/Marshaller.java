@@ -1,9 +1,9 @@
-package org.wildfly.apigen.invocation;
+package org.wildfly.config.invocation;
 
 import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
 import org.jboss.jandex.*;
-import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.config.model.AddressTemplate;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

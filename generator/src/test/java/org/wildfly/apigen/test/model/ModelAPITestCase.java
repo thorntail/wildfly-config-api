@@ -4,7 +4,7 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.wildfly.apigen.test.AbstractTestCase;
-import org.wildfly.apigen.model.AddressTemplate;
+import org.wildfly.config.model.AddressTemplate;
 import org.wildfly.apigen.model.DefaultStatementContext;
 import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.operations.ReadDescription;
