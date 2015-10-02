@@ -1,98 +1,50 @@
-# Java API generator and configuration library 
+# WildFly Configuration API
 
-This projects breaks down into two parts:
+This projects breaks down into three parts:
 
 - API Generator (`generator` module)
-- Configuration library (`config-lib` module)
+- Generated WildFly configuration API (`api` module)
+- Runtime dependencies for both the `generator` and `api` modules.
 
-The former provides a generator to create a Java API which represents the Wildfly management model (or parts of it) and marshalling layer to  turn the Java object model into a DMR representation and vice versa.
+The `generator` module provides facilities to create a Java API which represents
+the Wildfly management model (or parts of it).
 
-The configuration library contains the object model created by the generator and it intended to be used by actually clients that need to manage Wildfly configurations through the a Java API. 
+The configuration API contains the object model created by the generator. Client
+such as WildFly Swarm may use this generated API to configure a running instance
+of WildFly via a fluent Java API.
 
-## Generating the config library
+## Generating the API
 
-The config library is created from the Wildfly management model as part of the maven build. It requires an active Wildfly instance to access the meta data and execute the integration tests.
+The API is created from the Wildfly management model as part of the maven build.
+It requires an active Wildfly instance to access the meta data and execute the
+integration tests.
 
-1. Start a stock Wildfly distribution in standalone mode
+1. Start a stock Wildfly 10 distribution in standalone full ha mode
+`./bin/standalone.sh -server-config=standalone-full-ha.xml`
 2. Update the `*-config.json` to reflect your setup
 3. Perform a regular maven build `mvn clean install`
 
-If all goes well, you be able to access the generated sources at `config-lib/target/generated-sources`.
+If all goes well, you be able to access the generated sources at
+`api/target/generated-sources`.
 
-A generated config class looks like this
-
-```
-package org.wildfly.swarm.config.mail;
-
-[...]
-
-/**
- * Mail session definition
- */
-@Address("/subsystem=mail/mail-session=*")
-public class MailSession {
-
-	private Boolean debug;
-	private String from;
-	private String jndiName;
-	private List<Server> servers;
-	private List<Custom> customs;
-
-	/**
-	 * Enables JavaMail debugging
-	 */
-	@Binding(detypedName = "debug")
-	public Boolean getDebug() {
-		return debug;
-	}
-
-	/**
-	 * Enables JavaMail debugging
-	 */
-	public void setDebug(Boolean debug) {
-		this.debug = debug;
-	}
-
-	[...]
-
-	@Subresource
-	public List<Server> getServers() {
-		return servers;
-	}
-
-	public void setServers(List<Server> servers) {
-		this.servers = servers;
-	}
-
-	@Subresource
-	public List<Custom> getCustoms() {
-		return customs;
-	}
-
-	public void setCustoms(List<Custom> customs) {
-		this.customs = customs;
-	}
-
-	public MailSession() {
-		this.servers = new java.util.ArrayList<>();
-		this.customs = new java.util.ArrayList<>();
-	}
-}
-```
-
-The annotation meta data (i.e. `@Binding`) is used by the marshalling layer to drive the conversion between DMR and Java types. This will be explained further down.
-
-## Working with the config library
+## Working with the config API
 
 ### Maven dependencies
 
-Clients typically just depend on the config library itself:
+Clients typically depend on the API library itself, as well as the `runtime`
+library to marshal between Java configuration instances and the JBoss DMR
+`ModelNode` instances.
 
 ```
 <dependency>
 	<groupId>org.wildfly</groupId>
-	<artifactId>config-lib</artifactId>
-	<version>0.1.0.Final</version>
+	<artifactId>api</artifactId>
+	<version>0.3.0</version>
+</dependency>
+<dependency>
+	<groupId>org.wildfly</groupId>
+	<artifactId>runtime</artifactId>
+	<version>0.3.0</version>
 </dependency>
 ```
 
@@ -102,7 +54,7 @@ Clients typically just depend on the config library itself:
 
 To generate DMR from Java simply instantiate the object model and run it through the `EntityAdapter<T>`:
 
-``` 
+```
 DataSource dataSource = ...;
 EntityAdapter<DataSource> entityAdapter = new EntityAdapter<>(DataSource.class);
 ModelNode modelNode = entityAdapter.fromEntity(dataSource);
@@ -111,7 +63,7 @@ ModelNode modelNode = entityAdapter.fromEntity(dataSource);
 
 **DMR to Java**
 
-Creating object instances work 
+Creating object instances work
 in a similar way, by using the `EntityAdapter<T>`:
 
 ```
@@ -125,7 +77,7 @@ The `IntegrationTestCase.java` contains more examples.
 
 ## Status and limitations
 
-This is pretty much work in it's early stages. Use cases covered by the test cases seem to work, but we didn't test plenty of scenarios. 
+This is pretty much work in it's early stages. Use cases covered by the test cases seem to work, but we didn't test plenty of scenarios.
 
 But the project as it is should give you an idea where the config-lib is heading and what it might be used for.
 
@@ -134,8 +86,3 @@ But the project as it is should give you an idea where the config-lib is heading
 
 
 Feel free to create ticket right here on github, fork the code and send pull request or join us on the Wildfly IRC channels and mailing lists.
-
-
-
-
-
