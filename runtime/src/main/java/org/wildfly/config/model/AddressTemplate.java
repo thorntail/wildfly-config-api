@@ -21,8 +21,6 @@
  */
 package org.wildfly.config.model;
 
-
-import com.google.common.base.Joiner;
 import org.jboss.dmr.ModelNode;
 
 import java.util.ArrayList;
@@ -117,7 +115,22 @@ public class AddressTemplate implements Comparable<AddressTemplate> {
         if (optional) {
             builder.append(OPT);
         }
-        Joiner.on('/').appendTo(builder, tokens);
+        return joinTokens(builder, tokens, "/");
+    }
+
+    private String joinTokens(StringBuilder builder, LinkedList<Token> tokens, String c) {
+        int size = tokens.size();
+        if (size == 1) {
+            builder.append(tokens.getFirst().toString());
+        }
+        else if (size > 1) {
+            for (int i=0; i<size-1; i++) {
+                builder.append(tokens.get(i).toString());
+                builder.append(c);
+            }
+            builder.append(tokens.getLast().toString());
+        }
+        // if size == 0 there's nothing to append
         return builder.toString();
     }
 

@@ -1,6 +1,5 @@
 package org.wildfly.config.invocation;
 
-import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
