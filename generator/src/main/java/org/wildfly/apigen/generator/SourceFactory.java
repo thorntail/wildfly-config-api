@@ -1,6 +1,7 @@
 package org.wildfly.apigen.generator;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.base.Joiner;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
@@ -16,10 +17,12 @@ import org.wildfly.config.invocation.Types;
 import org.wildfly.config.model.AddressTemplate;
 import org.wildfly.apigen.model.ResourceDescription;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPRECATED;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
 
@@ -44,7 +47,9 @@ public class SourceFactory {
      */
     public static JavaClassSource createResourceAsClass(GeneratorScope scope, ResourceMetaData metaData) {
 
-        String className = javaClassName(metaData);
+        String[] names = derivePackageAndClassNames(metaData);
+        final String packageName = names[0]; //derivePackageName(metaData);
+        final String className = names[1]; // javaClassName(metaData, packageName);
 
         // base class
         JavaClassSource javaClass =  Roaster.parse(
@@ -78,14 +83,14 @@ public class SourceFactory {
 
         }
 
-        MethodSource<JavaClassSource> keyAccessor = javaClass.addMethod()
+        javaClass.addMethod()
                 .setName("getKey")
                 .setPublic()
                 .setReturnType(String.class)
                 .setBody("return this.key;");
 
 
-        javaClass.setPackage(derivePackageName(metaData));
+        javaClass.setPackage(packageName);
 
         // javadoc
         JavaDocSource javaDoc = javaClass.getJavaDoc();
@@ -112,7 +117,7 @@ public class SourceFactory {
                     ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
                     Optional<String> resolvedType = Types.resolveJavaTypeName(modelType, att.getValue());
 
-                    if (resolvedType.isPresent()) {
+                    if (resolvedType.isPresent() && !att.getValue().get(DEPRECATED).isDefined()) {
 
                         // attributes
                         try {
@@ -154,7 +159,8 @@ public class SourceFactory {
         return javaClass;
     }
 
-    private static String derivePackageName(ResourceMetaData metaData) {
+    private static String[] derivePackageAndClassNames(ResourceMetaData metaData) {
+        String[] strings = new String[2];
         int level = metaData.getAddress().tokenLength();
         StringBuffer sb = new StringBuffer();
         if(level>1) {
@@ -176,8 +182,33 @@ public class SourceFactory {
 
         sb.insert(0, metaData.get(ResourceMetaData.PKG));
         //System.out.println(metaData.getAddress() + " >> " + sb.toString());
-        return sb.toString();
+        strings[0] = sb.toString();
 
+
+        String name;
+        if(metaData.getDescription().isSingleton())
+        {
+            String[] packages = strings[0].split("\\.");
+            String prefix = packages[packages.length-1];
+            String singletonName = metaData.getDescription().getSingletonName().replace("-", "_");
+
+            if (!prefix.equals(singletonName)) {
+                prefix = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, prefix);
+                singletonName = prefix + "_" + singletonName;
+            }
+
+            name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, singletonName);
+            String pkg = Joiner.on('.').join(Arrays.copyOf(packages, packages.length-1));
+            strings[0] = pkg;
+            metaData.set(ResourceMetaData.PKG, pkg);
+        }
+        else
+        {
+            name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL,  metaData.getAddress().getResourceType().replace("-", "_"));
+        }
+
+        strings[1] = name;
+        return strings;
     }
 
     /**
@@ -293,6 +324,7 @@ public class SourceFactory {
 
         final ResourceDescription description = resourceMetaData.getDescription();
         final Set<String> singletonNames = description.getSingletonChildrenTypes();
+        javaClass.addImport(Subresource.class);
         for (String singletonName : singletonNames) {
 
             String[] split = singletonName.split("=");
@@ -302,11 +334,12 @@ public class SourceFactory {
             final JavaClassSource childClass = scope.getGenerated(childAddress);
             javaClass.addImport(childClass);
 
-            String propName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, name);
+            String propName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, childClass.getName());
 
             javaClass.addField()
                     .setName(propName)
-                    .setType(childClass)
+                    .setType(childClass.getCanonicalName())
+//                    .setType(childClass)
                     .setPrivate();
 
             // Add an accessor method
@@ -334,20 +367,6 @@ public class SourceFactory {
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
         }
-    }
-
-    public final static String javaClassName(ResourceMetaData metaData) {
-        String name;
-        if(metaData.getDescription().isSingleton())
-        {
-            name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL,  metaData.getDescription().getSingletonName().replace("-", "_"));
-        }
-        else
-        {
-            name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL,  metaData.getAddress().getResourceType().replace("-", "_"));
-        }
-        return name;
-
     }
 
     public final static String javaAttributeName(String dmr) {

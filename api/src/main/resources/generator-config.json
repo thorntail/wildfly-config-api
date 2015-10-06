@@ -6,6 +6,10 @@
         "pass" : "passWord123"
     },
     "generatorTargets" : [
+      {
+        "sourceAddress": "/subsystem=security",
+        "targetPackage": "org.wildfly.swarm.config.security"
+      },
         {
             "sourceAddress": "/subsystem=datasources",
             "targetPackage": "org.wildfly.swarm.config.datasources"
