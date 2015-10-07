@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+  <scm>
+    <connection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</connection>
+    <developerConnection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</developerConnection>
+    <url>https://github.com/wildfly-swarm/wildfly-config-api</url>
+    <tag>HEAD</tag>
+  </scm>
+
+
   <modelVersion>4.0.0</modelVersion>
   <artifactId>api</artifactId>
   <packaging>jar</packaging>
@@ -125,6 +133,31 @@
               %2$s %5$s%6$s%n</value>
             </property>
           </systemProperties>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.3</version>
+        <configuration>
+          <show>public</show>
+          <reportOutputDirectory>${project.reporting.outputDirectory}/${project.version}</reportOutputDirectory>
+          <header>WildFly Configuration API, ${project.version}</header>
+          <footer>WildFly Configuration API, ${project.version}</footer>
+          <doctitle>WildFly Configuration API, ${project.version}</doctitle>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <version>1.1</version>
+        <configuration>
+          <checkoutDirectory>${project.build.directory}/scmpublish</checkoutDirectory>
+          <checkinComment>Publishing javadoc for ${project.artifactId}:${project.version}</checkinComment>
+          <content>${project.reporting.outputDirectory}</content>
+          <skipDeletedFiles>true</skipDeletedFiles>
+          <pubScmUrl>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</pubScmUrl>
+          <scmBranch>gh-pages</scmBranch> <!-- branch with static site -->
         </configuration>
       </plugin>
     </plugins>
