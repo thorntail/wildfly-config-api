@@ -1,0 +1,27 @@
+
+body {
+    background-color:#ffffff;
+    color:#353833;
+    font-family:Arial, Helvetica, sans-serif;
+    font-size:14px;
+    margin:20px;
+}
+a:link, a:visited {
+    text-decoration:none;
+    color:#4A6782;
+}
+a:hover, a:focus {
+    text-decoration:none;
+    color:#bb7a2a;
+}
+a:active {
+    text-decoration:none;
+    color:#4A6782;
+}
+a[name] {
+    color:#353833;
+}
+a[name]:hover {
+    text-decoration:none;
+    color:#353833;
+}
