@@ -187,6 +187,8 @@ public class Generator {
             SourceFactory.createSingletonChildAccessors(scope, resourceMetaData, javaClass);
         }
 
+        System.err.println("ADDRESS: " + resourceMetaData.getAddress());
+        System.err.println("PACKAGE: " + javaClass.getPackage());
         writeClass(targetDir, javaClass);
         scope.addGenerated(resourceMetaData.getAddress(), javaClass);
     }
@@ -199,7 +201,7 @@ public class Generator {
 
             Path fileName = Paths.get(targetDir + File.separator + javaClass.getName() + ".java");
             if(Files.exists(fileName)) {
-                throw new RuntimeException("File already exists, will be replaced: " + fileName);
+                System.err.println("File already exists, will be replaced: " + fileName) ;
             }
 
             Files.write(fileName, javaClass.toString().getBytes());

@@ -1,78 +1,82 @@
 {
-    "server" : {
-        "host" : "localhost",
-        "port" : 9990,
-        "user" : "admin",
-        "pass" : "passWord123"
+  "server": {
+    "host": "localhost",
+    "port": 9990,
+    "user": "admin",
+    "pass": "passWord123"
+  },
+  "generatorTargets": [
+    {
+      "sourceAddress": "/subsystem=bean-validation",
+      "targetPackage": "org.wildfly.swarm.config.bean.validation"
     },
-    "generatorTargets" : [
-      {
-        "sourceAddress": "/subsystem=security",
-        "targetPackage": "org.wildfly.swarm.config.security"
-      },
-        {
-            "sourceAddress": "/subsystem=datasources",
-            "targetPackage": "org.wildfly.swarm.config.datasources"
-        },
-        {
-            "sourceAddress": "/subsystem=logging",
-            "targetPackage": "org.wildfly.swarm.config.logging"
-        },
-        {
-            "sourceAddress": "/subsystem=mail",
-            "targetPackage": "org.wildfly.swarm.config.mail"
-        },
-        {
-            "sourceAddress": "/subsystem=ejb3",
-            "targetPackage": "org.wildfly.swarm.config.ejb3"
-        },
-        {
-            "sourceAddress": "/subsystem=bean-validation",
-            "targetPackage": "org.wildfly.swarm.config.bean.validation"
-        },
-        {
-            "sourceAddress": "/subsystem=io",
-            "targetPackage": "org.wildfly.swarm.config.io"
-        },
-        {
-            "sourceAddress": "/subsystem=ee",
-            "targetPackage": "org.wildfly.swarm.config.ee"
-        },
-        {
-            "sourceAddress": "/subsystem=jaxrs",
-            "targetPackage": "org.wildfly.swarm.config.jaxrs"
-        },
-        {
-            "sourceAddress": "/subsystem=jca",
-            "targetPackage": "org.wildfly.swarm.config.jca"
-        },
-        {
-            "sourceAddress": "/subsystem=jpa",
-            "targetPackage": "org.wildfly.swarm.config.jpa"
-        },
-        {
-            "sourceAddress": "/subsystem=jsf",
-            "targetPackage": "org.wildfly.swarm.config.jsf"
-        },
-        {
-            "sourceAddress": "/subsystem=naming",
-            "targetPackage": "org.wildfly.swarm.config.naming"
-        },
-        {
-            "sourceAddress": "/subsystem=remoting",
-            "targetPackage": "org.wildfly.swarm.config.remoting"
-        },
-        {
-            "sourceAddress": "/subsystem=transactions",
-            "targetPackage": "org.wildfly.swarm.config.transactions"
-        },
-        {
-            "sourceAddress": "/subsystem=weld",
-            "targetPackage": "org.wildfly.swarm.config.weld"
-        },
-        {
-            "sourceAddress": "/subsystem=undertow",
-            "targetPackage": "org.wildfly.swarm.config.undertow"
-        }
-    ]
+    {
+      "sourceAddress": "/subsystem=datasources",
+      "targetPackage": "org.wildfly.swarm.config.datasources"
+    },
+    {
+      "sourceAddress": "/subsystem=ee",
+      "targetPackage": "org.wildfly.swarm.config.ee"
+    },
+    {
+      "sourceAddress": "/subsystem=ejb3",
+      "targetPackage": "org.wildfly.swarm.config.ejb3"
+    },
+    {
+      "sourceAddress": "/subsystem=infinispan",
+      "targetPackage": "org.wildfly.swarm.config.infinispan"
+    },
+    {
+      "sourceAddress": "/subsystem=io",
+      "targetPackage": "org.wildfly.swarm.config.io"
+    },
+    {
+      "sourceAddress": "/subsystem=jaxrs",
+      "targetPackage": "org.wildfly.swarm.config.jaxrs"
+    },
+    {
+      "sourceAddress": "/subsystem=jca",
+      "targetPackage": "org.wildfly.swarm.config.jca"
+    },
+    {
+      "sourceAddress": "/subsystem=jpa",
+      "targetPackage": "org.wildfly.swarm.config.jpa"
+    },
+    {
+      "sourceAddress": "/subsystem=jsf",
+      "targetPackage": "org.wildfly.swarm.config.jsf"
+    },
+    {
+      "sourceAddress": "/subsystem=logging",
+      "targetPackage": "org.wildfly.swarm.config.logging"
+    },
+    {
+      "sourceAddress": "/subsystem=mail",
+      "targetPackage": "org.wildfly.swarm.config.mail"
+    },
+    {
+      "sourceAddress": "/subsystem=naming",
+      "targetPackage": "org.wildfly.swarm.config.naming"
+    },
+    {
+      "sourceAddress": "/subsystem=remoting",
+      "targetPackage": "org.wildfly.swarm.config.remoting"
+    },
+    {
+      "sourceAddress": "/subsystem=security",
+      "targetPackage": "org.wildfly.swarm.config.security"
+    },
+    {
+      "sourceAddress": "/subsystem=transactions",
+      "targetPackage": "org.wildfly.swarm.config.transactions"
+    },
+    {
+      "sourceAddress": "/subsystem=undertow",
+      "targetPackage": "org.wildfly.swarm.config.undertow"
+    },
+    {
+      "sourceAddress": "/subsystem=weld",
+      "targetPackage": "org.wildfly.swarm.config.weld"
+    }
+  ]
 }

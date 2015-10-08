@@ -168,6 +168,14 @@ public class SourceFactory {
             int subLevel = level;
             while(subLevel>=1) {
                 AddressTemplate sub = metaData.getAddress().subTemplate(subLevel - 1, subLevel);
+
+                if (!sub.getResourceName().equals("*") && (level > 4)) {
+                    String subSubPackage = CaseFormat.LOWER_HYPHEN.to(
+                            CaseFormat.LOWER_CAMEL, sub.getResourceName()
+                    );
+                    sb.insert(0, "."+subSubPackage);
+                }
+
                 String type = sub.getResourceType().replace("-", "_");
                 String subPackage = CaseFormat.LOWER_UNDERSCORE.to(
                         CaseFormat.LOWER_CAMEL,
@@ -189,12 +197,19 @@ public class SourceFactory {
         if(metaData.getDescription().isSingleton())
         {
             String[] packages = strings[0].split("\\.");
-            String prefix = packages[packages.length-1];
+            String prefix = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, packages[packages.length-1]);
             String singletonName = metaData.getDescription().getSingletonName().replace("-", "_");
+            System.err.println("PREFIX: " + prefix);
+            System.err.println("SINGLETON NAME " + singletonName);
 
             if (!prefix.equals(singletonName)) {
-                prefix = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, prefix);
+                prefix = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, prefix);
                 singletonName = prefix + "_" + singletonName;
+                System.err.println("CHANGED NAME TO " + singletonName);
+            } else if (packages.length > 5) {
+                prefix = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, packages[packages.length-2]);
+                singletonName = prefix + "_" + singletonName;
+                System.err.println("CHANGED NAME TO " + singletonName);
             }
 
             name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, singletonName);
