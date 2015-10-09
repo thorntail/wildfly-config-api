@@ -55,6 +55,10 @@
       "targetPackage": "org.wildfly.swarm.config.mail"
     },
     {
+      "sourceAddress": "/subsystem=messaging-activemq",
+      "targetPackage": "org.wildfly.swarm.config.messaging"
+    },
+    {
       "sourceAddress": "/subsystem=naming",
       "targetPackage": "org.wildfly.swarm.config.naming"
     },

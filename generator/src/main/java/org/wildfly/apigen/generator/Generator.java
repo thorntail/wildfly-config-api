@@ -187,8 +187,6 @@ public class Generator {
             SourceFactory.createSingletonChildAccessors(scope, resourceMetaData, javaClass);
         }
 
-        System.err.println("ADDRESS: " + resourceMetaData.getAddress());
-        System.err.println("PACKAGE: " + javaClass.getPackage());
         writeClass(targetDir, javaClass);
         scope.addGenerated(resourceMetaData.getAddress(), javaClass);
     }
