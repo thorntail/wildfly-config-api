@@ -13,6 +13,9 @@ The configuration API contains the object model created by the generator. Client
 such as WildFly Swarm may use this generated API to configure a running instance
 of WildFly via a fluent Java API.
 
+The Javadocs for the generated API can be found at:
+http://wildfly-swarm.github.io/wildfly-config-api/
+
 ## Generating the API
 
 The API is created from the Wildfly management model as part of the maven build.
