@@ -124,6 +124,8 @@ public class SourceFactory {
                             final String name = javaAttributeName(att.getName());
                             String attributeDescription = att.getValue().get(DESCRIPTION).asString();
 
+                            System.err.println( "resolvedType: " + resolvedType.get() );
+
                             javaClass.addField()
                                     .setName(name)
                                     .setType(resolvedType.get())
@@ -199,6 +201,7 @@ public class SourceFactory {
             String[] packages = strings[0].split("\\.");
             String prefix = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, packages[packages.length-1]);
             String singletonName = metaData.getDescription().getSingletonName().replace("-", "_");
+            prefix = "";
 
             if (!prefix.equals(singletonName)) {
                 prefix = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, prefix);
@@ -239,13 +242,13 @@ public class SourceFactory {
 
             final AddressTemplate childAddress = resourceMetaData.getAddress().append(childName + "=*");
             final JavaClassSource childClass = scope.getGenerated(childAddress);
-            javaClass.addImport(childClass);
+            //javaClass.addImport(childClass);
 
-            final String childClassName = childClass.getName();
+            final String childClassName = childClass.getQualifiedName();
             final String propType = "java.util.List<" + childClassName + ">";
             String propName = CaseFormat.UPPER_CAMEL.to(
                     CaseFormat.LOWER_CAMEL,
-                    Keywords.escape(childClassName)
+                    Keywords.escape(childClass.getName())
             );
             String singularName = propName;
             if (!propName.endsWith("s")) { propName += "s"; }
@@ -343,7 +346,7 @@ public class SourceFactory {
             String name = split[1];
             final AddressTemplate childAddress = resourceMetaData.getAddress().append(type + "=" + name);
             final JavaClassSource childClass = scope.getGenerated(childAddress);
-            javaClass.addImport(childClass);
+            //javaClass.addImport(childClass);
 
             String propName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, childClass.getName());
 

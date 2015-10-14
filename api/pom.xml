@@ -55,7 +55,7 @@
               <goal>java</goal>
             </goals>
             <configuration>
-              <mainClass>org.wildfly.apigen.generator.Generator</mainClass>
+              <mainClass>org.wildfly.apigen.generator.smart.Generator</mainClass>
               <arguments>
                 <argument>
                 ${project.basedir}/src/main/resources/generator-config.json</argument>
