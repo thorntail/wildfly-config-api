@@ -5,6 +5,7 @@ import org.jboss.dmr.ModelType;
 import org.jboss.dmr.ValueExpression;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -41,6 +42,9 @@ public class SimpleTypeAdapter {
         else if(type.equals(ModelType.BOOLEAN))
         {
             target.set((Boolean) propValue);
+        }
+        else if (type.equals(ModelType.BIG_DECIMAL ) ) {
+            target.set((BigDecimal) propValue);
         }
         else if(type.equals(ModelType.LIST))
         {

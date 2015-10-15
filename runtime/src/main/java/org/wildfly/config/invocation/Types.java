@@ -3,6 +3,7 @@ package org.wildfly.config.invocation;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -112,6 +113,10 @@ public class Types<T> {
         {
             result = Optional.of("java.lang.Double");
         }
+        else if(ModelType.BIG_DECIMAL == modelType )
+        {
+            result = Optional.of("java.math.BigDecimal");
+        }
         else if (ModelType.OBJECT == modelType) {
             result = Optional.of("java.util.Map");
         }
@@ -152,6 +157,8 @@ public class Types<T> {
             type = ModelType.BOOLEAN;
         else if(Double.class.equals(javaType))
             type = ModelType.DOUBLE;
+        else if(BigDecimal.class.equals(javaType))
+            type = ModelType.BIG_DECIMAL;
         else if(List.class.equals(javaType))
             type = ModelType.LIST;
         else if(Map.class.equals(javaType))
