@@ -9,9 +9,12 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
@@ -42,11 +45,13 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.STE
 public class Generator {
 
     private static final Logger log = Logger.getLogger(Generator.class.getName());
+
     private static ModelControllerClient client;
 
     private DefaultStatementContext statementContext;
 
     private final String targetDir;
+
     private final Config config;
 
     public Generator(String targetDir, Config config) {
@@ -77,8 +82,7 @@ public class Generator {
         }
     }
 
-    public void deleteDir(String dir) throws Exception
-    {
+    public void deleteDir(String dir) throws Exception {
         Path directory = Paths.get(dir);
         Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
             @Override
@@ -108,14 +112,16 @@ public class Generator {
     public void processGeneratorTargets() {
 
 
-        if(Files.exists(Paths.get(targetDir))) {
-            System.out.println("Delete output dir: "+ targetDir);
+        if (Files.exists(Paths.get(targetDir))) {
+            System.out.println("Delete output dir: " + targetDir);
             try {
                 deleteDir(targetDir);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        List<SubsystemPlan> subsystems = new ArrayList<>();
 
         config.getGeneratorTargets().forEach(
                 target -> {
@@ -128,8 +134,8 @@ public class Generator {
 
                         // generate classes
 
-                        SubsystemPlan plan = new SubsystemPlan( resourceMetaData );
-
+                        SubsystemPlan plan = new SubsystemPlan(resourceMetaData);
+                        subsystems.add(plan);
 
                         List<ClassPlan> classPlans = plan.getClassPlans();
                         for (ClassPlan classPlan : classPlans) {
@@ -137,11 +143,11 @@ public class Generator {
                         }
 
                         for (ClassPlan classPlan : classPlans) {
-                            if ( classPlan.getJavaClassSource() == null ) {
-                                System.err.println( "did not generate: " + classPlan.getFullyQualifiedClassName() );
+                            if (classPlan.getJavaClassSource() == null) {
+                                System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName());
                             } else {
-                                writeClass( classPlan.getJavaClassSource() );
-                                System.err.println( "wrote: " + classPlan.getFullyQualifiedClassName() );
+                                writeClass(classPlan.getJavaClassSource());
+                                System.err.println("wrote: " + classPlan.getFullyQualifiedClassName());
                             }
                         }
                     } catch (Exception e) {
@@ -150,6 +156,21 @@ public class Generator {
                     }
                 }
         );
+
+        System.err.println("----------------- BEGIN module.xml paths -----------------------");
+
+        subsystems.stream()
+                .flatMap((e) -> e.getClassPlans().stream())
+                .map((e) -> e.getPackageName())
+                .collect(Collectors.toSet())
+                .stream().sorted()
+                .forEach((e) -> {
+                    System.err.println("        <path name=\"" + e.replace('.', '/' ) + "\"/>");
+                });
+
+        System.err.println("----------------- END module.xml paths -------------------------");
+
+
     }
 
     private void writeClass(JavaClassSource javaClass) {
@@ -159,8 +180,8 @@ public class Generator {
             Files.createDirectories(Paths.get(dir));
 
             Path fileName = Paths.get(dir + File.separator + javaClass.getName() + ".java");
-            if(Files.exists(fileName)) {
-                System.err.println("File already exists, will be replaced: " + fileName) ;
+            if (Files.exists(fileName)) {
+                System.err.println("File already exists, will be replaced: " + fileName);
             }
 
             Files.write(fileName, javaClass.toString().getBytes());
@@ -201,7 +222,7 @@ public class Generator {
         boolean isSingleton = false;
         List<ModelNode> types = response.get(RESULT).get("step-1").get(RESULT).asList();
         for (ModelNode type : types) {
-            if(type.asString().equals(address.getResourceType()+"="+address.getResourceName())) {
+            if (type.asString().equals(address.getResourceType() + "=" + address.getResourceName())) {
                 isSingleton = true;
                 break;
             }
@@ -209,8 +230,7 @@ public class Generator {
 
         // resource meta data
         ResourceDescription description = ResourceDescription.from(response.get(RESULT).get("step-2"));
-        if(isSingleton)
-        {
+        if (isSingleton) {
             description.setSingletonName(address.getResourceName());
         }
 
