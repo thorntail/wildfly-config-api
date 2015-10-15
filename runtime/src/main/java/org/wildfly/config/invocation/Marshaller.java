@@ -17,6 +17,7 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 public class Marshaller {
 
     private static HashMap<Class<?>, EntityAdapter<?>> adapters = new HashMap<>();
+
     private static HashMap<Class<?>, Optional<Subresource>> subresources = new HashMap<>();
 
     public static LinkedList<ModelNode> marshal(Object root) throws Exception {
@@ -29,7 +30,7 @@ public class Marshaller {
         final ModelNode modelNode = addressNodeFor(resourceAddress);
 
         EntityAdapter adapter = adapterFor(entity.getClass());
-        list.add( adapter.fromEntity(entity, modelNode) );
+        list.add(adapter.fromEntity(entity, modelNode));
 
         return marshalSubresources(entity, resourceAddress, list);
     }
@@ -46,27 +47,23 @@ public class Marshaller {
     }
 
     private static PathAddress getPathElements(Object resource, PathAddress pathAddress, Class<?> entityClass, ClassInfo clazz) {
-        for (AnnotationInstance annotation :  clazz.classAnnotations()) {
-            if (annotation.name().equals(IndexFactory.ADDRESS_META)) {
-                AddressTemplate address = AddressTemplate.of(annotation.value().asString());
-                String name = address.getResourceName();
-
-                if (name.equals("*")) {
-                    try {
-                        Method keyMethod = entityClass.getMethod("getKey");
-                        name = (String) keyMethod.invoke(resource);
-                        if (name == null) name = address.getResourceName();
-                    } catch (NoSuchMethodException e) {
-                        // Caught if the entity does not have a getKey method
-                        // e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
+        for (AnnotationInstance annotation : clazz.classAnnotations()) {
+            if (annotation.name().equals(IndexFactory.RESOURCE_TYPE)) {
+                String resourceType = annotation.value().asString();
+                String name = null;
+                try {
+                    Method keyMethod = entityClass.getMethod("getKey");
+                    name = (String) keyMethod.invoke(resource);
+                } catch (NoSuchMethodException e) {
+                    // Caught if the entity does not have a getKey method
+                    // e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
                 }
 
-                pathAddress = pathAddress.append(address.getResourceType(), name);
+                pathAddress = pathAddress.append(resourceType, name);
                 return pathAddress;
             }
         }
@@ -110,7 +107,7 @@ public class Marshaller {
 
     private static LinkedList<ModelNode> singletonSubresourcesFor(Object entity, PathAddress address) throws Exception {
         final LinkedList<ModelNode> list = new LinkedList<>();
-        for(Method target : orderedSubresources(entity)) {
+        for (Method target : orderedSubresources(entity)) {
             final Object result = target.invoke(entity);
             if (result != null) appendNode(result, address, list);
         }
@@ -130,7 +127,7 @@ public class Marshaller {
             if (optional.isPresent()) {
                 Object subresources = optional.get().invoke();
 
-                for(Method target : orderedSubresources(subresources)) {
+                for (Method target : orderedSubresources(subresources)) {
                     List<?> resourceList = (List<?>) target.invoke(subresources);
                     for (Object o : resourceList) {
                         appendNode(o, address, list);
@@ -148,7 +145,9 @@ public class Marshaller {
 
     private static class Subresource {
         public final Class<?> type;
+
         public final Method method;
+
         private final Object parent;
 
         public Subresource(Class<?> type, Method method, Object parent) {

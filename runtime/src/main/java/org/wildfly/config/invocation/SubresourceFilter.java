@@ -23,19 +23,13 @@ class SubresourceFilter {
     public SubresourceFilter(Class<?> parentClass) {
         this.parentClass = parentClass;
         this.index = IndexFactory.createIndex(parentClass);
-        switch (this.parentClass.getName()) {
-            case "org.wildfly.swarm.config.logging.Logging":
-            case "org.wildfly.swarm.config.logging.Logging$LoggingResources":
-            case "org.wildfly.apigen.test.invocation.logging.Logging":
-            case "org.wildfly.apigen.test.invocation.logging.Logging$LoggingResources":
-            case "org.wildfly.swarm.config.logging.subsystem.loggingProfile.LoggingProfile":
-            case "org.wildfly.swarm.config.logging.subsystem.loggingProfile.LoggingProfile$LoggingResources":
-            case "org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.LoggingProfile": {
-                this.comparator = new LoggingComparator();
-                break;
-            }
-            default: this.comparator = new DefaultComparator();
+        String name = this.parentClass.getName();
+        if ( name.startsWith( "org.wildfly.swarm.config.Logging" ) || name.startsWith( "org.wildfly.swarm.config.logging" ) ) {
+            this.comparator = new LoggingComparator();
+        } else {
+            this.comparator = new DefaultComparator();
         }
+
     }
 
     public List<Method> invoke() throws NoSuchMethodException {

@@ -7,6 +7,7 @@ import org.wildfly.config.runtime.Address;
 import org.wildfly.config.runtime.Implicit;
 import org.wildfly.config.runtime.ModelNodeBinding;
 import org.wildfly.config.runtime.Subresource;
+import org.wildfly.config.runtime.ResourceType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ public class IndexFactory {
     public final static DotName IMPLICIT_META = DotName.createSimple(Implicit.class.getCanonicalName());
     public final static DotName BINDING_META = DotName.createSimple(ModelNodeBinding.class.getCanonicalName());
     public final static DotName ADDRESS_META = DotName.createSimple(Address.class.getCanonicalName());
+    public final static DotName RESOURCE_TYPE = DotName.createSimple(ResourceType.class.getCanonicalName());
     public final static DotName SUBRESOURCE_META = DotName.createSimple(Subresource.class.getCanonicalName());
 
     /**

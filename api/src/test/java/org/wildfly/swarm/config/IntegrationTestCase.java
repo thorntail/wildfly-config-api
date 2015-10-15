@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.wildfly.apigen.generator.ClientFactory;
 import org.wildfly.apigen.generator.Config;
 import org.wildfly.config.invocation.EntityAdapter;
-import org.wildfly.swarm.config.datasources.subsystem.dataSource.DataSource;
-import org.wildfly.swarm.config.datasources.subsystem.dataSource.connectionProperties.ConnectionProperties;
-import org.wildfly.swarm.config.logging.subsystem.RootLoggerRoot;
+import org.wildfly.swarm.config.datasources.DataSource;
+import org.wildfly.swarm.config.datasources.data_source.ConnectionProperties;
+import org.wildfly.swarm.config.logging.RootLogger;
 
 import java.util.ArrayList;
 
@@ -79,8 +79,8 @@ public class IntegrationTestCase {
         Assert.assertEquals("success", response.get("outcome").asString());
         ModelNode payload = response.get(RESULT);
 
-        EntityAdapter<RootLoggerRoot> entityAdapter = new EntityAdapter<>(RootLoggerRoot.class);
-        RootLoggerRoot rootLogger = entityAdapter.fromDMR("ROOT", payload);
+        EntityAdapter<RootLogger> entityAdapter = new EntityAdapter<>(RootLogger.class);
+        RootLogger rootLogger = entityAdapter.fromDMR("ROOT", payload);
         Assert.assertNotNull(rootLogger);
         Assert.assertEquals("ROOT", rootLogger.getKey());
         Assert.assertEquals("INFO", rootLogger.level());
@@ -96,10 +96,10 @@ public class IntegrationTestCase {
     public void testRootLoogerMarshalling() throws Exception {
 
 
-        RootLoggerRoot root = new RootLoggerRoot();
+        RootLogger root = new RootLogger();
         root.level("DEBUG");
 
-        EntityAdapter<RootLoggerRoot> entityAdapter = new EntityAdapter<>(RootLoggerRoot.class);
+        EntityAdapter<RootLogger> entityAdapter = new EntityAdapter<>(RootLogger.class);
 
         ModelNode addOp = entityAdapter.fromEntity(root);
         addOp.get(OP).set(ADD);

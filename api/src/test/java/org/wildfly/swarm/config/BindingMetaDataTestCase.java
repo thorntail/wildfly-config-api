@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.wildfly.config.runtime.Address;
 import org.wildfly.config.runtime.ModelNodeBinding;
 import org.wildfly.config.runtime.Subresource;
-import org.wildfly.swarm.config.datasources.subsystem.dataSource.DataSource;
-import org.wildfly.swarm.config.datasources.subsystem.dataSource.connectionProperties.ConnectionProperties;
+import org.wildfly.swarm.config.datasources.DataSource;
+import org.wildfly.swarm.config.datasources.data_source.ConnectionProperties;
 
 import java.io.InputStream;
 

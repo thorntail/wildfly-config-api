@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.common.base.CaseFormat;
+import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.wildfly.apigen.generator.ResourceMetaData;
+import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.config.model.AddressTemplate;
 
 /**
@@ -16,11 +18,17 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
     private final List<ResourceMetaData> meta = new ArrayList<>();
 
+    private final String type;
+
     private String packageName;
 
     private String className;
 
     private String addresses;
+
+    private JavaClassSource source;
+
+    private boolean templated = false;
 
     ClassPlan(ResourceMetaData meta) {
         this(Collections.singletonList(meta));
@@ -31,6 +39,52 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
         this.packageName = determinePackageName(0);
         this.className = determineClassName(0);
+
+        AddressTemplate addr = this.meta.get(0).getAddress();
+        this.type = addr.subTemplate( addr.tokenLength() -1, addr.tokenLength() ).getResourceType();
+    }
+
+    String getResourceType() {
+        return this.type;
+    }
+
+    void setTemplated(boolean templated) {
+        this.templated = templated;
+    }
+
+    boolean isTemplated() {
+        return this.templated;
+    }
+
+    String getThisReturnType() {
+        if ( this.templated ) {
+            return "T";
+        }
+        return this.className;
+    }
+
+    boolean isSingleton() {
+        return this.meta.get(0).getDescription().isSingleton();
+    }
+
+    String getSingletonName() {
+        return this.meta.get(0).getDescription().getSingletonName();
+    }
+
+    ResourceDescription getDescription() {
+        return this.meta.get(0).getDescription();
+    }
+
+    ResourceMetaData getMetaData() {
+        return this.meta.get(0);
+    }
+
+    void setJavaClassSource(JavaClassSource source) {
+        this.source = source;
+    }
+
+    JavaClassSource getJavaClassSource() {
+        return this.source;
     }
 
     void deduplicate(int round) {
@@ -102,7 +156,6 @@ public class ClassPlan implements Comparable<ClassPlan> {
                 segments.add(part.getResourceName());
             } else {
                 if (i >= ((numTokens - uniqueRound) )) {
-                    System.err.println( "uniq! " + part );
                     segments.add(part.getResourceType());
                     segments.add(part.getResourceName());
                 } else {
@@ -116,10 +169,10 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
     private String packagize(List<String> segments) {
         if (segments.isEmpty()) {
-            return "org.wildfly.swarm.configuration";
+            return "org.wildfly.swarm.config";
         }
 
-        return "org.wildfly.swarm.configuration." + String.join(".", segments.stream().map((e) -> {
+        return "org.wildfly.swarm.config." + String.join(".", segments.stream().map((e) -> {
             return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_UNDERSCORE, e);
         }).collect(Collectors.toList()));
     }
@@ -131,11 +184,29 @@ public class ClassPlan implements Comparable<ClassPlan> {
         String type = last.getResourceType();
         String name = last.getResourceName();
 
+        if (address.tokenLength() == 1 && type.equals("subsystem")) {
+            return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
+        }
+
         if (name.equals("*")) {
             return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
         } else {
-            return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name + "-" + type);
+            if ( type.toLowerCase().startsWith( name.toLowerCase() ) ) {
+                return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
+            } else if ( name.toLowerCase().endsWith( type.toLowerCase() ) ) {
+                return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
+            } else {
+                return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name + "-" + type);
+            }
         }
+    }
+
+    String getPackageName() {
+        return this.packageName;
+    }
+
+    String getClassName() {
+        return this.className;
     }
 
     String getFullyQualifiedClassName() {

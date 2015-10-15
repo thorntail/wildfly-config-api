@@ -9,8 +9,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Adopts DMR to Entity T and vice versa.
@@ -199,20 +201,6 @@ public class EntityAdapter<T> {
                     AnnotationInstance ann = method.annotation(DotName.createSimple(ModelNodeBinding.class.getName()));
                     org.jboss.jandex.AnnotationValue annValue = ann.value("detypedName");
                     String detypedName = annValue.asString();
-
-            /*// EXPRESSIONS
-            if(property.doesSupportExpression())
-            {
-                String exprValue = ExpressionAdapter.getExpressionValue(
-                        entity, property.getJavaName()
-                );
-
-                if(exprValue!=null)
-                {
-                    modelMode.resolve(detypedName).setExpression(exprValue);
-                    continue; // expression have precedence over real values
-                }
-            }*/
 
                     // VALUES
                     if (propertyValue != null) {

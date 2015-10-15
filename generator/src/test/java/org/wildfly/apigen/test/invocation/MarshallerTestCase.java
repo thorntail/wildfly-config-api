@@ -4,6 +4,7 @@ import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.PathElement;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ValueExpression;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.wildfly.config.invocation.Marshaller;
 import org.wildfly.apigen.test.AbstractTestCase;
@@ -30,6 +31,7 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 /**
  * @author Lance Ball
  */
+@Ignore
 public class MarshallerTestCase extends AbstractTestCase {
 
     public static class LoggingSubclass extends Logging {

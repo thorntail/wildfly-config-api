@@ -20,7 +20,7 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 /**
  * @author Bob McWhirter
  */
-public class SubsystemPlan {
+public class SubsystemPlan implements ClassIndex {
 
     private final ResourceMetaData meta;
 
@@ -30,10 +30,22 @@ public class SubsystemPlan {
 
     SubsystemPlan(ResourceMetaData meta) {
         this.meta = meta;
+        plan();
+    }
+
+    @Override
+    public ClassPlan lookup(AddressTemplate address) {
+        return this.index.get( address );
+    }
+
+    List<ClassPlan> getClassPlans() {
+        return this.classPlans;
     }
 
     void plan() {
-        classPlans.add(new ClassPlan(this.meta));
+        ClassPlan subsystemClass = new ClassPlan(this.meta);
+        subsystemClass.setTemplated(true);
+        classPlans.add(subsystemClass);
 
         List<ResourceMetaData> list = new ArrayList<>();
         collect(this.meta, list);
@@ -72,14 +84,11 @@ public class SubsystemPlan {
         ClassPlan cur = null;
         Set<ClassPlan> dupes = new HashSet<>();
         for (ClassPlan each : classPlans) {
-            System.err.println(cur + " vs " + each);
             if (cur != null) {
                 if (cur.getFullyQualifiedClassName().equals(each.getFullyQualifiedClassName())) {
-                    System.err.println("duplicate: " + each.getAddresses());
                     dupes.add(cur);
                     dupes.add(each);
                 } else {
-                    System.err.println("not dupe: " + dupes.size());
                     if (!dupes.isEmpty()) {
                         deduplicate(dupes);
                         dupes.clear();
@@ -87,7 +96,6 @@ public class SubsystemPlan {
                 }
             }
             cur = each;
-            System.err.println(":: " + cur);
         }
 
         if (!dupes.isEmpty()) {

@@ -23,7 +23,6 @@ import org.wildfly.apigen.generator.GeneratorScope;
 import org.wildfly.apigen.generator.GeneratorTarget;
 import org.wildfly.apigen.generator.MetaDataTraversal;
 import org.wildfly.apigen.generator.ResourceMetaData;
-import org.wildfly.apigen.generator.SourceFactory;
 import org.wildfly.apigen.model.DefaultStatementContext;
 import org.wildfly.apigen.model.ResourceDescription;
 import org.wildfly.apigen.operations.ReadDescription;
@@ -129,23 +128,47 @@ public class Generator {
 
                         // generate classes
 
-                        SubsystemPlanner planner = new SubsystemPlanner( resourceMetaData );
+                        SubsystemPlan plan = new SubsystemPlan( resourceMetaData );
 
 
-                        planner.plan();
-                        /*
-                        Iterator<ResourceMetaData> iterator = new MetaDataTraversal(resourceMetaData).createInstance();
-                        iterator.forEachRemaining(metaData -> {
-                            generate(scope, metaData, targetDir);
-                        });
-                        */
+                        List<ClassPlan> classPlans = plan.getClassPlans();
+                        for (ClassPlan classPlan : classPlans) {
+                            SourceFactory.createResourceAsClass(plan, classPlan);
+                        }
 
-
+                        for (ClassPlan classPlan : classPlans) {
+                            if ( classPlan.getJavaClassSource() == null ) {
+                                System.err.println( "did not generate: " + classPlan.getFullyQualifiedClassName() );
+                            } else {
+                                writeClass( classPlan.getJavaClassSource() );
+                                System.err.println( "wrote: " + classPlan.getFullyQualifiedClassName() );
+                            }
+                        }
                     } catch (Exception e) {
+                        e.printStackTrace();
                         log.log(Level.ERROR, "Failed to process targets", e);
                     }
                 }
         );
+    }
+
+    private void writeClass(JavaClassSource javaClass) {
+
+        try {
+            String dir = this.targetDir + File.separator + javaClass.getPackage().replace(".", File.separator);
+            Files.createDirectories(Paths.get(dir));
+
+            Path fileName = Paths.get(dir + File.separator + javaClass.getName() + ".java");
+            if(Files.exists(fileName)) {
+                System.err.println("File already exists, will be replaced: " + fileName) ;
+            }
+
+            Files.write(fileName, javaClass.toString().getBytes());
+
+        } catch (IOException e) {
+            log.log(Level.ERROR, "Failed to persist class", e);
+        }
+
     }
 
     private ResourceMetaData loadResourceMetaData(GeneratorTarget generatorTarget) throws Exception {
@@ -194,38 +217,4 @@ public class Generator {
         return new ResourceMetaData(generatorTarget.getSourceAddress(), description);
     }
 
-    private void generate(GeneratorScope scope, ResourceMetaData resourceMetaData, String targetDir){
-
-        JavaClassSource javaClass = SourceFactory.createResourceAsClass(scope, resourceMetaData);
-
-        if (!resourceMetaData.getDescription().getChildrenTypes().isEmpty()) {
-            SourceFactory.createChildAccessors(scope, resourceMetaData, javaClass);
-        }
-
-        if (!resourceMetaData.getDescription().getSingletonChildrenTypes().isEmpty()) {
-            SourceFactory.createSingletonChildAccessors(scope, resourceMetaData, javaClass);
-        }
-
-        writeClass(targetDir, javaClass);
-        scope.addGenerated(resourceMetaData.getAddress(), javaClass);
-    }
-
-    private void writeClass(String targetDir, JavaClassSource javaClass) {
-
-        try {
-            targetDir = targetDir + File.separator + javaClass.getPackage().replace(".", File.separator);
-            Files.createDirectories(Paths.get(targetDir));
-
-            Path fileName = Paths.get(targetDir + File.separator + javaClass.getName() + ".java");
-            if(Files.exists(fileName)) {
-                System.err.println("File already exists, will be replaced: " + fileName) ;
-            }
-
-            Files.write(fileName, javaClass.toString().getBytes());
-
-        } catch (IOException e) {
-            log.log(Level.ERROR, "Failed to persist class", e);
-        }
-
-    }
 }
