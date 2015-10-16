@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.datasources.subsystem.dataSource.connectionProperties;
 
-import org.wildfly.config.runtime.Address;
-import org.wildfly.config.runtime.ModelNodeBinding;
+import org.wildfly.swarm.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 /**
  * The connection-properties element allows you to pass in arbitrary connection properties to the Driver.connect(url, props) method
  */

@@ -1,10 +1,10 @@
 package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession;
 
-import org.wildfly.config.runtime.Address;
-import org.wildfly.config.runtime.ModelNodeBinding;
+import org.wildfly.swarm.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 import java.util.List;
-import org.wildfly.config.runtime.Subresource;
-import org.wildfly.config.runtime.ModelNodeSubresources;
+import org.wildfly.swarm.config.runtime.Subresource;
+import org.wildfly.swarm.config.runtime.ModelNodeSubresources;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom.Custom;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Pop3;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp;

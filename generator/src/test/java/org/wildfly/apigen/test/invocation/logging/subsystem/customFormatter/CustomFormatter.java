@@ -1,7 +1,7 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.customFormatter;
 
-import org.wildfly.config.runtime.Address;
-import org.wildfly.config.runtime.ModelNodeBinding;
+import org.wildfly.swarm.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 import java.util.Map;
 /**
  * A custom formatter to be used with handlers. Note that most log records are formatted in the printf format. Formatters may require invocation of the org.jboss.logmanager.ExtLogRecord#getFormattedMessage() for the message to be properly formatted.

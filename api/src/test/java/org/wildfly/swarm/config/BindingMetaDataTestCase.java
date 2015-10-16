@@ -7,9 +7,9 @@ import org.jboss.jandex.Index;
 import org.jboss.jandex.Indexer;
 import org.jboss.jandex.MethodInfo;
 import org.junit.Test;
-import org.wildfly.config.runtime.Address;
-import org.wildfly.config.runtime.ModelNodeBinding;
-import org.wildfly.config.runtime.Subresource;
+import org.wildfly.swarm.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.ModelNodeBinding;
+import org.wildfly.swarm.config.runtime.Subresource;
 import org.wildfly.swarm.config.datasources.DataSource;
 import org.wildfly.swarm.config.datasources.data_source.ConnectionProperties;
 

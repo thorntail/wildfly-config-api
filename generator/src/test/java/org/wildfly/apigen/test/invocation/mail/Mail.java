@@ -1,11 +1,11 @@
 package org.wildfly.apigen.test.invocation.mail;
 
-import org.wildfly.config.runtime.Implicit;
-import org.wildfly.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.Implicit;
+import org.wildfly.swarm.config.runtime.Address;
 
 import java.util.List;
-import org.wildfly.config.runtime.Subresource;
-import org.wildfly.config.runtime.ModelNodeSubresources;
+import org.wildfly.swarm.config.runtime.Subresource;
+import org.wildfly.swarm.config.runtime.ModelNodeSubresources;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.MailSession;
 
 /**

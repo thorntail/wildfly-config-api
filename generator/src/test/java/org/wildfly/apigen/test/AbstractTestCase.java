@@ -5,13 +5,13 @@ import org.jboss.dmr.ModelNode;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.wildfly.apigen.generator.Config;
-import org.wildfly.apigen.generator.ResourceMetaData;
-import org.wildfly.apigen.generator.ClientFactory;
-import org.wildfly.config.model.AddressTemplate;
-import org.wildfly.apigen.model.DefaultStatementContext;
-import org.wildfly.apigen.model.ResourceDescription;
-import org.wildfly.apigen.operations.ReadDescription;
+import org.wildfly.swarm.config.generator.generator.Config;
+import org.wildfly.swarm.config.generator.generator.ResourceMetaData;
+import org.wildfly.swarm.config.generator.generator.ClientFactory;
+import org.wildfly.swarm.config.runtime.model.AddressTemplate;
+import org.wildfly.swarm.config.generator.model.DefaultStatementContext;
+import org.wildfly.swarm.config.generator.model.ResourceDescription;
+import org.wildfly.swarm.config.generator.operations.ReadDescription;
 
 import java.io.IOException;
 

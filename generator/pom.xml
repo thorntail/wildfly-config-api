@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>generator</artifactId>
+  <artifactId>config-api-generator</artifactId>
   <packaging>jar</packaging>
 
   <parent>
-    <groupId>org.wildfly.configuration</groupId>
-    <artifactId>configuration-parent</artifactId>
+    <groupId>org.wildfly.swarm</groupId>
+    <artifactId>config-api-parent</artifactId>
     <version>0.3.5-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
@@ -15,21 +15,19 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.wildfly.configuration</groupId>
-      <artifactId>runtime</artifactId>
+      <groupId>org.wildfly.swarm</groupId>
+      <artifactId>config-api-runtime</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.wildfly.core</groupId>
       <artifactId>wildfly-controller</artifactId>
-      <version>${version.wildfly.core}</version>
     </dependency>
 
     <dependency>
       <groupId>org.wildfly.core</groupId>
       <artifactId>wildfly-server</artifactId>
-      <version>${version.wildfly.core}</version>
     </dependency>
 
     <dependency>

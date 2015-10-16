@@ -6,7 +6,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ValueExpression;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.wildfly.config.invocation.Marshaller;
+import org.wildfly.swarm.config.runtime.invocation.Marshaller;
 import org.wildfly.apigen.test.AbstractTestCase;
 import org.wildfly.apigen.test.invocation.datasources.Datasources;
 import org.wildfly.apigen.test.invocation.datasources.subsystem.dataSource.DataSource;

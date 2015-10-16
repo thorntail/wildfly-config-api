@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>runtime</artifactId>
+  <artifactId>config-api-runtime</artifactId>
   <packaging>jar</packaging>
 
   <parent>
-    <groupId>org.wildfly.configuration</groupId>
-    <artifactId>configuration-parent</artifactId>
+    <groupId>org.wildfly.swarm</groupId>
+    <artifactId>config-api-parent</artifactId>
     <version>0.3.5-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
@@ -17,7 +17,6 @@
     <dependency>
       <groupId>org.wildfly.core</groupId>
       <artifactId>wildfly-controller</artifactId>
-      <version>${version.wildfly.core}</version>
       <scope>provided</scope>
     </dependency>
 

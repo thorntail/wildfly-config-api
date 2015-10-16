@@ -1,10 +1,10 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile;
 
-import org.wildfly.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.Address;
 
 import java.util.List;
-import org.wildfly.config.runtime.Subresource;
-import org.wildfly.config.runtime.ModelNodeSubresources;
+import org.wildfly.swarm.config.runtime.Subresource;
+import org.wildfly.swarm.config.runtime.ModelNodeSubresources;
 import org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.consoleHandler.ConsoleHandler;
 import org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.customFormatter.CustomFormatter;
 import org.wildfly.apigen.test.invocation.logging.subsystem.loggingProfile.customHandler.CustomHandler;

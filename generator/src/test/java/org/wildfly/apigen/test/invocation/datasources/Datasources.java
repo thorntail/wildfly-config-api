@@ -1,12 +1,12 @@
 package org.wildfly.apigen.test.invocation.datasources;
 
-import org.wildfly.config.runtime.Implicit;
-import org.wildfly.config.runtime.Address;
-import org.wildfly.config.runtime.ModelNodeBinding;
+import org.wildfly.swarm.config.runtime.Implicit;
+import org.wildfly.swarm.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 import java.util.List;
 import java.util.Map;
-import org.wildfly.config.runtime.Subresource;
-import org.wildfly.config.runtime.ModelNodeSubresources;
+import org.wildfly.swarm.config.runtime.Subresource;
+import org.wildfly.swarm.config.runtime.ModelNodeSubresources;
 import org.wildfly.apigen.test.invocation.datasources.subsystem.jdbcDriver.JdbcDriver;
 import org.wildfly.apigen.test.invocation.datasources.subsystem.xaDataSource.XaDataSource;
 import org.wildfly.apigen.test.invocation.datasources.subsystem.dataSource.DataSource;

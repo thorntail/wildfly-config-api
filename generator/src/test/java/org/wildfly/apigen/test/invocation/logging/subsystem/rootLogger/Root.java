@@ -1,8 +1,8 @@
 package org.wildfly.apigen.test.invocation.logging.subsystem.rootLogger;
 
-import org.wildfly.config.runtime.Implicit;
-import org.wildfly.config.runtime.Address;
-import org.wildfly.config.runtime.ModelNodeBinding;
+import org.wildfly.swarm.config.runtime.Implicit;
+import org.wildfly.swarm.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 import java.util.Map;
 import java.util.List;
 /**

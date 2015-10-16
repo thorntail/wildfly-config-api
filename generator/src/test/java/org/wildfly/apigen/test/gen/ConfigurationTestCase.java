@@ -3,8 +3,8 @@ package org.wildfly.apigen.test.gen;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.wildfly.apigen.generator.Config;
-import org.wildfly.apigen.generator.GeneratorTarget;
+import org.wildfly.swarm.config.generator.generator.Config;
+import org.wildfly.swarm.config.generator.generator.GeneratorTarget;
 
 import java.util.List;
 

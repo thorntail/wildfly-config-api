@@ -8,8 +8,8 @@
     <version>19</version>
   </parent>
 
-  <groupId>org.wildfly.configuration</groupId>
-  <artifactId>configuration-parent</artifactId>
+  <groupId>org.wildfly.swarm</groupId>
+  <artifactId>config-api-parent</artifactId>
   <version>0.3.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -21,7 +21,7 @@
   </scm>
 
   <properties>
-    <version.wildfly.core>2.0.0.Alpha11</version.wildfly.core>
+    <version.wildfly>10.0.0.CR2</version.wildfly>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -75,5 +75,17 @@
       </plugin>
     </plugins>
   </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-parent</artifactId>
+        <version>${version.wildfly}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
 </project>
