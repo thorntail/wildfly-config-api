@@ -30,6 +30,13 @@ Next, publish the documentation. TODO: This step could/should be improved.
     $ mvn scm-publish:publish-scm
     $ git co master
 
+Note: In order to actually publish the artifacts to sonatype, you'll need
+to sign the artifacts. This is handled automatically by the maven build and
+release process, but in order for it not to barf all over your shoes, you
+need to make sure you're set up correctly for this to work. To do that,
+follow the instructions here http://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/#.ViFfJyBVikq
+and here https://maven.apache.org/plugins/maven-gpg-plugin/usage.html.k
+
 Then you'll need to update the javadoc index page to include the latest
 version that you just published. It's simple enough to do this directly
 from the github interface.
