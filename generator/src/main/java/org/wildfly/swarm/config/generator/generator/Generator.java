@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
-import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.logmanager.Level;
 import org.wildfly.swarm.config.generator.model.DefaultStatementContext;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
@@ -128,15 +128,22 @@ public class Generator {
 
                         List<ClassPlan> classPlans = plan.getClassPlans();
                         for (ClassPlan classPlan : classPlans) {
-                            SourceFactory.createResourceAsClass(plan, classPlan);
+                            ResourceClassFactory.createResourceAsClass(plan, classPlan);
+                            ConfiguratorInterfaceFactory.createConfiguratorAsInterface(plan, classPlan);
                         }
 
                         for (ClassPlan classPlan : classPlans) {
-                            if (classPlan.getJavaClassSource() == null) {
+                            if (classPlan.getResourceClassSource() == null) {
                                 System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName());
                             } else {
-                                writeClass(classPlan.getJavaClassSource());
+                                write(classPlan.getResourceClassSource());
                                 System.err.println("wrote: " + classPlan.getFullyQualifiedClassName());
+                            }
+                            if (classPlan.getConfiguratorInterfaceSource() == null) {
+                                System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName() + "Configurator");
+                            } else {
+                                write(classPlan.getConfiguratorInterfaceSource());
+                                System.err.println("wrote: " + classPlan.getFullyQualifiedClassName() + "Configurator");
                             }
                         }
                     } catch (Exception e) {
@@ -162,7 +169,7 @@ public class Generator {
 
     }
 
-    private void writeClass(JavaClassSource javaClass) {
+    private void write(JavaType javaClass) {
 
         try {
             String dir = this.targetDir + File.separator + javaClass.getPackage().replace(".", File.separator);

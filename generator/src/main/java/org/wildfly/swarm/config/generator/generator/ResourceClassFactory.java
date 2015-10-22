@@ -30,9 +30,9 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYP
  * @author Heiko Braun
  * @since 30/07/15
  */
-public class SourceFactory {
+public class ResourceClassFactory {
 
-    private static final Logger log = Logger.getLogger(SourceFactory.class.getName());
+    private static final Logger log = Logger.getLogger(ResourceClassFactory.class.getName());
 
     /**
      * Base template for a resource representation.
@@ -47,7 +47,7 @@ public class SourceFactory {
         // base class
         JavaClassSource javaClass = Roaster.parse(
                 JavaClassSource.class,
-                "public class " + plan.getClassName() + ( plan.isTemplated() ?  "<T extends " + plan.getClassName() + "> " : "" ) + " {}"
+                "public class " + plan.getClassName() + "<T extends " + plan.getClassName() + "> {}"
         );
 
         // resource name
@@ -160,7 +160,7 @@ public class SourceFactory {
             createSingletonChildAccessors( index, plan, javaClass );
         }
 
-        plan.setJavaClassSource( javaClass );
+        plan.setResourceClassSource(javaClass);
 
         return javaClass;
     }
@@ -241,6 +241,21 @@ public class SourceFactory {
                     .setName(singularName)
                     .setReturnType( plan.getThisReturnType())
                     .setBody("this.subresources." + propName + ".add(value);\nreturn (" + plan.getThisReturnType()+ ") this;")
+                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+
+            // Add a mutator method that factories a single resource and applies a supplied configurator. Mutators are added to the containing class
+            final MethodSource<JavaClassSource> configurator = javaClass.addMethod();
+            configurator.getJavaDoc()
+                    .setText("Create and configure a " + childClassName + " object to the list of subresources")
+                    .addTagValue("@param", "key The key for the " + childClassName + " resource" )
+                    .addTagValue("@param", "config The " + childClassName + "Configurator to use")
+                    .addTagValue("@return", "this");
+            configurator.addParameter(String.class, "childKey");
+            configurator.addParameter(childClassName + "Configurator", "config");
+            configurator.setPublic()
+                    .setName(singularName)
+                    .setReturnType( plan.getThisReturnType())
+                    .setBody( childClassName + " child = new " + childClassName + "(childKey);\nconfig.configure(child);\n" + singularName +"(child);\nreturn (" + plan.getThisReturnType() + ") this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             final AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();

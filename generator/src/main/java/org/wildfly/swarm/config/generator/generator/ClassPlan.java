@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.CaseFormat;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
 import org.wildfly.swarm.config.runtime.model.AddressTemplate;
 
@@ -25,7 +26,8 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
     private String addresses;
 
-    private JavaClassSource source;
+    private JavaClassSource resourceSource;
+    private JavaInterfaceSource configSource;
 
     private boolean templated = false;
 
@@ -78,12 +80,20 @@ public class ClassPlan implements Comparable<ClassPlan> {
         return this.meta.get(0);
     }
 
-    void setJavaClassSource(JavaClassSource source) {
-        this.source = source;
+    void setResourceClassSource(JavaClassSource source) {
+        this.resourceSource = source;
     }
 
-    JavaClassSource getJavaClassSource() {
-        return this.source;
+    JavaClassSource getResourceClassSource() {
+        return this.resourceSource;
+    }
+
+    void setConfiguratorInterfaceSource(JavaInterfaceSource source) {
+        this.configSource = source;
+    }
+
+    JavaInterfaceSource getConfiguratorInterfaceSource() {
+        return this.configSource;
     }
 
     void deduplicate(int round) {
