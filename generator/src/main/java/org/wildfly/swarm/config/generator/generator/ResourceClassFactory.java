@@ -1,25 +1,23 @@
 package org.wildfly.swarm.config.generator.generator;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.logging.Logger;
-
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.*;
 import org.jboss.logmanager.Level;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
-import org.wildfly.swarm.config.runtime.invocation.Types;
-import org.wildfly.swarm.config.runtime.model.AddressTemplate;
 import org.wildfly.swarm.config.runtime.Implicit;
 import org.wildfly.swarm.config.runtime.ModelNodeBinding;
-import org.wildfly.swarm.config.runtime.Subresource;
 import org.wildfly.swarm.config.runtime.ResourceType;
+import org.wildfly.swarm.config.runtime.Subresource;
+import org.wildfly.swarm.config.runtime.invocation.Types;
+import org.wildfly.swarm.config.runtime.model.AddressTemplate;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPRECATED;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
+import java.util.Optional;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 
 /**
  * Encapsulates the templates for generating source files from resource descriptions
@@ -154,6 +152,17 @@ public class ResourceClassFactory {
                                         .setName(name + "Value") // non-trivial to singularize the method name here
                                         .setReturnType(plan.getThisReturnType())
                                         .setBody("this." + name + ".add(value);\nreturn (" + plan.getThisReturnType() + ") this;");
+                            } else if (modelType == ModelType.OBJECT) {
+                                // initialize the field to a HashMap
+                                attributeField.setLiteralInitializer("new java.util.HashMap<String, Object>()");
+                                final MethodSource<JavaClassSource> appender = javaClass.addMethod();
+                                appender.getJavaDoc().setText(attributeDescription);
+                                appender.addParameter(String.class, "key");
+                                appender.addParameter(Object.class, "value");
+                                appender.setPublic()
+                                        .setName(name + "Entry") // non-trivial to singularize the method name here
+                                        .setReturnType(plan.getThisReturnType())
+                                        .setBody("this." + name + ".put(key, value);\nreturn (" + plan.getThisReturnType() + ") this;");
                             }
                         } catch (Exception e) {
                             log.log(Level.ERROR, "Failed to process " + plan.getFullyQualifiedClassName() + ", attribute " + att.getName(), e);
