@@ -41,11 +41,10 @@ public class ConfiguratorInterfaceFactory {
                 .setText("Configure a pre-constructed instance of " + plan.getClassName() + " resource")
                 .addTagValue("@parameter", "Instance of " + plan.getClassName() + " to configure")
                 .addTagValue("@return", "nothing");
-        accessor.addParameter( plan.getClassName(), "value" );
+        accessor.addParameter( "T", "value" );
         accessor.setPublic()
                 .setName("configure")
                 .setReturnType("void");
-
 
         plan.setConfiguratorInterfaceSource(javaInterface);
         return javaInterface;

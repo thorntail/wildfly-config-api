@@ -255,7 +255,20 @@ public class ResourceClassFactory {
             configurator.setPublic()
                     .setName(singularName)
                     .setReturnType( plan.getThisReturnType())
-                    .setBody( childClassName + " child = new " + childClassName + "(childKey);\nconfig.configure(child);\n" + singularName +"(child);\nreturn (" + plan.getThisReturnType() + ") this;")
+                    .setBody( childClassName + " child = new " + childClassName + "(childKey);\n if ( config != null ) { config.configure(child); }\n" + singularName +"(child);\nreturn (" + plan.getThisReturnType() + ") this;")
+                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+
+            // Add a mutator method that factories a single resource and applies a supplied configurator. Mutators are added to the containing class
+            final MethodSource<JavaClassSource> nonConfigurator = javaClass.addMethod();
+            nonConfigurator.getJavaDoc()
+                    .setText("Create and configure a " + childClassName + " object to the list of subresources")
+                    .addTagValue("@param", "key The key for the " + childClassName + " resource" )
+                    .addTagValue("@return", "this");
+            nonConfigurator.addParameter(String.class, "childKey");
+            nonConfigurator.setPublic()
+                    .setName(singularName)
+                    .setReturnType( plan.getThisReturnType())
+                    .setBody( singularName + "(childKey, null);\nreturn ("+ plan.getThisReturnType() + ") this;\n")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             final AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
