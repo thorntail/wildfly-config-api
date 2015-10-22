@@ -7,10 +7,7 @@ import java.util.logging.Logger;
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.source.AnnotationSource;
-import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.JavaDocSource;
-import org.jboss.forge.roaster.model.source.MethodSource;
+import org.jboss.forge.roaster.model.source.*;
 import org.jboss.logmanager.Level;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
 import org.wildfly.swarm.config.runtime.invocation.Types;
@@ -120,7 +117,7 @@ public class ResourceClassFactory {
                             final String name = javaAttributeName(att.getName());
                             String attributeDescription = att.getValue().get(DESCRIPTION).asString();
 
-                            javaClass.addField()
+                            FieldSource attributeField = javaClass.addField()
                                     .setName(name)
                                     .setType(resolvedType.get())
                                     .setPrivate();
@@ -148,6 +145,8 @@ public class ResourceClassFactory {
 
                             // If the model type is LIST, then also add an appending mutator
                             if (modelType == ModelType.LIST) {
+                                // initialize the field to an array list
+                                attributeField.setLiteralInitializer("new java.util.ArrayList<>()");
                                 final MethodSource<JavaClassSource> appender = javaClass.addMethod();
                                 appender.getJavaDoc().setText(attributeDescription);
                                 appender.addParameter(Types.resolveValueType(att.getValue()), "value");
@@ -237,7 +236,7 @@ public class ResourceClassFactory {
             listMutator.addParameter(propType, "value");
             listMutator.setPublic()
                     .setName(propName)
-                    .setReturnType( plan.getThisReturnType() )
+                    .setReturnType(plan.getThisReturnType())
                     .setBody("this.subresources." + propName + " = value;\nreturn (" + plan.getThisReturnType() + ") this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
