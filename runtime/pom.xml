@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.wildfly.swarm</groupId>
     <artifactId>config-api-parent</artifactId>
-    <version>0.3.9-SNAPSHOT</version>
+    <version>0.3.9</version>
     <relativePath>../</relativePath>
   </parent>
 
