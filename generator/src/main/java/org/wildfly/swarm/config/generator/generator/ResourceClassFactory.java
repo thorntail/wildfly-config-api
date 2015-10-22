@@ -145,6 +145,17 @@ public class ResourceClassFactory {
                             AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
                             bindingMeta.setName("ModelNodeBinding");
                             bindingMeta.setStringValue("detypedName", att.getName());
+
+                            // If the model type is LIST, then also add an appending mutator
+                            if (modelType == ModelType.LIST) {
+                                final MethodSource<JavaClassSource> appender = javaClass.addMethod();
+                                appender.getJavaDoc().setText(attributeDescription);
+                                appender.addParameter(Types.resolveValueType(att.getValue()), "value");
+                                appender.setPublic()
+                                        .setName(name + "Value") // non-trivial to singularize the method name here
+                                        .setReturnType(plan.getThisReturnType())
+                                        .setBody("this." + name + ".add(value);\nreturn (" + plan.getThisReturnType() + ") this;");
+                            }
                         } catch (Exception e) {
                             log.log(Level.ERROR, "Failed to process " + plan.getFullyQualifiedClassName() + ", attribute " + att.getName(), e);
                         }
@@ -227,7 +238,7 @@ public class ResourceClassFactory {
             listMutator.setPublic()
                     .setName(propName)
                     .setReturnType( plan.getThisReturnType() )
-                    .setBody("this.subresources." + propName + ".addAll(value);\nreturn (" + plan.getThisReturnType() + ") this;")
+                    .setBody("this.subresources." + propName + " = value;\nreturn (" + plan.getThisReturnType() + ") this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that takes a single resource. Mutators are added to the containing class
