@@ -29,7 +29,6 @@ public class NameFixer {
             while ( cur < input.length() ) {
                 int loc = input.indexOf( this.key, cur );
                 if ( loc < 0 ) {
-                    System.err.println( "did not find: " + this.key );
                     output.append( input.substring( cur ) );
                     break;
                 } else {
@@ -37,7 +36,6 @@ public class NameFixer {
 
                     int nextCharLoc = loc + this.key.length();
                     if ( nextCharLoc < input.length() && Character.isUpperCase(input.charAt( nextCharLoc )) ) {
-                        System.err.println("found " + this.key + " at " + loc);
                         output.append(this.key.toUpperCase());
                     } else {
                         output.append(this.key);
@@ -46,18 +44,6 @@ public class NameFixer {
 
                 }
             }
-            /*
-            return input.replace(this.key, this.key.toUpperCase());
-            int loc = input.indexOf( this.key );
-            int nextCharLoc = loc + this.key.length() + 1;
-            if ( input.length() > nextCharLoc ) {
-                char nextChar = input.charAt( nextCharLoc );
-            } else {
-
-            }
-            */
-
-            System.err.println( input + " to " + output );
 
             return output.toString();
         }
