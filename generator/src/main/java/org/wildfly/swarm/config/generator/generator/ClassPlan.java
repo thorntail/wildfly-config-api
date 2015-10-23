@@ -193,21 +193,23 @@ public class ClassPlan implements Comparable<ClassPlan> {
         String type = last.getResourceType();
         String name = last.getResourceName();
 
-        if (address.tokenLength() == 1 && type.equals("subsystem")) {
-            return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
-        }
+        String clsName = null;
 
-        if (name.equals("*")) {
-            return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
+        if (address.tokenLength() == 1 && type.equals("subsystem")) {
+            clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
+        } else if (name.equals("*")) {
+            clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
         } else {
             if ( type.toLowerCase().startsWith( name.toLowerCase() ) ) {
-                return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
+                clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
             } else if ( name.toLowerCase().endsWith( type.toLowerCase() ) ) {
-                return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
+                clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
             } else {
-                return CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name + "-" + type);
+                clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name + "-" + type);
             }
         }
+
+        return NameFixer.fix( clsName );
     }
 
     String getPackageName() {
