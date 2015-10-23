@@ -210,7 +210,7 @@ public class ResourceClassFactory {
             final String propType = "java.util.List<" + childClassName + ">";
             String propName = CaseFormat.UPPER_CAMEL.to(
                     CaseFormat.LOWER_CAMEL,
-                    Keywords.escape(childClass.getClassName())
+                    Keywords.escape(childClass.getOriginalClassName())
             );
             String singularName = propName;
             if (!propName.endsWith("s")) {
@@ -342,7 +342,7 @@ public class ResourceClassFactory {
             final ClassPlan childClass = index.lookup(childAddress);
             //javaClass.addImport(childClass);
 
-            String propName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, childClass.getClassName());
+            String propName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, childClass.getOriginalClassName());
 
             javaClass.addField()
                     .setName(propName)

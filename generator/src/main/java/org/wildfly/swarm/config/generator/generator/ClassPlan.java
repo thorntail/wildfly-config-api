@@ -23,6 +23,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
     private String packageName;
 
     private String className;
+    private final String originalClassName;
 
     private String addresses;
 
@@ -39,7 +40,8 @@ public class ClassPlan implements Comparable<ClassPlan> {
         this.meta.addAll(meta);
 
         this.packageName = determinePackageName(0);
-        this.className = determineClassName(0);
+        this.originalClassName = determineClassName(0);
+        this.className = NameFixer.fixClassName( this.originalClassName );
 
         AddressTemplate addr = this.meta.get(0).getAddress();
         this.type = addr.subTemplate( addr.tokenLength() -1, addr.tokenLength() ).getResourceType();
@@ -209,7 +211,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
             }
         }
 
-        return NameFixer.fix( clsName );
+        return clsName;
     }
 
     String getPackageName() {
@@ -218,6 +220,10 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
     String getClassName() {
         return this.className;
+    }
+
+    String getOriginalClassName() {
+        return this.originalClassName;
     }
 
     String getFullyQualifiedClassName() {

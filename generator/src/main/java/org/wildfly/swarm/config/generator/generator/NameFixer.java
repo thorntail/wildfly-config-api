@@ -26,22 +26,22 @@ public class NameFixer {
 
             int cur = 0;
 
-            while ( cur < input.length() ) {
-                int loc = input.indexOf( this.key, cur );
-                if ( loc < 0 ) {
-                    output.append( input.substring( cur ) );
+            while (cur < input.length()) {
+                int loc = input.indexOf(this.key, cur);
+                if (loc < 0) {
+                    output.append(input.substring(cur));
                     break;
                 } else {
                     output.append(input.substring(cur, loc));
 
                     int nextCharLoc = loc + this.key.length();
-                    if ( nextCharLoc < input.length() && Character.isUpperCase(input.charAt( nextCharLoc )) ) {
+                    if ((nextCharLoc >= input.length() )
+                            || (nextCharLoc < input.length() && Character.isUpperCase(input.charAt(nextCharLoc)))) {
                         output.append(this.key.toUpperCase());
                     } else {
                         output.append(this.key);
                     }
                     cur = loc + this.key.length();
-
                 }
             }
 
@@ -66,14 +66,14 @@ public class NameFixer {
         }
     }
 
-    private static List<Fix> FIXES = new ArrayList<Fix>();
+    private static List<Fix> CLASSNAME_FIXES = new ArrayList<Fix>();
 
     private static void simpleFix(String s) {
-        FIXES.add(new SimpleFix(s));
+        CLASSNAME_FIXES.add(new SimpleFix(s));
     }
 
     private static void customFix(String s, String r) {
-        FIXES.add(new CustomFix(s, r));
+        CLASSNAME_FIXES.add(new CustomFix(s, r));
     }
 
     static {
@@ -106,8 +106,8 @@ public class NameFixer {
         simpleFix("Xa");
     }
 
-    public static String fix(String input) {
-        for (Fix s : FIXES) {
+    public static String fixClassName(String input) {
+        for (Fix s : CLASSNAME_FIXES) {
             input = s.fix(input);
         }
 
