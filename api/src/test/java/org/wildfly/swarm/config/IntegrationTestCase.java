@@ -14,8 +14,15 @@ import org.wildfly.swarm.config.datasources.data_source.ConnectionProperties;
 import org.wildfly.swarm.config.logging.RootLogger;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADDRESS;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.RECURSIVE;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.RESULT;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.REMOVE;
 
 /**
  * @author Heiko Braun
@@ -111,8 +118,10 @@ public class IntegrationTestCase {
 
     @Test
     public void testDatasourceMarshalling() throws Exception {
+        String datasourceName = UUID.randomUUID().toString();
+
         DataSource dataSource = new DataSource("TestDS");
-        dataSource.jndiName("java:/foo/bar/DS");
+        dataSource.jndiName("java:/foo/bar/"+datasourceName);
         dataSource.userName("john.doe");
         dataSource.password("password");
         dataSource.connectionUrl("jdbc:h2:mem:swarm-test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
@@ -124,8 +133,6 @@ public class IntegrationTestCase {
 
         Assert.assertNotNull(addOp);
         Assert.assertTrue(addOp.isDefined());
-
-        String datasourceName = "swarm-integration-test";
 
         addOp.get(OP).set(ADD);
         addOp.get(ADDRESS).add("subsystem", "datasources");
@@ -141,12 +148,16 @@ public class IntegrationTestCase {
 
         ModelNode removalRsp = client.execute(removeOp);
         Assert.assertEquals("success", removalRsp.get("outcome").asString());
+
     }
 
     @Test
     public void testDatasourceConnectionPropertiesMarshalling() throws Exception {
+
+        String datasourceName = UUID.randomUUID().toString();
+
         DataSource dataSource = new DataSource("TestDS");
-        dataSource.jndiName("java:/foo/bar/DS");
+        dataSource.jndiName("java:/foo/bar/"+datasourceName);
         dataSource.userName("john.doe");
         dataSource.password("password");
         dataSource.connectionUrl("jdbc:h2:mem:swarm-test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
@@ -165,8 +176,6 @@ public class IntegrationTestCase {
         Assert.assertNotNull(addOp);
         Assert.assertTrue(addOp.isDefined());
 
-        String datasourceName = "swarm-integration-test";
-
         addOp.get(OP).set(ADD);
         addOp.get(ADDRESS).add("subsystem", "datasources");
         addOp.get(ADDRESS).add("data-source", datasourceName);
@@ -181,5 +190,6 @@ public class IntegrationTestCase {
 
         ModelNode removalRsp = client.execute(removeOp);
         Assert.assertEquals("success", removalRsp.get("outcome").asString());
+
     }
 }
