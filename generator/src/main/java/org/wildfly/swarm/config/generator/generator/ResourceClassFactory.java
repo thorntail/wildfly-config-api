@@ -144,17 +144,17 @@ public class ResourceClassFactory {
                             // If the model type is LIST, then also add an appending mutator
                             if (modelType == ModelType.LIST) {
                                 // initialize the field to an array list
-                                attributeField.setLiteralInitializer("new java.util.ArrayList<>()");
+                                //attributeField.setLiteralInitializer("new java.util.ArrayList<>()");
                                 final MethodSource<JavaClassSource> appender = javaClass.addMethod();
                                 appender.getJavaDoc().setText(attributeDescription);
                                 appender.addParameter(Types.resolveValueType(att.getValue()), "value");
                                 appender.setPublic()
                                         .setName(name + "Value") // non-trivial to singularize the method name here
                                         .setReturnType(plan.getThisReturnType())
-                                        .setBody("this." + name + ".add(value);\nreturn (" + plan.getThisReturnType() + ") this;");
+                                        .setBody(" if ( this."+name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (" + plan.getThisReturnType() + ") this;");
                             } else if (modelType == ModelType.OBJECT) {
                                 // initialize the field to a HashMap
-                                attributeField.setLiteralInitializer("new java.util.HashMap<String, Object>()");
+                                //attributeField.setLiteralInitializer("new java.util.HashMap<String, Object>()");
                                 final MethodSource<JavaClassSource> appender = javaClass.addMethod();
                                 appender.getJavaDoc().setText(attributeDescription);
                                 appender.addParameter(String.class, "key");
@@ -162,7 +162,7 @@ public class ResourceClassFactory {
                                 appender.setPublic()
                                         .setName(name + "Entry") // non-trivial to singularize the method name here
                                         .setReturnType(plan.getThisReturnType())
-                                        .setBody("this." + name + ".put(key, value);\nreturn (" + plan.getThisReturnType() + ") this;");
+                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.HashMap<>(); }\nthis." + name + ".put(key, value);\nreturn (" + plan.getThisReturnType() + ") this;");
                             }
                         } catch (Exception e) {
                             log.log(Level.ERROR, "Failed to process " + plan.getFullyQualifiedClassName() + ", attribute " + att.getName(), e);
@@ -347,7 +347,6 @@ public class ResourceClassFactory {
             javaClass.addField()
                     .setName(propName)
                     .setType(childClass.getFullyQualifiedClassName())
-//                    .setType(childClass)
                     .setPrivate();
 
             // Add an accessor method
