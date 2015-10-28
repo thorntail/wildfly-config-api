@@ -135,8 +135,8 @@ public class ResourceClassFactory {
                             mutator.addParameter(resolvedType.get(), "value");
                             mutator.setPublic()
                                     .setName(name)
-                                    .setReturnType( plan.getThisReturnType() )
-                                    .setBody("this." + name + " = value;\nreturn (" + plan.getThisReturnType() + ") this;")
+                                    .setReturnType("T")
+                                    .setBody("this." + name + " = value;\nreturn (T) this;")
                                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
                             AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
@@ -153,8 +153,8 @@ public class ResourceClassFactory {
                                 appender.addParameter(Types.resolveValueType(att.getValue()), "value");
                                 appender.setPublic()
                                         .setName(singularName) // non-trivial to singularize the method name here
-                                        .setReturnType(plan.getThisReturnType())
-                                        .setBody(" if ( this."+name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (" + plan.getThisReturnType() + ") this;");
+                                        .setReturnType("T")
+                                        .setBody(" if ( this."+name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (T) this;");
                             } else if (modelType == ModelType.OBJECT) {
                                 // initialize the field to a HashMap
                                 //attributeField.setLiteralInitializer("new java.util.HashMap<String, Object>()");
@@ -165,8 +165,8 @@ public class ResourceClassFactory {
                                 appender.addParameter(Object.class, "value");
                                 appender.setPublic()
                                         .setName(singularName)
-                                        .setReturnType(plan.getThisReturnType())
-                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.HashMap<>(); }\nthis." + name + ".put(key, value);\nreturn (" + plan.getThisReturnType() + ") this;");
+                                        .setReturnType("T")
+                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.HashMap<>(); }\nthis." + name + ".put(key, value);\nreturn (T) this;");
                             }
                         } catch (Exception e) {
                             log.log(Level.ERROR, "Failed to process " + plan.getFullyQualifiedClassName() + ", attribute " + att.getName(), e);
@@ -249,8 +249,8 @@ public class ResourceClassFactory {
             listMutator.addParameter(propType, "value");
             listMutator.setPublic()
                     .setName(propName)
-                    .setReturnType(plan.getThisReturnType())
-                    .setBody("this.subresources." + propName + " = value;\nreturn (" + plan.getThisReturnType() + ") this;")
+                    .setReturnType("T")
+                    .setBody("this.subresources." + propName + " = value;\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that takes a single resource. Mutators are added to the containing class
@@ -262,8 +262,8 @@ public class ResourceClassFactory {
             mutator.addParameter(childClassName, "value");
             mutator.setPublic()
                     .setName(singularName)
-                    .setReturnType( plan.getThisReturnType())
-                    .setBody("this.subresources." + propName + ".add(value);\nreturn (" + plan.getThisReturnType()+ ") this;")
+                    .setReturnType( "T" )
+                    .setBody("this.subresources." + propName + ".add(value);\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that factories a single resource and applies a supplied configurator. Mutators are added to the containing class
@@ -277,8 +277,8 @@ public class ResourceClassFactory {
             configurator.addParameter(childClassName + "Configurator", "config");
             configurator.setPublic()
                     .setName(singularName)
-                    .setReturnType( plan.getThisReturnType())
-                    .setBody( childClassName + " child = new " + childClassName + "(childKey);\n if ( config != null ) { config.configure(child); }\n" + singularName +"(child);\nreturn (" + plan.getThisReturnType() + ") this;")
+                    .setReturnType("T")
+                    .setBody( childClassName + " child = new " + childClassName + "(childKey);\n if ( config != null ) { config.configure(child); }\n" + singularName +"(child);\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that factories a single resource and applies a supplied configurator. Mutators are added to the containing class
@@ -290,8 +290,8 @@ public class ResourceClassFactory {
             nonConfigurator.addParameter(String.class, "childKey");
             nonConfigurator.setPublic()
                     .setName(singularName)
-                    .setReturnType( plan.getThisReturnType())
-                    .setBody( singularName + "(childKey, null);\nreturn ("+ plan.getThisReturnType() + ") this;\n")
+                    .setReturnType("T")
+                    .setBody( singularName + "(childKey, null);\nreturn (T) this;\n")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             final AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
@@ -373,8 +373,8 @@ public class ResourceClassFactory {
             mutator.addParameter(childClass.getFullyQualifiedClassName(), "value");
             mutator.setPublic()
                     .setName(propName)
-                    .setReturnType( plan.getThisReturnType() )
-                    .setBody("this." + propName + "=value;\nreturn (" + plan.getThisReturnType() + ") this;")
+                    .setReturnType("T")
+                    .setBody("this." + propName + "=value;\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
         }

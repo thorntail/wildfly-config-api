@@ -43,7 +43,6 @@ public class SubsystemPlan implements ClassIndex {
 
     void plan() {
         ClassPlan subsystemClass = new ClassPlan(this.meta);
-        subsystemClass.setTemplated(true);
         classPlans.add(subsystemClass);
 
         List<ResourceMetaData> list = new ArrayList<>();

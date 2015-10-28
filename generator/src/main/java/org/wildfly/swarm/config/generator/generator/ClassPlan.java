@@ -23,11 +23,13 @@ public class ClassPlan implements Comparable<ClassPlan> {
     private String packageName;
 
     private String className;
+
     private final String originalClassName;
 
     private String addresses;
 
     private JavaClassSource resourceSource;
+
     private JavaInterfaceSource configSource;
 
     private boolean templated = false;
@@ -41,29 +43,14 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
         this.packageName = determinePackageName(0);
         this.originalClassName = determineClassName(0);
-        this.className = NameFixer.fixClassName( this.originalClassName );
+        this.className = NameFixer.fixClassName(this.originalClassName);
 
         AddressTemplate addr = this.meta.get(0).getAddress();
-        this.type = addr.subTemplate( addr.tokenLength() -1, addr.tokenLength() ).getResourceType();
+        this.type = addr.subTemplate(addr.tokenLength() - 1, addr.tokenLength()).getResourceType();
     }
 
     String getResourceType() {
         return this.type;
-    }
-
-    void setTemplated(boolean templated) {
-        this.templated = templated;
-    }
-
-    boolean isTemplated() {
-        return this.templated;
-    }
-
-    String getThisReturnType() {
-        if ( this.templated ) {
-            return "T";
-        }
-        return this.className;
     }
 
     boolean isSingleton() {
@@ -166,7 +153,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
             if (i == 0) {
                 segments.add(part.getResourceName());
             } else {
-                if (i >= ((numTokens - uniqueRound) )) {
+                if (i >= ((numTokens - uniqueRound))) {
                     segments.add(part.getResourceType());
                     segments.add(part.getResourceName());
                 } else {
@@ -202,9 +189,9 @@ public class ClassPlan implements Comparable<ClassPlan> {
         } else if (name.equals("*")) {
             clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
         } else {
-            if ( type.toLowerCase().startsWith( name.toLowerCase() ) ) {
+            if (type.toLowerCase().startsWith(name.toLowerCase())) {
                 clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
-            } else if ( name.toLowerCase().endsWith( type.toLowerCase() ) ) {
+            } else if (name.toLowerCase().endsWith(type.toLowerCase())) {
                 clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
             } else {
                 clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name + "-" + type);

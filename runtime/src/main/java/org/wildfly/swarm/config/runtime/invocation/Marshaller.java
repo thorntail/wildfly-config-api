@@ -26,6 +26,7 @@ public class Marshaller {
     @SuppressWarnings("unchecked")
     private static LinkedList<ModelNode> appendNode(Object entity, PathAddress address, LinkedList<ModelNode> list) throws Exception {
         final PathAddress resourceAddress = resourceAddress(entity, address);
+
         final ModelNode modelNode = addressNodeFor(resourceAddress);
 
         EntityAdapter adapter = adapterFor(entity.getClass());
@@ -95,7 +96,7 @@ public class Marshaller {
         if (!subresources.containsKey(type)) {
             try {
                 Method target = type.getMethod("subresources");
-                subresources.put(type, Optional.of(new Subresource(target.getReturnType(), target, entity)));
+                subresources.put(type, Optional.of(new Subresource(target.getReturnType(), target)));
             } catch (Exception e) {
                 // If no subresources() method, then no subresources exist
                 subresources.put(type, Optional.empty());
@@ -119,12 +120,13 @@ public class Marshaller {
     }
 
     private static LinkedList<ModelNode> marshalSubresources(Object parent, PathAddress address, LinkedList<ModelNode> list) {
+        System.err.println( "subresources for " + parent + " at " + address );
         try {
             // Handle lists
             Optional<Subresource> optional = subresourcesFor(parent);
 
             if (optional.isPresent()) {
-                Object subresources = optional.get().invoke();
+                Object subresources = optional.get().invoke(parent);
 
                 for (Method target : orderedSubresources(subresources)) {
                     List<?> resourceList = (List<?>) target.invoke(subresources);
@@ -136,7 +138,6 @@ public class Marshaller {
             // Then handle singletons
             list.addAll(singletonSubresourcesFor(parent, address));
         } catch (Exception e) {
-            System.err.println("Error getting subresources for " + parent.getClass().getSimpleName());
             e.printStackTrace();
         }
         return list;
@@ -147,15 +148,12 @@ public class Marshaller {
 
         public final Method method;
 
-        private final Object parent;
-
-        public Subresource(Class<?> type, Method method, Object parent) {
+        public Subresource(Class<?> type, Method method) {
             this.type = type;
             this.method = method;
-            this.parent = parent;
         }
 
-        public Object invoke() throws InvocationTargetException, IllegalAccessException {
+        public Object invoke(Object parent) throws InvocationTargetException, IllegalAccessException {
             return method.invoke(parent);
         }
 
