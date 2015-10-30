@@ -8,10 +8,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wildfly.swarm.config.generator.generator.ClientFactory;
 import org.wildfly.swarm.config.generator.generator.Config;
+import org.wildfly.swarm.config.runtime.invocation.Addressing;
 import org.wildfly.swarm.config.runtime.invocation.EntityAdapter;
 import org.wildfly.swarm.config.datasources.DataSource;
 import org.wildfly.swarm.config.datasources.data_source.ConnectionProperties;
 import org.wildfly.swarm.config.logging.RootLogger;
+import org.wildfly.swarm.config.runtime.model.AddressTemplate;
+import org.wildfly.swarm.config.runtime.model.ResourceAddress;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -53,9 +56,13 @@ public class IntegrationTestCase {
      */
     @Test
     public void testDatasourceUnmarshalling() throws Exception {
+
+        AddressTemplate template = Addressing.of(DataSource.class);
+        ResourceAddress address = template.resolve("ExampleDS");
+
         ModelNode op = new ModelNode();
         op.get(OP).set(READ_RESOURCE_OPERATION);
-        op.get(ADDRESS).set("/subsystem=datasources/data-source=ExampleDS");
+        op.get(ADDRESS).set(address);
         op.get(RECURSIVE).set(true);
 
         ModelNode response = client.execute(op);
@@ -76,6 +83,7 @@ public class IntegrationTestCase {
      */
     @Test
     public void testRootLoogerUnmarshalling() throws Exception {
+
         ModelNode op = new ModelNode();
         op.get(OP).set(READ_RESOURCE_OPERATION);
         op.get(ADDRESS).set("/subsystem=logging/root-logger=ROOT");
@@ -93,6 +101,18 @@ public class IntegrationTestCase {
         Assert.assertEquals("INFO", rootLogger.level());
 
     }
+
+    /**
+     * Java classes that are shared across the object model cannot be used
+     * to determine the resource address.
+     *
+     * @throws Exception
+     */
+    @Test(expected = RuntimeException.class)
+    public void testAmbiguousAddresses() throws Exception {
+        AddressTemplate template = Addressing.of(RootLogger.class);
+    }
+
 
     /**
      * A singleton resource, implicitly named
@@ -127,16 +147,17 @@ public class IntegrationTestCase {
         dataSource.connectionUrl("jdbc:h2:mem:swarm-test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
         dataSource.driverName("h2");
 
-
         EntityAdapter<DataSource> entityAdapter = new EntityAdapter<>(DataSource.class);
         ModelNode addOp = entityAdapter.fromEntity(dataSource);
 
         Assert.assertNotNull(addOp);
         Assert.assertTrue(addOp.isDefined());
 
+        AddressTemplate template = Addressing.of(DataSource.class);
+        ResourceAddress address = template.resolve(datasourceName);
+
         addOp.get(OP).set(ADD);
-        addOp.get(ADDRESS).add("subsystem", "datasources");
-        addOp.get(ADDRESS).add("data-source", datasourceName);
+        addOp.get(ADDRESS).set(address);
 
         ModelNode response = client.execute(addOp);
         Assert.assertEquals("success", response.get("outcome").asString());

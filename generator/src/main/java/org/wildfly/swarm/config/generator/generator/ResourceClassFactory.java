@@ -6,6 +6,8 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.*;
 import org.jboss.logmanager.Level;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
+import org.wildfly.swarm.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.Addresses;
 import org.wildfly.swarm.config.runtime.Implicit;
 import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 import org.wildfly.swarm.config.runtime.ResourceType;
@@ -51,6 +53,23 @@ public class ResourceClassFactory {
                 .setPrivate()
                 .setType(String.class);
 
+        // resource references
+        if(1==plan.getAddresses().size())
+        {
+            AnnotationSource<JavaClassSource> addressMeta = javaClass.addAnnotation(Address.class);
+            addressMeta.setStringValue(plan.getAddresses().get(0).toString());
+        }
+        else {
+            String[] addresses = new String[plan.getAddresses().size()];
+            int i = 0;
+            for (AddressTemplate addressTemplate : plan.getAddresses()) {
+                addresses[i] = addressTemplate.toString();
+                i++;
+            }
+            AnnotationSource<JavaClassSource> addressesMeta = javaClass.addAnnotation(Addresses.class);
+            addressesMeta.setStringArrayValue(addresses);
+        }
+
         // constructors
         boolean isSingleton = plan.isSingleton();
         if (isSingleton) {
@@ -84,14 +103,10 @@ public class ResourceClassFactory {
 
         // imports
         javaClass.addImport(Implicit.class);
-        //javaClass.addImport(Address.class);
+        javaClass.addImport(Address.class);
+        javaClass.addImport(Addresses.class);
         javaClass.addImport(ResourceType.class);
         javaClass.addImport(ModelNodeBinding.class);
-
-
-        //AnnotationSource<JavaClassSource> addressMeta = javaClass.addAnnotation();
-        //addressMeta.setName("Address");
-        //addressMeta.setStringValue(metaData.getAddress().getTemplate());
 
         AnnotationSource<JavaClassSource> typeAnno = javaClass.addAnnotation();
         typeAnno.setName( "ResourceType" );

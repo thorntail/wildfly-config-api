@@ -19,6 +19,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
     private final List<ResourceMetaData> meta = new ArrayList<>();
 
     private final String type;
+    private final AddressTemplate addr;
 
     private String packageName;
 
@@ -38,15 +39,34 @@ public class ClassPlan implements Comparable<ClassPlan> {
         this(Collections.singletonList(meta));
     }
 
+    /**
+     * Construct a class plan for set of identical resources.
+     *
+     * @param meta
+     */
     ClassPlan(List<ResourceMetaData> meta) {
-        this.meta.addAll(meta);
 
+        // type assertion to make things more obvious
+        ResourceMetaData prime = meta.get(0);
+        String primeType = prime.getAddress().getResourceType();
+        meta.forEach(resourceMetaData -> {
+            String resourceType = resourceMetaData.getAddress().getResourceType();
+            if (!resourceType.equals(primeType))
+                throw new IllegalArgumentException("Illegal partition, resourceType's don't match: "+
+                        primeType + " > "+ resourceType
+                );
+        });
+
+        this.meta.addAll(meta);
+        this.addr = prime.getAddress();
         this.packageName = determinePackageName(0);
         this.originalClassName = determineClassName(0);
         this.className = NameFixer.fixClassName(this.originalClassName);
+        this.type = addr.getResourceType();
+    }
 
-        AddressTemplate addr = this.meta.get(0).getAddress();
-        this.type = addr.subTemplate(addr.tokenLength() - 1, addr.tokenLength()).getResourceType();
+    public AddressTemplate getAddr() {
+        return addr;
     }
 
     String getResourceType() {
@@ -170,17 +190,18 @@ public class ClassPlan implements Comparable<ClassPlan> {
             return "org.wildfly.swarm.config";
         }
 
-        return "org.wildfly.swarm.config." + String.join(".", segments.stream().map((e) -> {
+        String pkg = "org.wildfly.swarm.config." + String.join(".", segments.stream().map((e) -> {
             return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_UNDERSCORE, e);
         }).collect(Collectors.toList()));
+
+        return pkg;
     }
 
     String determineClassName(int uniqueRound) {
         AddressTemplate address = this.meta.get(0).getAddress();
-        AddressTemplate last = address.subTemplate(address.tokenLength() - 1, address.tokenLength());
 
-        String type = last.getResourceType();
-        String name = last.getResourceName();
+        String type = address.getResourceType();
+        String name = address.getResourceName();
 
         String clsName = null;
 

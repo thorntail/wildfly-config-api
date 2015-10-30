@@ -4,6 +4,7 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.Index;
 import org.jboss.jandex.Indexer;
 import org.wildfly.swarm.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.Addresses;
 import org.wildfly.swarm.config.runtime.Implicit;
 import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 import org.wildfly.swarm.config.runtime.Subresource;
@@ -20,6 +21,7 @@ public class IndexFactory {
     public final static DotName IMPLICIT_META = DotName.createSimple(Implicit.class.getCanonicalName());
     public final static DotName BINDING_META = DotName.createSimple(ModelNodeBinding.class.getCanonicalName());
     public final static DotName ADDRESS_META = DotName.createSimple(Address.class.getCanonicalName());
+    public final static DotName ADDRESSES_META = DotName.createSimple(Addresses.class.getCanonicalName());
     public final static DotName RESOURCE_TYPE = DotName.createSimple(ResourceType.class.getCanonicalName());
     public final static DotName SUBRESOURCE_META = DotName.createSimple(Subresource.class.getCanonicalName());
 

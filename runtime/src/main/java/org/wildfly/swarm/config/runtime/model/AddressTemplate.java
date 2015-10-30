@@ -184,6 +184,10 @@ public class AddressTemplate implements Comparable<AddressTemplate> {
         return AddressTemplate.of(join(this.optional, subTokens));
     }
 
+    public AddressTemplate lastSubTemplate() {
+        return subTemplate(tokenLength() - 1, tokenLength());
+    }
+
     /**
      * Replaces one or more wildcards with the specified values starting from left to right and returns a new
      * address template.
@@ -242,6 +246,39 @@ public class AddressTemplate implements Comparable<AddressTemplate> {
 
     // ------------------------------------------------------ resolve
 
+    public ResourceAddress resolve(String... wildcards) {
+        return resolve(new StatementContext() {
+            @Override
+            public String get(String key) {
+                return null;
+            }
+
+            @Override
+            public String[] getTuple(String key) {
+                return null;
+            }
+
+            @Override
+            public String resolve(String key) {
+                return null;
+            }
+
+            @Override
+            public String[] resolveTuple(String key) {
+                return null;
+            }
+
+            @Override
+            public LinkedList<String> collect(String key) {
+                return null;
+            }
+
+            @Override
+            public LinkedList<String[]> collectTuples(String key) {
+                return null;
+            }
+        }, wildcards);
+    }
     /**
      * Resolve this address template against the specified statement context.
      *

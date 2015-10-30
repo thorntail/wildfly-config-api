@@ -7,18 +7,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Depicts config classes that represent multiple resources.
+ *
  * @author Heiko Braun
- * @date 4/19/11
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface ModelNodeBinding {
+@Target({ElementType.TYPE})
+public @interface Addresses {
 
     /**
-     * The name of the DMR attribute
+     * The resource addresses
      *
      * @return
      */
-    String detypedName();
+    String[] value();
 }

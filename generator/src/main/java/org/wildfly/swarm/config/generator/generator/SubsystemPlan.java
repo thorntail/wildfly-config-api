@@ -48,6 +48,7 @@ public class SubsystemPlan implements ClassIndex {
         List<ResourceMetaData> list = new ArrayList<>();
         collect(this.meta, list);
 
+        // exclude deprecated attributes
         for (ResourceMetaData each : list) {
             ModelNode attrs = each.getDescription().get(ATTRIBUTES);
             List<Property> props = attrs.asPropertyList();
@@ -59,11 +60,13 @@ public class SubsystemPlan implements ClassIndex {
             }
         }
 
+        // group by last tuple
         Map<AddressTemplate, List<ResourceMetaData>> grouped = list.stream().collect(Collectors.groupingBy((e) -> {
             AddressTemplate address = e.getAddress();
-            return address.subTemplate(address.tokenLength() - 1, address.tokenLength());
+            return address.lastSubTemplate();
         }));
 
+        // assign ClassPlan's to a set of resources (1:n)
         for (AddressTemplate key : grouped.keySet()) {
             List<ResourceMetaData> members = grouped.get(key);
             if (members.size() > 1) {
@@ -101,6 +104,8 @@ public class SubsystemPlan implements ClassIndex {
             dupes.clear();
         }
 
+        // assign a set of resources to a ClassPlan (n:1)
+        // used by ResourceClassFactory to determine the actual java type for a resource
         for (ClassPlan each : classPlans) {
             for (AddressTemplate address : each.getAddresses()) {
                 this.index.put(address, each);
