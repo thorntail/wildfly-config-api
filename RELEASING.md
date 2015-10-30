@@ -43,7 +43,7 @@ from the github interface.
 
     https://github.com/wildfly-swarm/wildfly-config-api/edit/gh-pages/index.html
 
-Finally, head over to JBoss Nexus website and login. https://oss.sonatype.org/
+Finally, head over to the Sonatype website and login. https://oss.sonatype.org/.
 Click `Staging Repositories`. Click the `Updated` tag twice to get your just
 published repository at the top of the list. Select it and confirm the contents.
 Click `Close`. Click `Refresh`. Click `Release`. Ridiculous, isn't it?
