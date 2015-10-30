@@ -130,6 +130,7 @@ public class Generator {
                         for (ClassPlan classPlan : classPlans) {
                             ResourceClassFactory.createResourceAsClass(plan, classPlan);
                             ConfiguratorInterfaceFactory.createConfiguratorAsInterface(plan, classPlan);
+                            SupplierInterfaceFactory.createSupplierAsInterface(plan, classPlan);
                         }
 
                         for (ClassPlan classPlan : classPlans) {
@@ -144,6 +145,12 @@ public class Generator {
                             } else {
                                 write(classPlan.getConfiguratorInterfaceSource());
                                 System.err.println("wrote: " + classPlan.getFullyQualifiedClassName() + "Configurator");
+                            }
+                            if (classPlan.getSupplierInterfaceSource() == null) {
+                                System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName() + "Supplier");
+                            } else {
+                                write(classPlan.getSupplierInterfaceSource());
+                                System.err.println("wrote: " + classPlan.getFullyQualifiedClassName() + "Supplier");
                             }
                         }
                     } catch (Exception e) {

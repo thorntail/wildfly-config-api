@@ -12,9 +12,9 @@ import org.jboss.forge.roaster.model.source.MethodSource;
  * @author Heiko Braun
  * @since 30/07/15
  */
-public class ConfiguratorInterfaceFactory {
+public class SupplierInterfaceFactory {
 
-    private static final Logger log = Logger.getLogger(ConfiguratorInterfaceFactory.class.getName());
+    private static final Logger log = Logger.getLogger(SupplierInterfaceFactory.class.getName());
 
     /**
      * Base template for a resource representation.
@@ -24,12 +24,12 @@ public class ConfiguratorInterfaceFactory {
      * @param plan
      * @return
      */
-    public static JavaInterfaceSource createConfiguratorAsInterface(ClassIndex index, ClassPlan plan) {
+    public static JavaInterfaceSource createSupplierAsInterface(ClassIndex index, ClassPlan plan) {
 
         // base class
         JavaInterfaceSource javaInterface = Roaster.parse(
                 JavaInterfaceSource.class,
-                "public interface " + plan.getClassName() + "Configurator<T extends " + plan.getClassName() + "> {}"
+                "public interface " + plan.getClassName() + "Supplier<T extends " + plan.getClassName() + "> {}"
         );
 
         javaInterface.setPackage(plan.getPackageName());
@@ -39,15 +39,13 @@ public class ConfiguratorInterfaceFactory {
 
         final MethodSource<JavaInterfaceSource> accessor = javaInterface.addMethod();
         accessor.getJavaDoc()
-                .setText("Configure a pre-constructed instance of " + plan.getClassName() + " resource")
-                .addTagValue("@parameter", "Instance of " + plan.getClassName() + " to configure")
-                .addTagValue("@return", "nothing");
-        accessor.addParameter( "T", "value" );
+                .setText("Constructed instance of " + plan.getClassName() + " resource")
+                .addTagValue("@return", "The instance");
         accessor.setPublic()
-                .setName("accept")
-                .setReturnType("void");
+                .setName("get")
+                .setReturnType(plan.getClassName());
 
-        plan.setConfiguratorInterfaceSource(javaInterface);
+        plan.setSupplierInterfaceSource(javaInterface);
         return javaInterface;
     }
 

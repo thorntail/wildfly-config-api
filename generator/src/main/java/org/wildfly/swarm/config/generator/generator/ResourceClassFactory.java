@@ -3,6 +3,7 @@ package org.wildfly.swarm.config.generator.generator;
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.JavaClass;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -21,6 +22,7 @@ import org.wildfly.swarm.config.runtime.model.AddressTemplate;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -60,12 +62,10 @@ public class ResourceClassFactory {
                 .setType(String.class);
 
         // resource references
-        if(1==plan.getAddresses().size())
-        {
+        if (1 == plan.getAddresses().size()) {
             AnnotationSource<JavaClassSource> addressMeta = javaClass.addAnnotation(Address.class);
             addressMeta.setStringValue(plan.getAddresses().get(0).toString());
-        }
-        else {
+        } else {
             String[] addresses = new String[plan.getAddresses().size()];
             int i = 0;
             for (AddressTemplate addressTemplate : plan.getAddresses()) {
@@ -84,9 +84,7 @@ public class ResourceClassFactory {
                     .setPublic()
                     .setBody("this.key = \"" + plan.getSingletonName() + "\";\n"
                             + "this.pcs = new PropertyChangeSupport(this);");
-        }
-        else
-        {
+        } else {
             // regular resources need to provide a key
             javaClass.addMethod()
                     .setConstructor(true)
@@ -129,7 +127,7 @@ public class ResourceClassFactory {
             implicitMeta.setName("Implicit");
         }
 
-           // property change listeners
+        // property change listeners
         javaClass.addField()
                 .setName("pcs")
                 .setType(PropertyChangeSupport.class)
@@ -183,9 +181,9 @@ public class ResourceClassFactory {
                             mutator.setPublic()
                                     .setName(name)
                                     .setReturnType("T")
-                                    .setBody("Object oldValue = this."+name+";\n"+
+                                    .setBody("Object oldValue = this." + name + ";\n" +
                                             "this." + name + " = value;\n" +
-                                            "if(this.pcs!=null) this.pcs.firePropertyChange(\""+name+"\", oldValue, value);\n" +
+                                            "if(this.pcs!=null) this.pcs.firePropertyChange(\"" + name + "\", oldValue, value);\n" +
                                             "return (T) this;")
                                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
@@ -195,20 +193,33 @@ public class ResourceClassFactory {
 
                             // If the model type is LIST, then also add an appending mutator
                             if (modelType == ModelType.LIST) {
-                                String singularName = inflector.singularize( name );
+                                String singularName = inflector.singularize(name);
                                 // initialize the field to an array list
                                 //attributeField.setLiteralInitializer("new java.util.ArrayList<>()");
+                                javaClass.addImport(Arrays.class);
                                 final MethodSource<JavaClassSource> appender = javaClass.addMethod();
                                 appender.getJavaDoc().setText(attributeDescription);
                                 appender.addParameter(Types.resolveValueType(att.getValue()), "value");
                                 appender.setPublic()
                                         .setName(singularName) // non-trivial to singularize the method name here
                                         .setReturnType("T")
-                                        .setBody(" if ( this."+name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (T) this;");
+                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (T) this;");
+
+                                // also produce a var-args version
+
+                                final MethodSource<JavaClassSource> varargs = javaClass.addMethod();
+                                varargs.getJavaDoc().setText(attributeDescription);
+                                varargs.addParameter(Types.resolveValueType(att.getValue()), "...args");
+                                varargs.setPublic()
+                                        .setName(name)
+                                        .setReturnType("T")
+                                        .setBody( name + "(Arrays.asList( args )); return (T) this;" )
+                                        .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+
                             } else if (modelType == ModelType.OBJECT) {
                                 // initialize the field to a HashMap
                                 //attributeField.setLiteralInitializer("new java.util.HashMap<String, Object>()");
-                                String singularName = inflector.singularize( name );
+                                String singularName = inflector.singularize(name);
                                 final MethodSource<JavaClassSource> appender = javaClass.addMethod();
                                 appender.getJavaDoc().setText(attributeDescription);
                                 appender.addParameter(String.class, "key");
@@ -225,12 +236,12 @@ public class ResourceClassFactory {
                 }
         );
 
-        if ( ! desc.getChildrenTypes().isEmpty() ) {
-            createChildAccessors( index, plan, javaClass );
+        if (!desc.getChildrenTypes().isEmpty()) {
+            createChildAccessors(index, plan, javaClass);
         }
 
-        if ( ! desc.getSingletonChildrenTypes().isEmpty() ) {
-            createSingletonChildAccessors( index, plan, javaClass );
+        if (!desc.getSingletonChildrenTypes().isEmpty()) {
+            createSingletonChildAccessors(index, plan, javaClass);
         }
 
         plan.setResourceClassSource(javaClass);
@@ -312,7 +323,7 @@ public class ResourceClassFactory {
             mutator.addParameter(childClassName, "value");
             mutator.setPublic()
                     .setName(singularName)
-                    .setReturnType( "T" )
+                    .setReturnType("T")
                     .setBody("this.subresources." + propName + ".add(value);\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
@@ -320,7 +331,7 @@ public class ResourceClassFactory {
             final MethodSource<JavaClassSource> configurator = javaClass.addMethod();
             configurator.getJavaDoc()
                     .setText("Create and configure a " + childClassName + " object to the list of subresources")
-                    .addTagValue("@param", "key The key for the " + childClassName + " resource" )
+                    .addTagValue("@param", "key The key for the " + childClassName + " resource")
                     .addTagValue("@param", "config The " + childClassName + "Configurator to use")
                     .addTagValue("@return", "this");
             configurator.addParameter(String.class, "childKey");
@@ -328,20 +339,20 @@ public class ResourceClassFactory {
             configurator.setPublic()
                     .setName(singularName)
                     .setReturnType("T")
-                    .setBody( childClassName + " child = new " + childClassName + "(childKey);\n if ( config != null ) { config.configure(child); }\n" + singularName +"(child);\nreturn (T) this;")
+                    .setBody(childClassName + " child = new " + childClassName + "(childKey);\n if ( config != null ) { config.accept(child); }\n" + singularName + "(child);\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that factories a single resource and applies a supplied configurator. Mutators are added to the containing class
             final MethodSource<JavaClassSource> nonConfigurator = javaClass.addMethod();
             nonConfigurator.getJavaDoc()
                     .setText("Create and configure a " + childClassName + " object to the list of subresources")
-                    .addTagValue("@param", "key The key for the " + childClassName + " resource" )
+                    .addTagValue("@param", "key The key for the " + childClassName + " resource")
                     .addTagValue("@return", "this");
             nonConfigurator.addParameter(String.class, "childKey");
             nonConfigurator.setPublic()
                     .setName(singularName)
                     .setReturnType("T")
-                    .setBody( singularName + "(childKey, null);\nreturn (T) this;\n")
+                    .setBody(singularName + "(childKey, null);\nreturn (T) this;\n")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             final AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
@@ -416,6 +427,7 @@ public class ResourceClassFactory {
             AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
             subresourceMeta.setName("Subresource");
 
+
             // Add a mutator
             final MethodSource<JavaClassSource> mutator = javaClass.addMethod();
             mutator.getJavaDoc()
@@ -427,6 +439,37 @@ public class ResourceClassFactory {
                     .setBody("this." + propName + "=value;\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
+            javaClass.addImport( childClass.getFullyQualifiedClassName() + "Configurator" );
+            javaClass.addImport( childClass.getFullyQualifiedClassName() + "Supplier" );
+
+            // Add a consumer to configure
+            final MethodSource<JavaClassSource> consumer = javaClass.addMethod();
+
+            String body = childClass.getClassName() + " child = new " + childClass.getClassName() + "();\n"
+                    + "if ( consumer != null ) { consumer.accept(child); }\n"
+                    + "this." + propName + " = child;\n"
+                    + "return (T) this;";
+
+            consumer.getJavaDoc()
+                    .setText(javaDoc);
+            consumer.addParameter(childClass.getClassName() + "Configurator", "consumer");
+            consumer.setPublic()
+                    .setName(propName)
+                    .setReturnType("T")
+                    .setBody(body)
+                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+
+            // Add a supplier to create
+
+            final MethodSource<JavaClassSource> supplier = javaClass.addMethod();
+            supplier.getJavaDoc()
+                    .setText(javaDoc);
+            supplier.addParameter(childClass.getClassName() + "Supplier", "supplier");
+            supplier.setPublic()
+                    .setName(propName)
+                    .setReturnType("T")
+                    .setBody("this." + propName + " = supplier.get();\nreturn (T) this;")
+                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
         }
     }
 

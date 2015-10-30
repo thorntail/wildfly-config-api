@@ -33,6 +33,8 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
     private JavaInterfaceSource configSource;
 
+    private JavaInterfaceSource supplierSource;
+
     private boolean templated = false;
 
     ClassPlan(ResourceMetaData meta) {
@@ -101,9 +103,19 @@ public class ClassPlan implements Comparable<ClassPlan> {
         this.configSource = source;
     }
 
+
     JavaInterfaceSource getConfiguratorInterfaceSource() {
         return this.configSource;
     }
+
+    void setSupplierInterfaceSource(JavaInterfaceSource source) {
+        this.supplierSource = source;
+    }
+
+    JavaInterfaceSource getSupplierInterfaceSource() {
+        return this.supplierSource;
+    }
+
 
     void deduplicate(int round) {
         this.packageName = determinePackageName(round);
