@@ -29,7 +29,7 @@ public class ConfiguratorInterfaceFactory {
         // base class
         JavaInterfaceSource javaInterface = Roaster.parse(
                 JavaInterfaceSource.class,
-                "public interface " + plan.getClassName() + "Configurator<T extends " + plan.getClassName() + "> {}"
+                "public interface " + plan.getClassName() + "Consumer<T extends " + plan.getClassName() + "> {}"
         );
 
         javaInterface.setPackage(plan.getPackageName());

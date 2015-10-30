@@ -213,7 +213,7 @@ public class ResourceClassFactory {
                                 varargs.setPublic()
                                         .setName(name)
                                         .setReturnType("T")
-                                        .setBody( name + "(Arrays.asList( args )); return (T) this;" )
+                                        .setBody(name + "(Arrays.asList( args )); return (T) this;")
                                         .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
                             } else if (modelType == ModelType.OBJECT) {
@@ -271,7 +271,11 @@ public class ResourceClassFactory {
             final ClassPlan childClass = index.lookup(childAddress);
             //javaClass.addImport(childClass);
 
-            final String childClassName = childClass.getFullyQualifiedClassName();
+            javaClass.addImport(childClass.getFullyQualifiedClassName() + "Consumer");
+            javaClass.addImport(childClass.getFullyQualifiedClassName() + "Supplier");
+
+            final String childClassName = childClass.getClassName();
+            javaClass.addImport( childClass.getFullyQualifiedClassName() );
             final String propType = "java.util.List<" + childClassName + ">";
             String propName = CaseFormat.UPPER_CAMEL.to(
                     CaseFormat.LOWER_CAMEL,
@@ -332,14 +336,14 @@ public class ResourceClassFactory {
             configurator.getJavaDoc()
                     .setText("Create and configure a " + childClassName + " object to the list of subresources")
                     .addTagValue("@param", "key The key for the " + childClassName + " resource")
-                    .addTagValue("@param", "config The " + childClassName + "Configurator to use")
+                    .addTagValue("@param", "config The " + childClassName + "Consumer to use")
                     .addTagValue("@return", "this");
             configurator.addParameter(String.class, "childKey");
-            configurator.addParameter(childClassName + "Configurator", "config");
+            configurator.addParameter(childClassName + "Consumer", "consumer");
             configurator.setPublic()
                     .setName(singularName)
                     .setReturnType("T")
-                    .setBody(childClassName + " child = new " + childClassName + "(childKey);\n if ( config != null ) { config.accept(child); }\n" + singularName + "(child);\nreturn (T) this;")
+                    .setBody(childClassName + " child = new " + childClassName + "(childKey);\n if ( consumer != null ) { consumer.accept(child); }\n" + singularName + "(child);\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that factories a single resource and applies a supplied configurator. Mutators are added to the containing class
@@ -353,6 +357,20 @@ public class ResourceClassFactory {
                     .setName(singularName)
                     .setReturnType("T")
                     .setBody(singularName + "(childKey, null);\nreturn (T) this;\n")
+                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+
+
+            // Add a supplier to create
+
+            final MethodSource<JavaClassSource> supplier = javaClass.addMethod();
+            supplier.getJavaDoc()
+                    .setText("Install a supplied " + childClassName + " object to the list of subresources" );
+            //supplier.addParameter(childClassName + "Supplier", "supplier");
+            supplier.addParameter(  childClassName + "Supplier", "supplier" );
+            supplier.setPublic()
+                    .setName(singularName)
+                    .setReturnType("T")
+                    .setBody( singularName + "(supplier.get()); return (T) this;" )
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             final AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
@@ -439,24 +457,26 @@ public class ResourceClassFactory {
                     .setBody("this." + propName + "=value;\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
-            javaClass.addImport( childClass.getFullyQualifiedClassName() + "Configurator" );
-            javaClass.addImport( childClass.getFullyQualifiedClassName() + "Supplier" );
+            javaClass.addImport(childClass.getFullyQualifiedClassName() + "Consumer");
+            javaClass.addImport(childClass.getFullyQualifiedClassName() + "Supplier");
 
             // Add a consumer to configure
             final MethodSource<JavaClassSource> consumer = javaClass.addMethod();
 
-            String body = childClass.getClassName() + " child = new " + childClass.getClassName() + "();\n"
-                    + "if ( consumer != null ) { consumer.accept(child); }\n"
-                    + "this." + propName + " = child;\n"
-                    + "return (T) this;";
 
             consumer.getJavaDoc()
                     .setText(javaDoc);
-            consumer.addParameter(childClass.getClassName() + "Configurator", "consumer");
+            //consumer.addParameter(childClass.getClassName() + "Configurator", "consumer");
+            consumer.addParameter(childClass.getClassName() + "Consumer", "consumer");
             consumer.setPublic()
                     .setName(propName)
                     .setReturnType("T")
-                    .setBody(body)
+                    .setBody(
+                            childClass.getClassName() + " child = new " + childClass.getClassName() + "();\n"
+                                    + "if ( consumer != null ) { consumer.accept(child); }\n"
+                                    + "this." + propName + " = child;\n"
+                                    + "return (T) this;"
+                    )
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a supplier to create
@@ -464,7 +484,8 @@ public class ResourceClassFactory {
             final MethodSource<JavaClassSource> supplier = javaClass.addMethod();
             supplier.getJavaDoc()
                     .setText(javaDoc);
-            supplier.addParameter(childClass.getClassName() + "Supplier", "supplier");
+            //supplier.addParameter(childClass.getClassName() + "Supplier", "supplier");
+            supplier.addParameter(  childClass.getClassName() + "Supplier", "supplier" );
             supplier.setPublic()
                     .setName(propName)
                     .setReturnType("T")

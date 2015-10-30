@@ -141,10 +141,10 @@ public class Generator {
                                 System.err.println("wrote: " + classPlan.getFullyQualifiedClassName());
                             }
                             if (classPlan.getConfiguratorInterfaceSource() == null) {
-                                System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName() + "Configurator");
+                                System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName() + "Consumer");
                             } else {
                                 write(classPlan.getConfiguratorInterfaceSource());
-                                System.err.println("wrote: " + classPlan.getFullyQualifiedClassName() + "Configurator");
+                                System.err.println("wrote: " + classPlan.getFullyQualifiedClassName() + "Consumer");
                             }
                             if (classPlan.getSupplierInterfaceSource() == null) {
                                 System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName() + "Supplier");

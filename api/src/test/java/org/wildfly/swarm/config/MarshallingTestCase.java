@@ -21,10 +21,7 @@ public class MarshallingTestCase {
         CacheContainer ejbCache = new CacheContainer("ejb")
                 .defaultCache("dist")
                 .aliases("sfsb")
-                .jgroupsTransport(() -> {
-                    return new JGroupsTransport();
-                })
-                .jgroupsTransport( t -> {
+                .jgroupsTransport(t -> {
                     t.lockTimeout(60000L);
                 })
                 .distributedCache("dist", c -> {
