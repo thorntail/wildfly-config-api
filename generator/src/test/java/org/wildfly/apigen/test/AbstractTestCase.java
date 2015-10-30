@@ -28,14 +28,15 @@ public class AbstractTestCase  {
     public static void setup() throws Exception {
 
         String configDirectory = System.getProperty("APIGEN_CFG_DIR");
-        Assert.assertNotNull(configDirectory, "No configuration given");
+        Assert.assertNotNull("No configuration given. Please make sure the 'APIGEN_CFG_DIR' property is set", configDirectory);
         config = Config.fromJson(configDirectory + "/example-config.json");
         client = ClientFactory.createClient(config);
     }
 
     @AfterClass
     public static void teardown() throws Exception {
-        client.close();
+        if(client!=null)
+            client.close();
     }
 
     protected ResourceMetaData getResourceMetaData(AddressTemplate address) {

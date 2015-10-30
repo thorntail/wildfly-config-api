@@ -2,15 +2,26 @@ package org.wildfly.swarm.config.runtime.invocation;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
-import org.jboss.jandex.*;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.Index;
+import org.jboss.jandex.MethodInfo;
+import org.wildfly.config.model.NoopContext;
+import org.wildfly.swarm.config.runtime.Address;
 import org.wildfly.swarm.config.runtime.ModelNodeBinding;
+import org.wildfly.swarm.config.runtime.model.AddressTemplate;
+import org.wildfly.swarm.config.runtime.model.StatementContext;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 
 /**
  * Adopts DMR to Entity T and vice versa.
@@ -19,6 +30,7 @@ public class EntityAdapter<T> {
 
     private Class<?> type;
     private Index index;
+    private static final StatementContext NOOP_CTX = new NoopContext();
 
     public EntityAdapter(Class<?> type) {
         this.type = type;
@@ -158,6 +170,93 @@ public class EntityAdapter<T> {
             }
         }
         return entity;
+    }
+
+    /**
+     * Turns a changeset into a composite write attribute operation.
+     * The keys to the changeset are the java property names of the attributes that have been modified.
+     *
+     * @param changeSet values of the java properties that changed
+     * @return composite operation
+     */
+    public ModelNode fromChangeset(Map<String, Object> changeSet, String... wildcards) {
+
+        ClassInfo clazz = null;
+        Class<?> currentType = getType();
+
+        while (clazz == null) {
+            clazz = index.getClassByName(DotName.createSimple(currentType.getCanonicalName()));
+
+            if (clazz == null) {
+                currentType = currentType.getSuperclass();
+                if (currentType == null) {
+                    throw new RuntimeException("Unable to determine ClassInfo");
+                }
+            }
+        }
+
+        Address addressMeta = currentType.getDeclaredAnnotation(Address.class);
+        AddressTemplate address = AddressTemplate.of(addressMeta.value());
+        ModelNode protoType = new ModelNode();
+        protoType.get(ADDRESS).set(address.resolve(NOOP_CTX, wildcards));
+        protoType.get(OP).set(WRITE_ATTRIBUTE_OPERATION);
+
+        ModelNode operation = new ModelNode();
+        operation.get(OP).set(COMPOSITE);
+        operation.get(ADDRESS).setEmptyList();
+
+        List<ModelNode> steps = new ArrayList<ModelNode>();
+
+
+        for (MethodInfo method : clazz.methods()) {
+
+            if (method.hasAnnotation(IndexFactory.BINDING_META)) {
+
+                try {
+
+                    Method target = currentType.getMethod(method.name());
+                    Class<?> propertyType = target.getReturnType();
+                    ModelNodeBinding binding = target.getDeclaredAnnotation(ModelNodeBinding.class);
+                    String detypedName = binding.detypedName();
+
+                    String javaPropName = method.name(); // in our case it's same as the method name
+                    Object value = changeSet.get(javaPropName);
+                    if (value == null) continue;
+
+                    ModelNode step = protoType.clone();
+
+                    step.get(NAME).set(javaPropName);
+                    ModelNode modelNode = step.get(VALUE);
+
+                    try {
+                        ModelType dmrType = Types.resolveModelType(propertyType);
+
+                        if (dmrType == ModelType.LIST) {
+                            new ListTypeAdapter().toDmr(modelNode, detypedName, (List) value);
+
+                        } else if (dmrType == ModelType.OBJECT) {
+                            // only Map<String,String> supported
+                            new MapTypeAdapter().toDmr(modelNode, detypedName, (Map) value);
+
+                        } else {
+                            new SimpleTypeAdapter().toDmr(modelNode, detypedName, dmrType, value);
+                        }
+                    } catch (RuntimeException e) {
+                        throw new RuntimeException("Failed to adopt value " + propertyType.getName(), e);
+                    }
+
+                    steps.add(step);
+
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+        operation.get(STEPS).set(steps);
+
+        return operation;
     }
 
     /**

@@ -42,12 +42,12 @@ library to marshal between Java configuration instances and the JBoss DMR
 <dependency>
 	<groupId>org.wildfly</groupId>
 	<artifactId>api</artifactId>
-	<version>0.3.0</version>
+	<version>...</version>
 </dependency>
 <dependency>
 	<groupId>org.wildfly</groupId>
 	<artifactId>runtime</artifactId>
-	<version>0.3.0</version>
+	<version>...</version>
 </dependency>
 ```
 
@@ -70,9 +70,32 @@ Creating object instances work
 in a similar way, by using the `EntityAdapter<T>`:
 
 ```
-ModelNode modelNode = ...;
+ModelNode payload = ...;
 EntityAdapter<DataSource> entityAdapter = new EntityAdapter<>(DataSource.class);
 DataSource dataSource = entityAdapter.fromDMR(payload);
+```
+
+**Changesets**
+
+Modification to the java objects can be captured in changesets.
+The EntityAdapter turns these changes into a series of write-attribute operations (composite op).
+
+```
+DataSource dataSource = ...;
+
+// setup capture 
+Map<String, Object> changeset = new HashMap<>();
+dataSource.addPropertyChangeListener(evt -> {
+	changeset.put(evt.getPropertyName(), evt.getNewValue());
+});
+
+// modify beans
+dataSource.userName("...");
+dataSource.password("...");
+
+EntityAdapter<DataSource> entityAdapter = new EntityAdapter<>(DataSource.class);
+ModelNode operation = entityAdapter.fromChangeset(changeset, "ds-name");
+
 ```
 
 The `IntegrationTestCase.java` contains more examples.
