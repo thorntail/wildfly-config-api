@@ -32,6 +32,8 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
     private List<JavaType> sources = new ArrayList<>();
 
+    private JavaClassSource subresourceClass;
+
     ClassPlan(ResourceMetaData meta) {
         this(Collections.singletonList(meta));
     }
@@ -60,6 +62,14 @@ public class ClassPlan implements Comparable<ClassPlan> {
         this.originalClassName = determineClassName(0);
         this.className = NameFixer.fixClassName(this.originalClassName);
         this.type = addr.getResourceType();
+    }
+
+    void setSubresourceClass(JavaClassSource cls) {
+        this.subresourceClass = cls;
+    }
+
+    JavaClassSource getSubresourceClass() {
+        return this.subresourceClass;
     }
 
     public AddressTemplate getAddr() {

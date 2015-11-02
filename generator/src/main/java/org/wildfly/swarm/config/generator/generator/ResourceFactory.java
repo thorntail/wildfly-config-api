@@ -51,43 +51,52 @@ public class ResourceFactory implements SourceFactory {
     public JavaClassSource create(ClassIndex index, ClassPlan plan) {
 
         // base class
-        JavaClassSource javaClass = Roaster.parse(
+        JavaClassSource type = Roaster.parse(
                 JavaClassSource.class,
                 "public class " + plan.getClassName() + "<T extends " + plan.getClassName() + "<T>> {}"
         );
 
+        type.setPackage(plan.getPackageName());
+
+        JavaDocSource javaDoc = type.getJavaDoc();
+        ResourceDescription desc = plan.getDescription();
+        javaDoc.setText(desc.getText());
+
+        addAddressAnnotations(type, plan);
+        addConstructor(type, plan);
+        addResourceTypeAnnotation( type, plan );
+        addPropertyChangeSupport( type, plan );
+        addAttribtues( type, plan);
+
+        addChildResources( index, type, plan );
+        addSingletonResources( index, type, plan );
+
+        if ( plan.getSubresourceClass() != null ) {
+            type.addNestedType(plan.getSubresourceClass());
+        }
+
+        return type;
+    }
+
+    protected void addConstructor(JavaClassSource type, ClassPlan plan) {
+
         // resource name
-        javaClass.addField()
+        type.addField()
                 .setName("key")
                 .setPrivate()
                 .setType(String.class);
 
-        // resource references
-        if (1 == plan.getAddresses().size()) {
-            AnnotationSource<JavaClassSource> addressMeta = javaClass.addAnnotation(Address.class);
-            addressMeta.setStringValue(plan.getAddresses().get(0).toString());
-        } else {
-            String[] addresses = new String[plan.getAddresses().size()];
-            int i = 0;
-            for (AddressTemplate addressTemplate : plan.getAddresses()) {
-                addresses[i] = addressTemplate.toString();
-                i++;
-            }
-            AnnotationSource<JavaClassSource> addressesMeta = javaClass.addAnnotation(Addresses.class);
-            addressesMeta.setStringArrayValue(addresses);
-        }
-
         // constructors
         boolean isSingleton = plan.isSingleton();
         if (isSingleton) {
-            javaClass.addMethod()
+            type.addMethod()
                     .setConstructor(true)
                     .setPublic()
                     .setBody("this.key = \"" + plan.getSingletonName() + "\";\n"
                             + "this.pcs = new PropertyChangeSupport(this);");
         } else {
             // regular resources need to provide a key
-            javaClass.addMethod()
+            type.addMethod()
                     .setConstructor(true)
                     .setPublic()
                     .setBody("this.key = key;")
@@ -95,46 +104,67 @@ public class ResourceFactory implements SourceFactory {
 
         }
 
-        javaClass.addMethod()
+        type.addMethod()
                 .setName("getKey")
                 .setPublic()
                 .setReturnType(String.class)
                 .setBody("return this.key;");
+    }
+
+    protected void addAddressAnnotations(JavaClassSource type, ClassPlan plan) {
+
+        // resource references
+        if (1 == plan.getAddresses().size()) {
+            type.addImport(Address.class);
+            AnnotationSource<JavaClassSource> addressMeta = type.addAnnotation(Address.class);
+            addressMeta.setStringValue(plan.getAddresses().get(0).toString());
+        } else {
+            type.addImport(Addresses.class);
+            String[] addresses = new String[plan.getAddresses().size()];
+            int i = 0;
+            for (AddressTemplate addressTemplate : plan.getAddresses()) {
+                addresses[i] = addressTemplate.toString();
+                i++;
+            }
+            AnnotationSource<JavaClassSource> addressesMeta = type.addAnnotation(Addresses.class);
+            addressesMeta.setStringArrayValue(addresses);
+        }
+    }
 
 
-        javaClass.setPackage(plan.getPackageName());
+
+
 
         // javadoc
-        JavaDocSource javaDoc = javaClass.getJavaDoc();
-        ResourceDescription desc = plan.getDescription();
-        javaDoc.setText(desc.getText());
 
         // imports
-        javaClass.addImport(Implicit.class);
-        javaClass.addImport(Address.class);
-        javaClass.addImport(Addresses.class);
-        javaClass.addImport(ResourceType.class);
-        javaClass.addImport(ModelNodeBinding.class);
-        javaClass.addImport(PropertyChangeListener.class);
-        javaClass.addImport(PropertyChangeSupport.class);
+        //type.addImport(PropertyChangeListener.class);
+        //type.addImport(PropertyChangeSupport.class);
 
-        AnnotationSource<JavaClassSource> typeAnno = javaClass.addAnnotation();
+
+    protected void addResourceTypeAnnotation(JavaClassSource type, ClassPlan plan) {
+        type.addImport(ResourceType.class);
+
+        AnnotationSource<JavaClassSource> typeAnno = type.addAnnotation();
         typeAnno.setName("ResourceType");
         typeAnno.setStringValue(plan.getResourceType());
 
-
-        if (isSingleton) {
-            AnnotationSource<JavaClassSource> implicitMeta = javaClass.addAnnotation();
-            implicitMeta.setName("Implicit");
+        if (plan.isSingleton()) {
+            type.addImport(Implicit.class);
+            AnnotationSource<JavaClassSource> implicitMeta = type.addAnnotation();
+            implicitMeta.setName(Implicit.class.getSimpleName());
         }
+    }
+
+    protected void addPropertyChangeSupport(JavaClassSource type, ClassPlan plan) {
 
         // property change listeners
-        javaClass.addField()
+        type.addField()
                 .setName("pcs")
                 .setType(PropertyChangeSupport.class)
                 .setPrivate();
 
-        final MethodSource<JavaClassSource> listenerAdd = javaClass.addMethod();
+        final MethodSource<JavaClassSource> listenerAdd = type.addMethod();
         listenerAdd.getJavaDoc().setText("Adds a property change listener");
         listenerAdd.setPublic()
                 .setName("addPropertyChangeListener")
@@ -142,14 +172,19 @@ public class ResourceFactory implements SourceFactory {
         listenerAdd.setBody("if(null==this.pcs) this.pcs = new PropertyChangeSupport(this);\n" +
                 "this.pcs.addPropertyChangeListener(listener);");
 
-        final MethodSource<JavaClassSource> listenerRemove = javaClass.addMethod();
+        final MethodSource<JavaClassSource> listenerRemove = type.addMethod();
         listenerRemove.getJavaDoc().setText("Removes a property change listener");
         listenerRemove.setPublic()
                 .setName("removePropertyChangeListener")
                 .addParameter(PropertyChangeListener.class, "listener");
         listenerRemove.setBody("if(this.pcs!=null) this.pcs.removePropertyChangeListener(listener);");
+    }
 
+    protected void addAttribtues(JavaClassSource type, ClassPlan plan) {
+        ResourceDescription desc = plan.getDescription();
         Inflector inflector = new Inflector();
+
+        type.addImport(ModelNodeBinding.class);
 
         desc.getAttributes().forEach(
                 att -> {
@@ -163,12 +198,12 @@ public class ResourceFactory implements SourceFactory {
                             final String name = javaAttributeName(att.getName());
                             String attributeDescription = att.getValue().get(DESCRIPTION).asString();
 
-                            FieldSource attributeField = javaClass.addField()
+                            FieldSource attributeField = type.addField()
                                     .setName(name)
                                     .setType(resolvedType.get())
                                     .setPrivate();
 
-                            final MethodSource<JavaClassSource> accessor = javaClass.addMethod();
+                            final MethodSource<JavaClassSource> accessor = type.addMethod();
                             accessor.getJavaDoc().setText(attributeDescription);
                             accessor.setPublic()
                                     .setName(name)
@@ -176,7 +211,7 @@ public class ResourceFactory implements SourceFactory {
                                     .setBody("return this." + name + ";");
 
 
-                            final MethodSource<JavaClassSource> mutator = javaClass.addMethod();
+                            final MethodSource<JavaClassSource> mutator = type.addMethod();
                             mutator.getJavaDoc().setText(attributeDescription);
                             mutator.addParameter(resolvedType.get(), "value");
                             mutator.setPublic()
@@ -189,7 +224,7 @@ public class ResourceFactory implements SourceFactory {
                                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
                             AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
-                            bindingMeta.setName("ModelNodeBinding");
+                            bindingMeta.setName(ModelNodeBinding.class.getSimpleName());
                             bindingMeta.setStringValue("detypedName", att.getName());
 
                             // If the model type is LIST, then also add an appending mutator
@@ -197,8 +232,8 @@ public class ResourceFactory implements SourceFactory {
                                 String singularName = inflector.singularize(name);
                                 // initialize the field to an array list
                                 //attributeField.setLiteralInitializer("new java.util.ArrayList<>()");
-                                javaClass.addImport(Arrays.class);
-                                final MethodSource<JavaClassSource> appender = javaClass.addMethod();
+                                type.addImport(Arrays.class);
+                                final MethodSource<JavaClassSource> appender = type.addMethod();
                                 appender.getJavaDoc().setText(attributeDescription);
                                 appender.addParameter(Types.resolveValueType(att.getValue()), "value");
                                 appender.setPublic()
@@ -208,7 +243,7 @@ public class ResourceFactory implements SourceFactory {
 
                                 // also produce a var-args version
 
-                                final MethodSource<JavaClassSource> varargs = javaClass.addMethod();
+                                final MethodSource<JavaClassSource> varargs = type.addMethod();
                                 varargs.getJavaDoc().setText(attributeDescription);
                                 varargs.addParameter(Types.resolveValueType(att.getValue()), "...args");
                                 varargs.setPublic()
@@ -221,7 +256,7 @@ public class ResourceFactory implements SourceFactory {
                                 // initialize the field to a HashMap
                                 //attributeField.setLiteralInitializer("new java.util.HashMap<String, Object>()");
                                 String singularName = inflector.singularize(name);
-                                final MethodSource<JavaClassSource> appender = javaClass.addMethod();
+                                final MethodSource<JavaClassSource> appender = type.addMethod();
                                 appender.getJavaDoc().setText(attributeDescription);
                                 appender.addParameter(String.class, "key");
                                 appender.addParameter(Object.class, "value");
@@ -236,18 +271,19 @@ public class ResourceFactory implements SourceFactory {
                     } //else System.err.println(att.getValue());
                 }
         );
+    }
 
-        if (!desc.getChildrenTypes().isEmpty()) {
-            createChildAccessors(index, plan, javaClass);
+
+    protected void addChildResources(ClassIndex index, JavaClassSource type, ClassPlan plan) {
+        if (!plan.getDescription().getChildrenTypes().isEmpty()) {
+            createChildAccessors(index, plan, type);
         }
+    }
 
-        if (!desc.getSingletonChildrenTypes().isEmpty()) {
-            createSingletonChildAccessors(index, plan, javaClass);
+    protected void addSingletonResources(ClassIndex index, JavaClassSource type, ClassPlan plan) {
+        if (!plan.getDescription().getSingletonChildrenTypes().isEmpty()) {
+            createSingletonChildAccessors(index, plan, type);
         }
-
-        plan.addSource(javaClass);
-
-        return javaClass;
     }
 
     /**
@@ -261,7 +297,7 @@ public class ResourceFactory implements SourceFactory {
 
         ResourceMetaData resourceMetaData = plan.getMetaData();
 
-        final JavaClassSource subresourceClass = createSubresourceClass(plan, javaClass);
+        final JavaClassSource subresourceClass = getOrCreateSubresourceClass(plan, javaClass);
 
         // For each subresource create a getter/mutator/list-mutator
         final ResourceDescription resourceMetaDataDescription = resourceMetaData.getDescription();
@@ -381,39 +417,15 @@ public class ResourceFactory implements SourceFactory {
         }
 
         // initialize the collections
-        javaClass.addNestedType(subresourceClass);
     }
 
-    private static JavaClassSource createSubresourceClass(ClassPlan plan, JavaClassSource javaClass) {
 
-        JavaClassSource subresourceClass = Roaster.parse(
-                JavaClassSource.class,
-                "class " + javaClass.getName() + "Resources" + " {}"
-        );
-        subresourceClass.setPackage(plan.getPackageName());
-        subresourceClass.getJavaDoc().setText("Child mutators for " + javaClass.getName());
-        subresourceClass.setPublic();
-
-        javaClass.addField()
-                .setPrivate()
-                .setType(subresourceClass.getName())
-                .setName("subresources")
-                .setLiteralInitializer("new " + subresourceClass.getName() + "();");
-
-        final MethodSource<JavaClassSource> subresourcesMethod = javaClass.addMethod()
-                .setName("subresources")
-                .setPublic();
-        subresourcesMethod.setReturnType(subresourceClass.getName());
-        subresourcesMethod.setBody("return this.subresources;");
-
-        javaClass.addImport("java.util.List");
-        javaClass.addImport(Subresource.class);
-        return subresourceClass;
-    }
 
     public static void createSingletonChildAccessors(ClassIndex index, ClassPlan plan, JavaClassSource javaClass) {
 
         ResourceMetaData resourceMetaData = plan.getMetaData();
+
+        final JavaClassSource subresourceClass = getOrCreateSubresourceClass(plan, javaClass);
 
         final ResourceDescription description = resourceMetaData.getDescription();
         final Set<String> singletonNames = description.getSingletonChildrenTypes();
@@ -429,13 +441,13 @@ public class ResourceFactory implements SourceFactory {
 
             String propName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, childClass.getOriginalClassName());
 
-            javaClass.addField()
+            subresourceClass.addField()
                     .setName(propName)
                     .setType(childClass.getFullyQualifiedClassName())
                     .setPrivate();
 
             // Add an accessor method
-            final MethodSource<JavaClassSource> accessor = javaClass.addMethod();
+            final MethodSource<JavaClassSource> accessor = subresourceClass.addMethod();
             String javaDoc = description.getChildDescription(type, name).getText();
             accessor.getJavaDoc()
                     .setText(javaDoc);
@@ -456,7 +468,7 @@ public class ResourceFactory implements SourceFactory {
             mutator.setPublic()
                     .setName(propName)
                     .setReturnType("T")
-                    .setBody("this." + propName + "=value;\nreturn (T) this;")
+                    .setBody("this.subresources." + propName + "=value;\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             javaClass.addImport(childClass.getFullyQualifiedClassName() + "Consumer");
@@ -476,7 +488,7 @@ public class ResourceFactory implements SourceFactory {
                     .setBody(
                             childClass.getClassName() + "<?> child = new " + childClass.getClassName() + "<>();\n"
                                     + "if ( consumer != null ) { consumer.accept(child); }\n"
-                                    + "this." + propName + " = child;\n"
+                                    + "this.subresources." + propName + " = child;\n"
                                     + "return (T) this;"
                     )
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
@@ -491,9 +503,44 @@ public class ResourceFactory implements SourceFactory {
             supplier.setPublic()
                     .setName(propName)
                     .setReturnType("T")
-                    .setBody("this." + propName + " = supplier.get();\nreturn (T) this;")
+                    .setBody("this.subresources." + propName + " = supplier.get();\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
         }
+    }
+
+    private static JavaClassSource getOrCreateSubresourceClass(ClassPlan plan, JavaClassSource javaClass) {
+
+        JavaClassSource subresourceClass = plan.getSubresourceClass();
+
+        if ( subresourceClass != null ) {
+            return subresourceClass;
+        }
+
+        subresourceClass = Roaster.parse(
+                JavaClassSource.class,
+                "class " + javaClass.getName() + "Resources" + " {}"
+        );
+        subresourceClass.setPackage(plan.getPackageName());
+        subresourceClass.getJavaDoc().setText("Child mutators for " + javaClass.getName());
+        subresourceClass.setPublic();
+        subresourceClass.setStatic(true);
+
+        javaClass.addField()
+                .setPrivate()
+                .setType(subresourceClass.getName())
+                .setName("subresources")
+                .setLiteralInitializer("new " + subresourceClass.getName() + "();");
+
+        final MethodSource<JavaClassSource> subresourcesMethod = javaClass.addMethod()
+                .setName("subresources")
+                .setPublic();
+        subresourcesMethod.setReturnType(subresourceClass.getName());
+        subresourcesMethod.setBody("return this.subresources;");
+
+        javaClass.addImport("java.util.List");
+        javaClass.addImport(Subresource.class);
+        plan.setSubresourceClass( subresourceClass );
+        return subresourceClass;
     }
 
     public final static String javaAttributeName(String dmr) {

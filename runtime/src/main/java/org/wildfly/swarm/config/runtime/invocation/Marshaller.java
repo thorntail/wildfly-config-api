@@ -105,15 +105,6 @@ public class Marshaller {
         return subresources.get(type);
     }
 
-    private static LinkedList<ModelNode> singletonSubresourcesFor(Object entity, PathAddress address) throws Exception {
-        final LinkedList<ModelNode> list = new LinkedList<>();
-        for (Method target : orderedSubresources(entity)) {
-            final Object result = target.invoke(entity);
-            if (result != null) appendNode(result, address, list);
-        }
-        return list;
-    }
-
     private static List<Method> orderedSubresources(Object parent) throws NoSuchMethodException {
         final Class<?> parentClass = parent.getClass();
         return new SubresourceFilter(parentClass).invoke();
@@ -128,14 +119,20 @@ public class Marshaller {
                 Object subresources = optional.get().invoke(parent);
 
                 for (Method target : orderedSubresources(subresources)) {
-                    List<?> resourceList = (List<?>) target.invoke(subresources);
-                    for (Object o : resourceList) {
-                        appendNode(o, address, list);
+                    if ( target.getReturnType() == List.class ) {
+                        List<?> resourceList = (List<?>) target.invoke(subresources);
+                        for (Object o : resourceList) {
+                            appendNode(o, address, list);
+                        }
+                    } else {
+                        Object resource = target.invoke(subresources);
+                        if ( resource != null ) {
+                            appendNode(resource, address, list);
+                        }
+
                     }
                 }
             }
-            // Then handle singletons
-            list.addAll(singletonSubresourcesFor(parent, address));
         } catch (Exception e) {
             System.err.println("Error getting subresources for " + parent.getClass().getSimpleName());
             e.printStackTrace();
