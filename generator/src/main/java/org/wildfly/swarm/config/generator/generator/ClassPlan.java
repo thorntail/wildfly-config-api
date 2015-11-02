@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.common.base.CaseFormat;
+import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
@@ -29,13 +30,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
     private String addresses;
 
-    private JavaClassSource resourceSource;
-
-    private JavaInterfaceSource configSource;
-
-    private JavaInterfaceSource supplierSource;
-
-    private boolean templated = false;
+    private List<JavaType> sources = new ArrayList<>();
 
     ClassPlan(ResourceMetaData meta) {
         this(Collections.singletonList(meta));
@@ -91,31 +86,13 @@ public class ClassPlan implements Comparable<ClassPlan> {
         return this.meta.get(0);
     }
 
-    void setResourceClassSource(JavaClassSource source) {
-        this.resourceSource = source;
+    void addSource(JavaType source) {
+        this.sources.add( source );
     }
 
-    JavaClassSource getResourceClassSource() {
-        return this.resourceSource;
+    List<JavaType> getSources() {
+        return this.sources;
     }
-
-    void setConfiguratorInterfaceSource(JavaInterfaceSource source) {
-        this.configSource = source;
-    }
-
-
-    JavaInterfaceSource getConfiguratorInterfaceSource() {
-        return this.configSource;
-    }
-
-    void setSupplierInterfaceSource(JavaInterfaceSource source) {
-        this.supplierSource = source;
-    }
-
-    JavaInterfaceSource getSupplierInterfaceSource() {
-        return this.supplierSource;
-    }
-
 
     void deduplicate(int round) {
         this.packageName = determinePackageName(round);

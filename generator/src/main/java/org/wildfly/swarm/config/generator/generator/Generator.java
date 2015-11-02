@@ -114,6 +114,12 @@ public class Generator {
 
         List<SubsystemPlan> subsystems = new ArrayList<>();
 
+        ArrayList<SourceFactory> factories = new ArrayList<SourceFactory>() {{
+            add(new ResourceFactory());
+            add(new ConsumerFactory());
+            add(new SupplierFactory());
+        }};
+
         config.getGeneratorTargets().forEach(
                 target -> {
                     try {
@@ -128,29 +134,14 @@ public class Generator {
 
                         List<ClassPlan> classPlans = plan.getClassPlans();
                         for (ClassPlan classPlan : classPlans) {
-                            ResourceClassFactory.createResourceAsClass(plan, classPlan);
-                            ConfiguratorInterfaceFactory.createConfiguratorAsInterface(plan, classPlan);
-                            SupplierInterfaceFactory.createSupplierAsInterface(plan, classPlan);
+                            for (SourceFactory factory : factories) {
+                                classPlan.addSource(factory.create(plan, classPlan));
+                            }
                         }
 
                         for (ClassPlan classPlan : classPlans) {
-                            if (classPlan.getResourceClassSource() == null) {
-                                System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName());
-                            } else {
-                                write(classPlan.getResourceClassSource());
-                                System.err.println("wrote: " + classPlan.getFullyQualifiedClassName());
-                            }
-                            if (classPlan.getConfiguratorInterfaceSource() == null) {
-                                System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName() + "Consumer");
-                            } else {
-                                write(classPlan.getConfiguratorInterfaceSource());
-                                System.err.println("wrote: " + classPlan.getFullyQualifiedClassName() + "Consumer");
-                            }
-                            if (classPlan.getSupplierInterfaceSource() == null) {
-                                System.err.println("did not generate: " + classPlan.getFullyQualifiedClassName() + "Supplier");
-                            } else {
-                                write(classPlan.getSupplierInterfaceSource());
-                                System.err.println("wrote: " + classPlan.getFullyQualifiedClassName() + "Supplier");
+                            for (JavaType javaType : classPlan.getSources()) {
+                                write(javaType);
                             }
                         }
                     } catch (Exception e) {
@@ -168,7 +159,7 @@ public class Generator {
                 .collect(Collectors.toSet())
                 .stream().sorted()
                 .forEach((e) -> {
-                    System.err.println("        <path name=\"" + e.replace('.', '/' ) + "\"/>");
+                    System.err.println("        <path name=\"" + e.replace('.', '/') + "\"/>");
                 });
 
         System.err.println("----------------- END module.xml paths -------------------------");

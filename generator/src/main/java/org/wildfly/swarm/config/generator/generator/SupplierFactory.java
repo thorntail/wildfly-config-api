@@ -3,6 +3,7 @@ package org.wildfly.swarm.config.generator.generator;
 import java.util.logging.Logger;
 
 import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 
@@ -12,9 +13,9 @@ import org.jboss.forge.roaster.model.source.MethodSource;
  * @author Heiko Braun
  * @since 30/07/15
  */
-public class SupplierInterfaceFactory {
+public class SupplierFactory implements SourceFactory {
 
-    private static final Logger log = Logger.getLogger(SupplierInterfaceFactory.class.getName());
+    private static final Logger log = Logger.getLogger(SupplierFactory.class.getName());
 
     /**
      * Base template for a resource representation.
@@ -24,29 +25,31 @@ public class SupplierInterfaceFactory {
      * @param plan
      * @return
      */
-    public static JavaInterfaceSource createSupplierAsInterface(ClassIndex index, ClassPlan plan) {
+    public JavaType create(ClassIndex index, ClassPlan plan) {
 
         // base class
-        JavaInterfaceSource javaInterface = Roaster.parse(
+        JavaInterfaceSource type = Roaster.parse(
                 JavaInterfaceSource.class,
                 "public interface " + plan.getClassName() + "Supplier<T extends " + plan.getClassName() + "> {}"
         );
 
-        javaInterface.setPackage(plan.getPackageName());
+        type.setPackage(plan.getPackageName());
 
-        javaInterface.addImport(plan.getPackageName() + "." + plan.getClassName());
-        javaInterface.addAnnotation( FunctionalInterface.class );
+        type.addAnnotation(FunctionalInterface.class);
 
-        final MethodSource<JavaInterfaceSource> accessor = javaInterface.addMethod();
-        accessor.getJavaDoc()
+        addGet( type, plan );
+
+        return type;
+    }
+
+    protected void addGet(JavaInterfaceSource type, ClassPlan plan) {
+        final MethodSource<JavaInterfaceSource> method = type.addMethod();
+        method.getJavaDoc()
                 .setText("Constructed instance of " + plan.getClassName() + " resource")
                 .addTagValue("@return", "The instance");
-        accessor.setPublic()
+        method.setPublic()
                 .setName("get")
                 .setReturnType(plan.getClassName());
-
-        plan.setSupplierInterfaceSource(javaInterface);
-        return javaInterface;
     }
 
 }

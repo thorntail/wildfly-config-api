@@ -3,6 +3,7 @@ package org.wildfly.swarm.config.generator.generator;
 import java.util.logging.Logger;
 
 import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 
@@ -12,9 +13,9 @@ import org.jboss.forge.roaster.model.source.MethodSource;
  * @author Heiko Braun
  * @since 30/07/15
  */
-public class ConfiguratorInterfaceFactory {
+public class ConsumerFactory implements SourceFactory {
 
-    private static final Logger log = Logger.getLogger(ConfiguratorInterfaceFactory.class.getName());
+    private static final Logger log = Logger.getLogger(ConsumerFactory.class.getName());
 
     /**
      * Base template for a resource representation.
@@ -24,31 +25,33 @@ public class ConfiguratorInterfaceFactory {
      * @param plan
      * @return
      */
-    public static JavaInterfaceSource createConfiguratorAsInterface(ClassIndex index, ClassPlan plan) {
+    public JavaType create(ClassIndex index, ClassPlan plan) {
 
         // base class
-        JavaInterfaceSource javaInterface = Roaster.parse(
+        JavaInterfaceSource type = Roaster.parse(
                 JavaInterfaceSource.class,
                 "public interface " + plan.getClassName() + "Consumer<T extends " + plan.getClassName() + "> {}"
         );
 
-        javaInterface.setPackage(plan.getPackageName());
+        type.setPackage(plan.getPackageName());
 
-        javaInterface.addImport(plan.getPackageName() + "." + plan.getClassName());
-        javaInterface.addAnnotation( FunctionalInterface.class );
+        type.addImport(plan.getPackageName() + "." + plan.getClassName());
+        type.addAnnotation(FunctionalInterface.class);
 
-        final MethodSource<JavaInterfaceSource> accessor = javaInterface.addMethod();
-        accessor.getJavaDoc()
+        addAccept(type, plan);
+
+        return type;
+    }
+
+    protected void addAccept(JavaInterfaceSource type, ClassPlan plan) {
+        final MethodSource<JavaInterfaceSource> method = type.addMethod();
+        method.getJavaDoc()
                 .setText("Configure a pre-constructed instance of " + plan.getClassName() + " resource")
                 .addTagValue("@parameter", "Instance of " + plan.getClassName() + " to configure")
                 .addTagValue("@return", "nothing");
-        accessor.addParameter( "T", "value" );
-        accessor.setPublic()
-                .setName("accept")
+        method.addParameter( "T", "value" );
+        method.setName("accept")
                 .setReturnType("void");
-
-        plan.setConfiguratorInterfaceSource(javaInterface);
-        return javaInterface;
     }
 
 }

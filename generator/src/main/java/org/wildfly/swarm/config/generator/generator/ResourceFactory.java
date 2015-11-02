@@ -1,9 +1,15 @@
 package org.wildfly.swarm.config.generator.generator;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.Set;
+import java.util.logging.Logger;
+
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.JavaClass;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -20,14 +26,9 @@ import org.wildfly.swarm.config.runtime.Subresource;
 import org.wildfly.swarm.config.runtime.invocation.Types;
 import org.wildfly.swarm.config.runtime.model.AddressTemplate;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPRECATED;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
 
 /**
  * Encapsulates the templates for generating source files from resource descriptions
@@ -35,9 +36,9 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
  * @author Heiko Braun
  * @since 30/07/15
  */
-public class ResourceClassFactory {
+public class ResourceFactory implements SourceFactory {
 
-    private static final Logger log = Logger.getLogger(ResourceClassFactory.class.getName());
+    private static final Logger log = Logger.getLogger(ResourceFactory.class.getName());
 
     /**
      * Base template for a resource representation.
@@ -47,12 +48,12 @@ public class ResourceClassFactory {
      * @param plan
      * @return
      */
-    public static JavaClassSource createResourceAsClass(ClassIndex index, ClassPlan plan) {
+    public JavaClassSource create(ClassIndex index, ClassPlan plan) {
 
         // base class
         JavaClassSource javaClass = Roaster.parse(
                 JavaClassSource.class,
-                "public class " + plan.getClassName() + "<T extends " + plan.getClassName() + "> {}"
+                "public class " + plan.getClassName() + "<T extends " + plan.getClassName() + "<T>> {}"
         );
 
         // resource name
@@ -244,7 +245,7 @@ public class ResourceClassFactory {
             createSingletonChildAccessors(index, plan, javaClass);
         }
 
-        plan.setResourceClassSource(javaClass);
+        plan.addSource(javaClass);
 
         return javaClass;
     }
@@ -340,10 +341,11 @@ public class ResourceClassFactory {
                     .addTagValue("@return", "this");
             configurator.addParameter(String.class, "childKey");
             configurator.addParameter(childClassName + "Consumer", "consumer");
+            //configurator.addParameter(childClassName + "Consumer", "consumer");
             configurator.setPublic()
                     .setName(singularName)
                     .setReturnType("T")
-                    .setBody(childClassName + " child = new " + childClassName + "(childKey);\n if ( consumer != null ) { consumer.accept(child); }\n" + singularName + "(child);\nreturn (T) this;")
+                    .setBody(childClassName + "<?> child = new " + childClassName + "<>(childKey);\n if ( consumer != null ) { consumer.accept(child); }\n" + singularName + "(child);\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that factories a single resource and applies a supplied configurator. Mutators are added to the containing class
@@ -466,13 +468,13 @@ public class ResourceClassFactory {
 
             consumer.getJavaDoc()
                     .setText(javaDoc);
-            //consumer.addParameter(childClass.getClassName() + "Configurator", "consumer");
             consumer.addParameter(childClass.getClassName() + "Consumer", "consumer");
+            //consumer.addParameter(childClass.getClassName() + "Consumer", "consumer");
             consumer.setPublic()
                     .setName(propName)
                     .setReturnType("T")
                     .setBody(
-                            childClass.getClassName() + " child = new " + childClass.getClassName() + "();\n"
+                            childClass.getClassName() + "<?> child = new " + childClass.getClassName() + "<>();\n"
                                     + "if ( consumer != null ) { consumer.accept(child); }\n"
                                     + "this." + propName + " = child;\n"
                                     + "return (T) this;"
@@ -484,8 +486,8 @@ public class ResourceClassFactory {
             final MethodSource<JavaClassSource> supplier = javaClass.addMethod();
             supplier.getJavaDoc()
                     .setText(javaDoc);
-            //supplier.addParameter(childClass.getClassName() + "Supplier", "supplier");
-            supplier.addParameter(  childClass.getClassName() + "Supplier", "supplier" );
+            supplier.addParameter( childClass.getClassName() + "Supplier", "supplier");
+            //supplier.addParameter(  childClass.getClassName() + "Supplier", "supplier" );
             supplier.setPublic()
                     .setName(propName)
                     .setReturnType("T")
