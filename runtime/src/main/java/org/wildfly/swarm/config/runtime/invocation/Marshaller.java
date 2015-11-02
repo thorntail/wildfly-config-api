@@ -118,18 +118,22 @@ public class Marshaller {
             if (optional.isPresent()) {
                 Object subresources = optional.get().invoke(parent);
 
+                // Do regular sub-resources first
                 for (Method target : orderedSubresources(subresources)) {
-                    if ( target.getReturnType() == List.class ) {
+                    if (target.getReturnType() == List.class) {
                         List<?> resourceList = (List<?>) target.invoke(subresources);
                         for (Object o : resourceList) {
                             appendNode(o, address, list);
                         }
-                    } else {
+                    }
+                }
+                // Do singletons next
+                for (Method target: orderedSubresources(subresources) ) {
+                    if (target.getReturnType() != List.class) {
                         Object resource = target.invoke(subresources);
                         if ( resource != null ) {
                             appendNode(resource, address, list);
                         }
-
                     }
                 }
             }

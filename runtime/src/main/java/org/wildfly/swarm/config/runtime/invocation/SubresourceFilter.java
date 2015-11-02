@@ -21,6 +21,7 @@ class SubresourceFilter {
     private final Index index;
 
     public SubresourceFilter(Class<?> parentClass) {
+
         this.parentClass = parentClass;
         this.index = IndexFactory.createIndex(parentClass);
         String name = this.parentClass.getName();
