@@ -295,6 +295,8 @@ public class ResourceFactory implements SourceFactory {
      */
     public static void createChildAccessors(ClassIndex index, ClassPlan plan, JavaClassSource javaClass) {
 
+        Inflector inflector = new Inflector();
+
         ResourceMetaData resourceMetaData = plan.getMetaData();
 
         final JavaClassSource subresourceClass = getOrCreateSubresourceClass(plan, javaClass);
@@ -318,9 +320,12 @@ public class ResourceFactory implements SourceFactory {
                     CaseFormat.LOWER_CAMEL,
                     Keywords.escape(childClass.getOriginalClassName())
             );
+
             String singularName = propName;
+            String pluralName = inflector.pluralize( singularName );
+
             if (!propName.endsWith("s")) {
-                propName += "s";
+                propName = pluralName;
             }
 
             // Add a property and an initializer for this subresource to the class
@@ -477,7 +482,6 @@ public class ResourceFactory implements SourceFactory {
             // Add a consumer to configure
             final MethodSource<JavaClassSource> consumer = javaClass.addMethod();
 
-
             consumer.getJavaDoc()
                     .setText(javaDoc);
             consumer.addParameter(childClass.getClassName() + "Consumer", "consumer");
@@ -488,6 +492,21 @@ public class ResourceFactory implements SourceFactory {
                     .setBody(
                             childClass.getClassName() + "<?> child = new " + childClass.getClassName() + "<>();\n"
                                     + "if ( consumer != null ) { consumer.accept(child); }\n"
+                                    + "this.subresources." + propName + " = child;\n"
+                                    + "return (T) this;"
+                    )
+                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+
+            // Add a consumer to configure
+            final MethodSource<JavaClassSource> noConfig = javaClass.addMethod();
+
+            noConfig.getJavaDoc()
+                    .setText(javaDoc);
+            noConfig.setPublic()
+                    .setName(propName)
+                    .setReturnType("T")
+                    .setBody(
+                            childClass.getClassName() + "<?> child = new " + childClass.getClassName() + "<>();\n"
                                     + "this.subresources." + propName + " = child;\n"
                                     + "return (T) this;"
                     )
