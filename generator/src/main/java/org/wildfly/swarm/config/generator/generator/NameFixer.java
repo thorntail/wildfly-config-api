@@ -36,7 +36,7 @@ public class NameFixer {
 
                     int nextCharLoc = loc + this.key.length();
                     if ((nextCharLoc >= input.length() )
-                            || (nextCharLoc < input.length() && Character.isUpperCase(input.charAt(nextCharLoc)))) {
+                            || (nextCharLoc < input.length() && ( Character.isUpperCase(input.charAt(nextCharLoc))) || Character.isDigit( input.charAt(nextCharLoc)))) {
                         output.append(this.key.toUpperCase());
                     } else {
                         output.append(this.key);
