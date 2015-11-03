@@ -30,7 +30,7 @@ public class ConsumerFactory implements SourceFactory {
         // base class
         JavaInterfaceSource type = Roaster.parse(
                 JavaInterfaceSource.class,
-                "public interface " + plan.getClassName() + "Consumer<T extends " + plan.getClassName() + "> {}"
+                "public interface " + plan.getClassName() + "Consumer<T extends " + plan.getClassName() + "<T>> {}"
         );
 
         type.setPackage(plan.getPackageName());
@@ -39,6 +39,7 @@ public class ConsumerFactory implements SourceFactory {
         type.addAnnotation(FunctionalInterface.class);
 
         addAccept(type, plan);
+        addAndThen(type, plan);
 
         return type;
     }
@@ -49,9 +50,26 @@ public class ConsumerFactory implements SourceFactory {
                 .setText("Configure a pre-constructed instance of " + plan.getClassName() + " resource")
                 .addTagValue("@parameter", "Instance of " + plan.getClassName() + " to configure")
                 .addTagValue("@return", "nothing");
-        method.addParameter( "T", "value" );
+        method.addParameter("T", "value");
         method.setName("accept")
                 .setReturnType("void");
+    }
+
+    protected void addAndThen(JavaInterfaceSource type, ClassPlan plan) {
+
+        /*
+        final MethodSource<JavaInterfaceSource> method = type.addMethod();
+        method.addParameter( plan.getClassName() + "Consumer<T>", "after" );
+        method.setName("andThen")
+                .setBody( "return (c)->{ this.accept(c); after.accept(c); };")
+                .setReturnType( plan.getClassName() +"Consumer<T>" )
+                .setDefault(true);
+                */
+        type.addMethod(
+                "default " + plan.getClassName() + "Consumer<T> andThen(" + plan.getClassName() + "Consumer<T> after) {\n"
+                        + "  return (c)->{ this.accept(c); after.accept(c);};\n"
+                        + "}\n");
+
     }
 
 }
