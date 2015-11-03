@@ -39,6 +39,10 @@
       "targetPackage": "org.wildfly.swarm.config.jca"
     },
     {
+      "sourceAddress": "/subsystem=jgroups",
+      "targetPackage": "org.wildfly.swarm.config.jgroups"
+    },
+    {
       "sourceAddress": "/subsystem=jpa",
       "targetPackage": "org.wildfly.swarm.config.jpa"
     },

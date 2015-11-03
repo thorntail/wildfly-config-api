@@ -106,6 +106,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
     void deduplicate(int round) {
         this.packageName = determinePackageName(round);
+        this.className = determineClassName(round);
     }
 
     public String toString() {
@@ -213,6 +214,15 @@ public class ClassPlan implements Comparable<ClassPlan> {
                 clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
             } else if (name.toLowerCase().endsWith(type.toLowerCase())) {
                 clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
+            } else if ( name.contains("." ) ) {
+                int dotLoc = name.indexOf( "." );
+                this.packageName = this.packageName + "." + name.substring( 0, dotLoc );
+                String rest = name.substring(dotLoc + 1 );
+                if ( rest.chars().allMatch( c->Character.isUpperCase(c) || Character.isDigit(c)) ) {
+                    clsName = rest;
+                } else {
+                    clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, rest );
+                }
             } else {
                 clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name + "-" + type);
             }
