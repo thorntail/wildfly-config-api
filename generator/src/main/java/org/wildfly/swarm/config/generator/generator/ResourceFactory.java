@@ -386,7 +386,7 @@ public class ResourceFactory implements SourceFactory {
             configurator.setPublic()
                     .setName(singularName)
                     .setReturnType("T")
-                    .setBody(childClassName + "<?> child = new " + childClassName + "<>(childKey);\n if ( consumer != null ) { consumer.accept(child); }\n" + singularName + "(child);\nreturn (T) this;")
+                    .setBody(childClassName + "<? extends "+childClassName+"> child = new " + childClassName + "<>(childKey);\n if ( consumer != null ) { consumer.accept(child); }\n" + singularName + "(child);\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that factories a single resource and applies a supplied configurator. Mutators are added to the containing class
@@ -490,7 +490,7 @@ public class ResourceFactory implements SourceFactory {
                     .setName(propName)
                     .setReturnType("T")
                     .setBody(
-                            childClass.getClassName() + "<?> child = new " + childClass.getClassName() + "<>();\n"
+                            childClass.getClassName() + "<? extends "+childClass.getClassName()+"> child = new " + childClass.getClassName() + "<>();\n"
                                     + "if ( consumer != null ) { consumer.accept(child); }\n"
                                     + "this.subresources." + propName + " = child;\n"
                                     + "return (T) this;"
@@ -506,7 +506,7 @@ public class ResourceFactory implements SourceFactory {
                     .setName(propName)
                     .setReturnType("T")
                     .setBody(
-                            childClass.getClassName() + "<?> child = new " + childClass.getClassName() + "<>();\n"
+                            childClass.getClassName() + "<? extends "+childClass.getClassName()+"> child = new " + childClass.getClassName() + "<>();\n"
                                     + "this.subresources." + propName + " = child;\n"
                                     + "return (T) this;"
                     )
