@@ -83,6 +83,10 @@
       "targetPackage": "org.wildfly.swarm.config.undertow"
     },
     {
+      "sourceAddress": "/subsystem=webservices",
+      "targetPackage": "org.wildfly.swarm.config.webservices"
+    },
+    {
       "sourceAddress": "/subsystem=weld",
       "targetPackage": "org.wildfly.swarm.config.weld"
     }
