@@ -10,14 +10,14 @@
 
   <groupId>org.wildfly.swarm</groupId>
   <artifactId>config-api-parent</artifactId>
-  <version>0.3.16</version>
+  <version>0.3.17-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <scm>
     <connection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</connection>
     <developerConnection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</developerConnection>
     <url>https://github.com/wildfly-swarm/wildfly-config-api</url>
-    <tag>0.3.16</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
