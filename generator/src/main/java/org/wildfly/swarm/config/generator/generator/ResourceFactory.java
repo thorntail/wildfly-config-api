@@ -3,6 +3,7 @@ package org.wildfly.swarm.config.generator.generator;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -347,6 +348,13 @@ public class ResourceFactory implements SourceFactory {
                     .setReturnType(propType)
                     .setBody("return this." + propName + ";");
 
+            final MethodSource<JavaClassSource> getByKey = subresourceClass.addMethod();
+            getByKey.addParameter( String.class, "key" );
+            getByKey.setPublic()
+                    .setName(singularName)
+                    .setReturnType( childClassName )
+                    .setBody( "return this." + propName + ".stream().filter( e->e.getKey().equals(key) ).findFirst().orElse(null);");
+
             // Add a mutator method that takes a list of resources. Mutators are added to the containing class
             final MethodSource<JavaClassSource> listMutator = javaClass.addMethod();
             listMutator.getJavaDoc()
@@ -418,6 +426,7 @@ public class ResourceFactory implements SourceFactory {
 
             final AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
             subresourceMeta.setName("Subresource");
+
 
         }
 
