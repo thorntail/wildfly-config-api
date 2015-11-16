@@ -1,5 +1,13 @@
 package org.wildfly.swarm.config.runtime.invocation;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.jandex.AnnotationInstance;
@@ -13,15 +21,14 @@ import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 import org.wildfly.swarm.config.runtime.model.AddressTemplate;
 import org.wildfly.swarm.config.runtime.model.StatementContext;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADDRESS;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.COMPOSITE;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.NAME;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.STEPS;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.VALUE;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.WRITE_ATTRIBUTE_OPERATION;
 
 /**
  * Adopts DMR to Entity T and vice versa.
@@ -29,7 +36,9 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.*;
 public class EntityAdapter<T> {
 
     private Class<?> type;
+
     private Index index;
+
     private static final StatementContext NOOP_CTX = new NoopContext();
 
     public EntityAdapter(Class<?> type) {
@@ -41,7 +50,9 @@ public class EntityAdapter<T> {
         return type;
     }
 
-    public Index getIndex() { return index; }
+    public Index getIndex() {
+        return index;
+    }
 
     /**
      * Determine if this is an EntityAdapter for a one of the supported ModelNode
@@ -71,13 +82,13 @@ public class EntityAdapter<T> {
 
     @SuppressWarnings("unchecked")
     private T convertToBaseType(ModelNode dmr) {
-        if (getType() == String.class) return (T)dmr.asString();
-        if (getType() == Long.class) return (T)Long.valueOf(dmr.asLong());
-        if (getType() == Integer.class) return (T)Integer.valueOf(dmr.asInt());
-        if (getType() == Boolean.class) return (T)Boolean.valueOf(dmr.asBoolean());
-        if (getType() == Double.class) return (T)Double.valueOf(dmr.asDouble());
-        if (getType() == BigDecimal.class) return (T)BigDecimal.valueOf(dmr.asDouble());
-        if (getType() == byte[].class) return (T)dmr.asBytes();
+        if (getType() == String.class) return (T) dmr.asString();
+        if (getType() == Long.class) return (T) Long.valueOf(dmr.asLong());
+        if (getType() == Integer.class) return (T) Integer.valueOf(dmr.asInt());
+        if (getType() == Boolean.class) return (T) Boolean.valueOf(dmr.asBoolean());
+        if (getType() == Double.class) return (T) Double.valueOf(dmr.asDouble());
+        if (getType() == BigDecimal.class) return (T) BigDecimal.valueOf(dmr.asDouble());
+        if (getType() == byte[].class) return (T) dmr.asBytes();
 
         throw new IllegalArgumentException("Can not convert. This node is not of a base type. Actual type is " + type.getName());
     }
@@ -95,8 +106,7 @@ public class EntityAdapter<T> {
 
         ModelNode actualPayload = null;
 
-        if(ModelType.OBJECT.equals(modelNode.getType()))
-        {
+        if (ModelType.OBJECT.equals(modelNode.getType())) {
             actualPayload = modelNode;
         }
        /* else if(ModelType.PROPERTY.equals(modelNode.getType()))
@@ -104,9 +114,8 @@ public class EntityAdapter<T> {
             final Property property = modelNode.asProperty();
             actualPayload = property.getValue();
         }*/
-        else
-        {
-            throw new IllegalArgumentException("Unsupported ModelType "+modelNode.getType()+": "+modelNode);
+        else {
+            throw new IllegalArgumentException("Unsupported ModelType " + modelNode.getType() + ": " + modelNode);
         }
 
         ClassInfo clazz = index.getClassByName(DotName.createSimple(getType().getCanonicalName()));
@@ -114,14 +123,11 @@ public class EntityAdapter<T> {
         T entity = null;
         boolean implicitKey = clazz.annotations().containsKey(IndexFactory.IMPLICIT_META);
 
-        if(implicitKey)
-        {
+        if (implicitKey) {
             // implicit (aka singleton) resource
             Constructor<?> ctor = getType().getConstructor();
             entity = (T) ctor.newInstance();
-        }
-        else
-        {
+        } else {
             // explicit (regular) resource
             entity = (T) getType().getConstructor(String.class)
                     .newInstance(keyValue);
@@ -271,22 +277,35 @@ public class EntityAdapter<T> {
     }
 
     public ModelNode fromEntity(T entity, ModelNode modelNode) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        ClassInfo clazz = null;
 
-        Class<?> currentType = getType();
-
-        while (clazz == null ) {
-            clazz = index.getClassByName(DotName.createSimple(currentType.getCanonicalName()));
-
-            if ( clazz == null ) {
-                currentType = currentType.getSuperclass();
-                if ( currentType == null ) {
-                    throw new RuntimeException( "Unable to determine ClassInfo" );
+        ModelNode addr = modelNode.get(OP_ADDR);
+        if (addr.getType().equals(ModelType.LIST)) {
+            if ( addr.asList().size() == 1 ) {
+                ModelNode node = addr.get(0);
+                if ( node.getType().equals(ModelType.PROPERTY) ) {
+                    if ( node.asProperty().getName().equals( "core-service" ) ) {
+                        return null;
+                    }
                 }
             }
         }
 
-        while ( clazz != null ) {
+        ClassInfo clazz = null;
+
+        Class<?> currentType = getType();
+
+        while (clazz == null) {
+            clazz = index.getClassByName(DotName.createSimple(currentType.getCanonicalName()));
+
+            if (clazz == null) {
+                currentType = currentType.getSuperclass();
+                if (currentType == null) {
+                    throw new RuntimeException("Unable to determine ClassInfo");
+                }
+            }
+        }
+
+        while (clazz != null) {
             for (MethodInfo method : clazz.methods()) {
 
                 if (method.hasAnnotation(IndexFactory.BINDING_META)) {
@@ -321,14 +340,15 @@ public class EntityAdapter<T> {
 
                 }
             }
-            if ( currentType.getSuperclass() != null ) {
+            if (currentType.getSuperclass() != null) {
                 currentType = currentType.getSuperclass();
-                if ( currentType.equals( Object.class ) ) {
+                if (currentType.equals(Object.class)) {
                     break;
                 }
             }
-            clazz = index.getClassByName( DotName.createSimple( currentType.getCanonicalName() ));
+            clazz = index.getClassByName(DotName.createSimple(currentType.getCanonicalName()));
         }
+
         return modelNode;
     }
 }

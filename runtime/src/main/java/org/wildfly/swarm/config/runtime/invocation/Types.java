@@ -2,6 +2,7 @@ package org.wildfly.swarm.config.runtime.invocation;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
+import org.jboss.dmr.Property;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -140,6 +141,8 @@ public class Types<T> {
             final ModelType type = valueTypeNode.asType();
             if (type == ModelType.STRING) {
                 templatedType = "String";
+            } else if ( type == ModelType.PROPERTY ) {
+                templatedType = Property.class.getName();
             }
         }
         return templatedType;

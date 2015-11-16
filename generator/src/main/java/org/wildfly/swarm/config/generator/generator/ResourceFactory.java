@@ -3,7 +3,6 @@ package org.wildfly.swarm.config.generator.generator;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -113,6 +112,8 @@ public class ResourceFactory implements SourceFactory {
     }
 
     protected void addAddressAnnotations(JavaClassSource type, ClassPlan plan) {
+
+        AddressTemplate address = plan.getAddr();
 
         // resource references
         if (1 == plan.getAddresses().size()) {

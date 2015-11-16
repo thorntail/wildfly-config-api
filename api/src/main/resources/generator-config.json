@@ -7,6 +7,10 @@
   },
   "generatorTargets": [
     {
+      "sourceAddress": "/core-service=management",
+      "targetPackage": "org.wildfly.swarm.config.management"
+    },
+    {
       "sourceAddress": "/subsystem=bean-validation",
       "targetPackage": "org.wildfly.swarm.config.bean.validation"
     },

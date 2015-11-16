@@ -30,7 +30,10 @@ public class Marshaller {
         final ModelNode modelNode = addressNodeFor(resourceAddress);
 
         EntityAdapter adapter = adapterFor(entity.getClass());
-        list.add(adapter.fromEntity(entity, modelNode));
+        ModelNode result = adapter.fromEntity(entity, modelNode);
+        if ( result != null ) {
+            list.add(result);
+        }
 
         return marshalSubresources(entity, resourceAddress, list);
     }

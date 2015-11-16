@@ -61,6 +61,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
         this.packageName = determinePackageName(0);
         this.originalClassName = determineClassName(0);
         this.className = NameFixer.fixClassName(this.originalClassName);
+
         this.type = addr.getResourceType();
     }
 
@@ -175,7 +176,9 @@ public class ClassPlan implements Comparable<ClassPlan> {
             } else {
                 if (i >= ((numTokens - uniqueRound))) {
                     segments.add(part.getResourceType());
-                    segments.add(part.getResourceName());
+                    if ( ! part.getResourceName().equals( "*" ) ) {
+                        segments.add(part.getResourceName());
+                    }
                 } else {
                     segments.add(part.getResourceType());
                 }
