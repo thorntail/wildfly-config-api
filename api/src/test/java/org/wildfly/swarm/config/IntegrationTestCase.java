@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wildfly.swarm.config.generator.generator.ClientFactory;
 import org.wildfly.swarm.config.generator.generator.Config;
+import org.wildfly.swarm.config.logging.Level;
 import org.wildfly.swarm.config.runtime.invocation.Addressing;
 import org.wildfly.swarm.config.runtime.invocation.EntityAdapter;
 import org.wildfly.swarm.config.datasources.DataSource;
@@ -102,7 +103,7 @@ public class IntegrationTestCase {
         RootLogger rootLogger = entityAdapter.fromDMR("ROOT", payload);
         Assert.assertNotNull(rootLogger);
         Assert.assertEquals("ROOT", rootLogger.getKey());
-        Assert.assertEquals("INFO", rootLogger.level());
+        Assert.assertEquals(Level.INFO, rootLogger.level());
 
     }
 
@@ -128,7 +129,7 @@ public class IntegrationTestCase {
 
 
         RootLogger root = new RootLogger();
-        root.level("DEBUG");
+        root.level(Level.DEBUG);
 
         EntityAdapter<RootLogger> entityAdapter = new EntityAdapter<>(RootLogger.class);
 
