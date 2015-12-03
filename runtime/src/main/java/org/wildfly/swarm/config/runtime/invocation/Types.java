@@ -154,6 +154,8 @@ public class Types<T> {
 
         if(String.class.equals(javaType))
             type = ModelType.STRING;
+        else if(Enum.class.isAssignableFrom(javaType))
+            type = ModelType.STRING;
         else if(Integer.class.equals(javaType))
             type = ModelType.INT;
         else if(Long.class.equals(javaType))

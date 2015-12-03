@@ -1,19 +1,28 @@
 package org.wildfly.swarm.config.generator.generator;
 
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ALLOWED;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPRECATED;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.common.base.CaseFormat;
+import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
+import org.jboss.forge.roaster.model.source.EnumConstantSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaDocSource;
+import org.jboss.forge.roaster.model.source.JavaEnumSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.jboss.logmanager.Level;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
@@ -25,10 +34,6 @@ import org.wildfly.swarm.config.runtime.ResourceType;
 import org.wildfly.swarm.config.runtime.Subresource;
 import org.wildfly.swarm.config.runtime.invocation.Types;
 import org.wildfly.swarm.config.runtime.model.AddressTemplate;
-
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPRECATED;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
 
 /**
  * Encapsulates the templates for generating source files from resource descriptions
@@ -194,28 +199,70 @@ public class ResourceFactory implements SourceFactory {
                     Optional<String> resolvedType = Types.resolveJavaTypeName(modelType, att.getValue());
 
                     if (resolvedType.isPresent() && !att.getValue().get(DEPRECATED).isDefined()) {
-
                         // attributes
                         try {
                             final String name = javaAttributeName(att.getName());
+                            final String attributeType;
+
+                            // Determine if we should create an enum for strings that specify values
+                            if (modelType == ModelType.STRING && att.getValue().hasDefined(ALLOWED)) {
+                                // Create the enum name and enum source
+                                final String enumName = Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
+                                final JavaEnumSource enumType = createEnum(enumName, type.getPackage(), att.getValue().get(ALLOWED).asList());
+                                plan.addSource(enumType);
+                                attributeType = enumType.getName();
+                                type.addImport(Arrays.class);
+                                // TODO For now add a deprecated String setter, but this should be removed at some point
+                                final MethodSource<JavaClassSource> stringMutator = type.addMethod()
+                                        .setName(name)
+                                        .setPublic()
+                                        .setReturnType("T");
+                                stringMutator.addParameter(String.class, name).setFinal(true);
+                                stringMutator.addAnnotation(Deprecated.class);
+                                stringMutator.addAnnotation("SuppressWarnings").setStringValue("unchecked");
+                                // Loop through the enum values and return set the first value found
+                                final StringBuilder body = new StringBuilder();
+                                body.append("if (").append(name).append(" == null) {");
+                                body.append("    this.").append(name).append(" = null;");
+                                body.append("} else {");
+                                body.append("    boolean found = false;");
+                                body.append("    for (").append(attributeType).append(" e : ").append(enumName).append(".values()) {");
+                                body.append("        if (e.toString().equals(").append(name).append(")) {");
+                                body.append("            ").append(name).append("(e);");
+                                body.append("            found=true;");
+                                body.append("            break;");
+                                body.append("         }");
+                                body.append("    }");
+                                body.append("    if (!found) throw new RuntimeException(String.format(\"Value '%s' not valid. Valid values are: %s\", ")
+                                        .append(name)
+                                        .append(", Arrays.asList(")
+                                        .append(enumName).append(".values())")
+                                        .append("));");
+                                body.append("}");
+                                body.append("return (T) this;");
+                                stringMutator.setBody(body.toString());
+                            } else {
+                                attributeType = resolvedType.get();
+                            }
+
                             String attributeDescription = att.getValue().get(DESCRIPTION).asString();
 
                             FieldSource attributeField = type.addField()
                                     .setName(name)
-                                    .setType(resolvedType.get())
+                                    .setType(attributeType)
                                     .setPrivate();
 
                             final MethodSource<JavaClassSource> accessor = type.addMethod();
                             accessor.getJavaDoc().setText(attributeDescription);
                             accessor.setPublic()
                                     .setName(name)
-                                    .setReturnType(resolvedType.get())
+                                    .setReturnType(attributeType)
                                     .setBody("return this." + name + ";");
 
 
                             final MethodSource<JavaClassSource> mutator = type.addMethod();
                             mutator.getJavaDoc().setText(attributeDescription);
-                            mutator.addParameter(resolvedType.get(), "value");
+                            mutator.addParameter(attributeType, "value");
                             mutator.setPublic()
                                     .setName(name)
                                     .setReturnType("T")
@@ -574,5 +621,53 @@ public class ResourceFactory implements SourceFactory {
 
     public final static String javaAttributeName(String dmr) {
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, Keywords.escape(dmr.replace("-", "_")));
+    }
+
+    private static JavaEnumSource createEnum(final String enumName, final String packageName, final List<ModelNode> allowedValues) {
+        final JavaEnumSource enumType = Roaster.create(JavaEnumSource.class)
+                .setName(enumName)
+                .setPublic()
+                .setPackage(packageName);
+
+        // Create a field to indicate the value the model expects
+        enumType.addProperty(String.class, "allowedValue")
+                .getAccessor()
+                .getJavaDoc()
+                .setText("Returns the allowed value for the management model.")
+                .addTagValue("@return", "the allowed model value");
+
+        final MethodSource<JavaEnumSource> constructor = enumType.addMethod()
+                .setConstructor(true);
+        constructor.addParameter(String.class, "allowedValue");
+        constructor.setBody("this.allowedValue = allowedValue;");
+
+        // Override the toString() to return the allowedValue so it can be used to determine the correct enum to use
+        enumType.addMethod()
+                .setName("toString")
+                .setReturnType(String.class)
+                .setPublic()
+                .setBody("return allowedValue;")
+                .addAnnotation(Override.class);
+
+        // For each allowed value add an enum constant
+        allowedValues.forEach(value -> {
+            final String v = value.asString();
+            // Replace - and . with _ and uppercase each character
+            final StringBuilder sb = new StringBuilder();
+            for (char c : v.toCharArray()) {
+                switch (c) {
+                    case '-':
+                    case '.': {
+                        sb.append('_');
+                        break;
+                    }
+                    default:
+                        sb.append(Character.toUpperCase(c));
+                }
+            }
+            final EnumConstantSource constantSource = enumType.addEnumConstant(sb.toString());
+            constantSource.setConstructorArguments("\"" + value.asString() +"\"");
+        });
+        return enumType;
     }
 }

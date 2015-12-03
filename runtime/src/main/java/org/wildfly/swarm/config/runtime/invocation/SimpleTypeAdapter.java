@@ -1,12 +1,12 @@
 package org.wildfly.swarm.config.runtime.invocation;
 
-import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
-import org.jboss.dmr.ValueExpression;
-
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.List;
+
+import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
+import org.jboss.dmr.ValueExpression;
 
 /**
  * @author Heiko Braun
@@ -112,6 +112,23 @@ public class SimpleTypeAdapter {
                 value = dmrPayload.asString();
             else
                 value = "";
+        }
+        else if(Enum.class.isAssignableFrom(propertyType))
+        {
+            if(dmrPayload.isDefined()) {
+                final String allowedValue = dmrPayload.asString();
+                // The toString() value should be the same as the DMR string
+                for (Object e : propertyType.getEnumConstants()) {
+                    if (allowedValue.equals(e.toString())) {
+                        value = e;
+                        break;
+                    }
+                }
+                if (value == null) {
+                    throw new RuntimeException(String.format("Could not determine correct enum value for type %s with value %s", propertyType, dmrPayload.asString()));
+                }
+            } else
+                value = null;
         }
 
       /*  else if ("java.util.List".equals(propBinding.getJavaTypeName()))
