@@ -11,6 +11,10 @@
       "targetPackage": "org.wildfly.swarm.config.management"
     },
     {
+      "sourceAddress": "/subsystem=batch-jberet",
+      "targetPackage": "org.wildfly.swarm.config.batch.jberet"
+    },
+    {
       "sourceAddress": "/subsystem=bean-validation",
       "targetPackage": "org.wildfly.swarm.config.bean.validation"
     },
@@ -75,8 +79,16 @@
       "targetPackage": "org.wildfly.swarm.config.remoting"
     },
     {
+      "sourceAddress": "/subsystem=sar",
+      "targetPackage": "org.wildfly.swarm.config.sar"
+    },
+    {
       "sourceAddress": "/subsystem=security",
       "targetPackage": "org.wildfly.swarm.config.security"
+    },
+    {
+      "sourceAddress": "/subsystem=security-manager",
+      "targetPackage": "org.wildfly.swarm.config.security.manager"
     },
     {
       "sourceAddress": "/subsystem=transactions",
