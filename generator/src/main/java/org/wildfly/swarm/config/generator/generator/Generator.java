@@ -53,7 +53,7 @@ public class Generator {
         try {
             client = ClientFactory.createClient(config);
         } catch (Exception e) {
-            log.log(Level.ERROR, "Failed to create model controller client", e);
+            throw new RuntimeException("Failed to create model controller client", e);
         }
 
     }
@@ -62,14 +62,12 @@ public class Generator {
         log.info("Config: " + args[0]);
         log.info("Output: " + args[1]);
 
+        Config config = Config.fromJson(args[0]);
+        Generator generator = new Generator(args[1], config);
         try {
-            Config config = Config.fromJson(args[0]);
-            Generator generator = new Generator(args[1], config);
             generator.processGeneratorTargets();
+        } finally {
             generator.shutdown();
-        } catch (Throwable e) {
-            System.exit(-1);
-            log.log(Level.ERROR, "Unexpected error", e);
         }
     }
 
