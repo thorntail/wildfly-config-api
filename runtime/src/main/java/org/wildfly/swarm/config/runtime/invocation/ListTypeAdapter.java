@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Heiko Braun
@@ -53,6 +54,19 @@ public class ListTypeAdapter {
         else if(type.equals(ModelType.BOOLEAN))
         {
             target.add((Boolean) propValue);
+        }
+        else if (type.equals(ModelType.OBJECT)) {
+            ModelNode val = target.addEmptyObject();
+            Map<String,?> map = (Map) propValue;
+
+            for (String key : map.keySet()) {
+                Object value = map.get(key);
+                if ( value instanceof String ) {
+                    val.get( key ).set( (String) value );
+                } else if ( value instanceof Boolean ) {
+                    val.get( key ).set( (Boolean) value );
+                }
+            }
         }
         else
         {

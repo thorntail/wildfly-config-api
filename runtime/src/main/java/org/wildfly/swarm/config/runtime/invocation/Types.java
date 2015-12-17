@@ -166,9 +166,9 @@ public class Types<T> {
             type = ModelType.DOUBLE;
         else if(BigDecimal.class.equals(javaType))
             type = ModelType.BIG_DECIMAL;
-        else if(List.class.equals(javaType))
+        else if(List.class.isAssignableFrom(javaType))
             type = ModelType.LIST;
-        else if(Map.class.equals(javaType))
+        else if(Map.class.isAssignableFrom(javaType))
             type = ModelType.OBJECT;
         else {
             throw new RuntimeException("Failed to resolve ModelType for '"+ javaType.getName()+"'");
