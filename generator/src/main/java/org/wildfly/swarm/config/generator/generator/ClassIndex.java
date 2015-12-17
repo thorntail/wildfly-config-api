@@ -1,5 +1,6 @@
 package org.wildfly.swarm.config.generator.generator;
 
+import org.jboss.dmr.Property;
 import org.wildfly.swarm.config.runtime.model.AddressTemplate;
 
 /**
@@ -10,4 +11,5 @@ import org.wildfly.swarm.config.runtime.model.AddressTemplate;
  */
 public interface ClassIndex {
     ClassPlan lookup(AddressTemplate address);
+    EnumPlan lookup(ClassPlan requester, Property attr);
 }

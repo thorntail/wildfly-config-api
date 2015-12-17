@@ -3,14 +3,21 @@ package org.wildfly.swarm.config.generator.generator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.google.common.base.CaseFormat;
+import org.jboss.dmr.ModelType;
+import org.jboss.dmr.Property;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
+import org.wildfly.swarm.config.runtime.invocation.Types;
 import org.wildfly.swarm.config.runtime.model.AddressTemplate;
+
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ALLOWED;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPRECATED;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
 
 /**
  * @author Bob McWhirter
@@ -20,6 +27,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
     private final List<ResourceMetaData> meta = new ArrayList<>();
 
     private final String type;
+
     private final AddressTemplate addr;
 
     private String packageName;
@@ -34,8 +42,22 @@ public class ClassPlan implements Comparable<ClassPlan> {
 
     private JavaClassSource subresourceClass;
 
+    private List<EnumPlan> enumPlans = new ArrayList<>();
+
     ClassPlan(ResourceMetaData meta) {
         this(Collections.singletonList(meta));
+    }
+
+    void addEnumPlan(EnumPlan enumPlan) {
+        this.enumPlans.add( enumPlan );
+    }
+
+    List<EnumPlan> getEnumPlans() {
+        return this.enumPlans;
+    }
+
+    public EnumPlan lookup(Property attr) {
+        return this.enumPlans.stream().filter( e->e.matches( this, attr ) ).findFirst().orElse(null);
     }
 
     /**
@@ -51,8 +73,8 @@ public class ClassPlan implements Comparable<ClassPlan> {
         meta.forEach(resourceMetaData -> {
             String resourceType = resourceMetaData.getAddress().getResourceType();
             if (!resourceType.equals(primeType))
-                throw new IllegalArgumentException("Illegal partition, resourceType's don't match: "+
-                        primeType + " > "+ resourceType
+                throw new IllegalArgumentException("Illegal partition, resourceType's don't match: " +
+                        primeType + " > " + resourceType
                 );
         });
 
@@ -63,6 +85,32 @@ public class ClassPlan implements Comparable<ClassPlan> {
         this.className = NameFixer.fixClassName(this.originalClassName);
 
         this.type = addr.getResourceType();
+    }
+
+    List<EnumRequirement> getEnumRequirements() {
+
+        List<EnumRequirement> plans = new ArrayList<>();
+
+        ResourceDescription desc = getDescription();
+
+        desc.getAttributes().forEach(
+                att -> {
+                    ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
+                    Optional<String> resolvedType = Types.resolveJavaTypeName(modelType, att.getValue());
+
+                    if (resolvedType.isPresent() && !att.getValue().get(DEPRECATED).isDefined()) {
+                        // attributes
+                        // Determine if we should create an enum for strings that specify values
+                        if (modelType == ModelType.STRING && att.getValue().hasDefined(ALLOWED)) {
+                            // Create the enum name and enum source
+                            EnumRequirement enumRequirement = new EnumRequirement(this, att);
+                            plans.add(enumRequirement);
+                        }
+                    }
+                }
+        );
+
+        return plans;
     }
 
     void setSubresourceClass(JavaClassSource cls) {
@@ -98,7 +146,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
     }
 
     void addSource(JavaType source) {
-        this.sources.add( source );
+        this.sources.add(source);
     }
 
     List<JavaType> getSources() {
@@ -159,7 +207,6 @@ public class ClassPlan implements Comparable<ClassPlan> {
             ++i;
         }
 
-
         return packagize(commonSegments);
     }
 
@@ -176,7 +223,7 @@ public class ClassPlan implements Comparable<ClassPlan> {
             } else {
                 if (i >= ((numTokens - uniqueRound))) {
                     segments.add(part.getResourceType());
-                    if ( ! part.getResourceName().equals( "*" ) ) {
+                    if (!part.getResourceName().equals("*")) {
                         segments.add(part.getResourceName());
                     }
                 } else {
@@ -193,9 +240,20 @@ public class ClassPlan implements Comparable<ClassPlan> {
             return "org.wildfly.swarm.config";
         }
 
-        String pkg = "org.wildfly.swarm.config." + String.join(".", segments.stream().map((e) -> {
-            return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_UNDERSCORE, e);
-        }).collect(Collectors.toList()));
+        List<String> formatted = new ArrayList<>();
+
+        boolean first = true;
+        for (String each : segments) {
+            String f = CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_UNDERSCORE, each);
+            if (first) {
+                f = f.replace('_', '.');
+            }
+            first = false;
+            formatted.add(f);
+        }
+
+
+        String pkg = "org.wildfly.swarm.config." + String.join(".", formatted);
 
         return pkg;
     }
@@ -217,14 +275,14 @@ public class ClassPlan implements Comparable<ClassPlan> {
                 clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, type);
             } else if (name.toLowerCase().endsWith(type.toLowerCase())) {
                 clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name);
-            } else if ( name.contains("." ) ) {
-                int dotLoc = name.indexOf( "." );
-                this.packageName = this.packageName + "." + name.substring( 0, dotLoc );
-                String rest = name.substring(dotLoc + 1 );
-                if ( rest.chars().allMatch( c->Character.isUpperCase(c) || Character.isDigit(c)) ) {
+            } else if (name.contains(".")) {
+                int dotLoc = name.indexOf(".");
+                this.packageName = this.packageName + "." + name.substring(0, dotLoc);
+                String rest = name.substring(dotLoc + 1);
+                if (rest.chars().allMatch(c -> Character.isUpperCase(c) || Character.isDigit(c))) {
                     clsName = rest;
                 } else {
-                    clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, rest );
+                    clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, rest);
                 }
             } else {
                 clsName = CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, name + "-" + type);

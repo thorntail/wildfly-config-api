@@ -17,6 +17,7 @@ import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.EnumConstantSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -71,7 +72,7 @@ public class ResourceFactory implements SourceFactory {
         addConstructor(type, plan);
         addResourceTypeAnnotation( type, plan );
         addPropertyChangeSupport( type, plan );
-        addAttribtues( type, plan);
+        addAttribtues( index, type, plan);
 
         addChildResources( index, type, plan );
         addSingletonResources( index, type, plan );
@@ -79,6 +80,14 @@ public class ResourceFactory implements SourceFactory {
         if ( plan.getSubresourceClass() != null ) {
             type.addNestedType(plan.getSubresourceClass());
         }
+
+        for (EnumPlan enumPlan : plan.getEnumPlans()) {
+            EnumFactory factory = new EnumFactory();
+            JavaEnumSource enumType = factory.create(index, enumPlan);
+            enumType.setStatic(true);
+            type.addNestedType( enumType );
+        }
+
 
         return type;
     }
@@ -187,7 +196,7 @@ public class ResourceFactory implements SourceFactory {
         listenerRemove.setBody("if(this.pcs!=null) this.pcs.removePropertyChangeListener(listener);");
     }
 
-    protected void addAttribtues(JavaClassSource type, ClassPlan plan) {
+    protected void addAttribtues(ClassIndex index, JavaClassSource type, ClassPlan plan) {
         ResourceDescription desc = plan.getDescription();
         Inflector inflector = new Inflector();
 
@@ -207,11 +216,18 @@ public class ResourceFactory implements SourceFactory {
                             // Determine if we should create an enum for strings that specify values
                             if (modelType == ModelType.STRING && att.getValue().hasDefined(ALLOWED)) {
                                 // Create the enum name and enum source
+                                boolean standaloneEnum = false;
+                                EnumPlan enumPlan = plan.lookup( att );
+                                if ( enumPlan == null ) {
+                                    standaloneEnum = true;
+                                    enumPlan = index.lookup(plan, att);
+                                }
                                 final String enumName = Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
-                                final JavaEnumSource enumType = createEnum(enumName, type.getPackage(), att.getValue().get(ALLOWED).asList());
-                                plan.addSource(enumType);
-                                attributeType = enumType.getName();
+                                attributeType = enumPlan.getClassName();
                                 type.addImport(Arrays.class);
+                                if ( standaloneEnum ) {
+                                    type.addImport(enumPlan.getFullyQualifiedClassName());
+                                }
                                 // TODO For now add a deprecated String setter, but this should be removed at some point
                                 final MethodSource<JavaClassSource> stringMutator = type.addMethod()
                                         .setName(name)
@@ -623,11 +639,14 @@ public class ResourceFactory implements SourceFactory {
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, Keywords.escape(dmr.replace("-", "_")));
     }
 
-    private static JavaEnumSource createEnum(final String enumName, final String packageName, final List<ModelNode> allowedValues) {
+    private static JavaEnumSource createEnum(final String enumName, final JavaClassSource type, final List<ModelNode> allowedValues) {
+
+
         final JavaEnumSource enumType = Roaster.create(JavaEnumSource.class)
                 .setName(enumName)
-                .setPublic()
-                .setPackage(packageName);
+                .setStatic(true)
+                .setPublic();
+                //.setPackage(packageName);
 
         // Create a field to indicate the value the model expects
         enumType.addProperty(String.class, "allowedValue")
@@ -668,6 +687,7 @@ public class ResourceFactory implements SourceFactory {
             final EnumConstantSource constantSource = enumType.addEnumConstant(sb.toString());
             constantSource.setConstructorArguments("\"" + value.asString() +"\"");
         });
-        return enumType;
+
+        return type.addNestedType(enumType);
     }
 }

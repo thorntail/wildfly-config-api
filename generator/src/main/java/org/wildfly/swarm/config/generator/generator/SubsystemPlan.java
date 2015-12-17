@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.Property;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
@@ -25,6 +26,8 @@ public class SubsystemPlan implements ClassIndex {
 
     private final List<ClassPlan> classPlans = new ArrayList<>();
 
+    private final List<EnumPlan> enumPlans = new ArrayList<>();
+
     private Map<AddressTemplate, ClassPlan> index = new HashMap<>();
 
     SubsystemPlan(ResourceMetaData meta) {
@@ -37,8 +40,17 @@ public class SubsystemPlan implements ClassIndex {
         return this.index.get( address );
     }
 
+    @Override
+    public EnumPlan lookup(ClassPlan requester, Property attr) {
+        return this.enumPlans.stream().filter( e->e.matches( requester, attr ) ).findFirst().orElse(null);
+    }
+
     List<ClassPlan> getClassPlans() {
         return this.classPlans;
+    }
+
+    List<EnumPlan> getEnumPlans() {
+        return this.enumPlans;
     }
 
     void plan() {
@@ -112,6 +124,61 @@ public class SubsystemPlan implements ClassIndex {
             }
         }
 
+        // determine all potential enums
+        List<EnumRequirement> enumRequirements = new ArrayList<>();
+        for ( ClassPlan each : classPlans ) {
+            enumRequirements.addAll( each.getEnumRequirements() );
+        }
+
+        List<List<EnumRequirement>> enumPartitions = partitionEnumRequirements(enumRequirements);
+
+        for (List<EnumRequirement> enumPartition : enumPartitions) {
+            if ( enumPartition.size() == 1 ) {
+                EnumRequirement requirement = enumPartition.get(0);
+                requirement.getOriginatingClassPlan().addEnumPlan( new EnumPlan(null, enumPartition ) );
+
+            } else {
+                this.enumPlans.add(new EnumPlan(subsystemPackage(subsystemClass), enumPartition));
+            }
+        }
+
+        Collections.sort(enumPlans);
+
+        EnumPlan curEnum = null;
+        Set<EnumPlan> dupeEnums = new HashSet<>();
+        for (EnumPlan each : enumPlans) {
+            if (curEnum != null) {
+                if (curEnum.getFullyQualifiedClassName().equals(each.getFullyQualifiedClassName())) {
+                    dupeEnums.add(curEnum);
+                    dupeEnums.add(each);
+                } else {
+                    if (!dupeEnums.isEmpty()) {
+                        //deduplicate(dupes);
+                        System.err.println( "A ****** NEED TO DEDUPE ENUM: " + dupeEnums );
+                        for (EnumPlan eachPlan : dupeEnums) {
+                            System.err.println( " - " + eachPlan.getOriginatingClassPlans() );
+                        }
+                        dupeEnums.clear();
+                    }
+                }
+            }
+            curEnum = each;
+        }
+
+        if (!dupeEnums.isEmpty()) {
+            //deduplicate(dupes);
+            System.err.println( "B ****** NEED TO DEDUPE ENUM: " + dupeEnums );
+            for (EnumPlan each : dupeEnums) {
+                System.err.println( " - " + each.getOriginatingClassPlans() );
+            }
+
+            dupeEnums.clear();
+        }
+
+    }
+
+    static String subsystemPackage(ClassPlan subsystemClass) {
+        return subsystemClass.getPackageName() + "." + CaseFormat.UPPER_CAMEL.to( CaseFormat.LOWER_HYPHEN, subsystemClass.getOriginalClassName() ).replace('-', '.' );
     }
 
     static boolean deduplicate(Set<ClassPlan> dupes) {
@@ -165,6 +232,8 @@ public class SubsystemPlan implements ClassIndex {
         return partitions;
     }
 
+
+
     static List<ResourceMetaData> findPartition(List<List<ResourceMetaData>> partitions, ResourceMetaData prime) {
 
         for (List<ResourceMetaData> partition : partitions) {
@@ -211,6 +280,37 @@ public class SubsystemPlan implements ClassIndex {
 
 
             return partition;
+        }
+
+        return null;
+    }
+
+    static List<List<EnumRequirement>> partitionEnumRequirements(List<EnumRequirement> list) {
+        List<List<EnumRequirement>> partitions = new ArrayList<>();
+
+        for ( EnumRequirement prime : list ) {
+            List<EnumRequirement> matched = findEnumRequirementPartition(partitions, prime);
+            if ( matched == null ) {
+                matched = new ArrayList<>();
+                partitions.add( matched );
+            }
+            matched.add( prime );
+        }
+
+        return partitions;
+    }
+
+    static List<EnumRequirement> findEnumRequirementPartition(List<List<EnumRequirement>> partitions, EnumRequirement prime) {
+
+        for (List<EnumRequirement> partition : partitions) {
+            if ( partition.isEmpty() ) {
+                continue;
+            }
+
+            EnumRequirement comp = partition.get(0);
+            if ( prime.getName().equals( comp.getName() ) && prime.getAllowedValues().equals( comp.getAllowedValues() ) ) {
+                return partition;
+            }
         }
 
         return null;

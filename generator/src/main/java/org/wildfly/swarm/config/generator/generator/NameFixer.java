@@ -78,6 +78,7 @@ public class NameFixer {
 
     static {
         customFix("Activemq", "ActiveMQ");
+        customFix("Jberet", "JBeret");
         simpleFix("Acl");
         simpleFix("Ajp");
         simpleFix("Ee");

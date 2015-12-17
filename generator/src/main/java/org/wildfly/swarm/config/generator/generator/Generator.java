@@ -130,6 +130,13 @@ public class Generator {
                         SubsystemPlan plan = new SubsystemPlan(resourceMetaData);
                         subsystems.add(plan);
 
+                        for ( EnumPlan enumPlan : plan.getEnumPlans() ) {
+                            System.err.println( "generate enum: " + enumPlan.getFullyQualifiedClassName() );
+                            EnumFactory factory = new EnumFactory();
+                            JavaType javaType = factory.create(plan, enumPlan);
+                            write(javaType);
+                        }
+
                         List<ClassPlan> classPlans = plan.getClassPlans();
                         for (ClassPlan classPlan : classPlans) {
                             for (SourceFactory factory : factories) {
@@ -142,6 +149,7 @@ public class Generator {
                                 write(javaType);
                             }
                         }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                         log.log(Level.ERROR, "Failed to process targets", e);

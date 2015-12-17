@@ -35,6 +35,10 @@
       "targetPackage": "org.wildfly.swarm.config.infinispan"
     },
     {
+      "sourceAddress": "/subsystem=iiop-openjdk",
+      "targetPackage": "org.wildfly.swarm.config.iiop.openjdk"
+    },
+    {
       "sourceAddress": "/subsystem=io",
       "targetPackage": "org.wildfly.swarm.config.io"
     },
