@@ -131,7 +131,6 @@ public class Generator {
                         subsystems.add(plan);
 
                         for ( EnumPlan enumPlan : plan.getEnumPlans() ) {
-                            System.err.println( "generate enum: " + enumPlan.getFullyQualifiedClassName() );
                             EnumFactory factory = new EnumFactory();
                             JavaType javaType = factory.create(plan, enumPlan);
                             write(javaType);

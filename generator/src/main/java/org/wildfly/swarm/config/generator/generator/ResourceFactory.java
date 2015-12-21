@@ -70,14 +70,14 @@ public class ResourceFactory implements SourceFactory {
 
         addAddressAnnotations(type, plan);
         addConstructor(type, plan);
-        addResourceTypeAnnotation( type, plan );
-        addPropertyChangeSupport( type, plan );
-        addAttribtues( index, type, plan);
+        addResourceTypeAnnotation(type, plan);
+        addPropertyChangeSupport(type, plan);
+        addAttribtues(index, type, plan);
 
-        addChildResources( index, type, plan );
-        addSingletonResources( index, type, plan );
+        addChildResources(index, type, plan);
+        addSingletonResources(index, type, plan);
 
-        if ( plan.getSubresourceClass() != null ) {
+        if (plan.getSubresourceClass() != null) {
             type.addNestedType(plan.getSubresourceClass());
         }
 
@@ -85,7 +85,7 @@ public class ResourceFactory implements SourceFactory {
             EnumFactory factory = new EnumFactory();
             JavaEnumSource enumType = factory.create(index, enumPlan);
             enumType.setStatic(true);
-            type.addNestedType( enumType );
+            type.addNestedType(enumType);
         }
 
 
@@ -148,14 +148,11 @@ public class ResourceFactory implements SourceFactory {
     }
 
 
+    // javadoc
 
-
-
-        // javadoc
-
-        // imports
-        //type.addImport(PropertyChangeListener.class);
-        //type.addImport(PropertyChangeSupport.class);
+    // imports
+    //type.addImport(PropertyChangeListener.class);
+    //type.addImport(PropertyChangeSupport.class);
 
 
     protected void addResourceTypeAnnotation(JavaClassSource type, ClassPlan plan) {
@@ -217,15 +214,15 @@ public class ResourceFactory implements SourceFactory {
                             if (modelType == ModelType.STRING && att.getValue().hasDefined(ALLOWED)) {
                                 // Create the enum name and enum source
                                 boolean standaloneEnum = false;
-                                EnumPlan enumPlan = plan.lookup( att );
-                                if ( enumPlan == null ) {
+                                EnumPlan enumPlan = plan.lookup(att);
+                                if (enumPlan == null) {
                                     standaloneEnum = true;
                                     enumPlan = index.lookup(plan, att);
                                 }
                                 final String enumName = Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
                                 attributeType = enumPlan.getClassName();
                                 type.addImport(Arrays.class);
-                                if ( standaloneEnum ) {
+                                if (standaloneEnum) {
                                     type.addImport(enumPlan.getFullyQualifiedClassName());
                                 }
                                 // TODO For now add a deprecated String setter, but this should be removed at some point
@@ -304,7 +301,8 @@ public class ResourceFactory implements SourceFactory {
                                 appender.setPublic()
                                         .setName(singularName) // non-trivial to singularize the method name here
                                         .setReturnType("T")
-                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (T) this;");
+                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (T) this;")
+                                        .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
                                 // also produce a var-args version
 
@@ -328,7 +326,8 @@ public class ResourceFactory implements SourceFactory {
                                 appender.setPublic()
                                         .setName(singularName)
                                         .setReturnType("T")
-                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.HashMap<>(); }\nthis." + name + ".put(key, value);\nreturn (T) this;");
+                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.HashMap<>(); }\nthis." + name + ".put(key, value);\nreturn (T) this;")
+                                        .addAnnotation("SuppressWarnings").setStringValue("unchecked");
                             }
                         } catch (Exception e) {
                             log.log(Level.ERROR, "Failed to process " + plan.getFullyQualifiedClassName() + ", attribute " + att.getName(), e);
@@ -379,7 +378,7 @@ public class ResourceFactory implements SourceFactory {
             javaClass.addImport(childClass.getFullyQualifiedClassName() + "Supplier");
 
             final String childClassName = childClass.getClassName();
-            javaClass.addImport( childClass.getFullyQualifiedClassName() );
+            javaClass.addImport(childClass.getFullyQualifiedClassName());
             final String propType = "java.util.List<" + childClassName + ">";
             String propName = CaseFormat.UPPER_CAMEL.to(
                     CaseFormat.LOWER_CAMEL,
@@ -387,7 +386,7 @@ public class ResourceFactory implements SourceFactory {
             );
 
             String singularName = propName;
-            String pluralName = inflector.pluralize( singularName );
+            String pluralName = inflector.pluralize(singularName);
 
             if (!propName.endsWith("s")) {
                 propName = pluralName;
@@ -413,11 +412,11 @@ public class ResourceFactory implements SourceFactory {
                     .setBody("return this." + propName + ";");
 
             final MethodSource<JavaClassSource> getByKey = subresourceClass.addMethod();
-            getByKey.addParameter( String.class, "key" );
+            getByKey.addParameter(String.class, "key");
             getByKey.setPublic()
                     .setName(singularName)
-                    .setReturnType( childClassName )
-                    .setBody( "return this." + propName + ".stream().filter( e->e.getKey().equals(key) ).findFirst().orElse(null);");
+                    .setReturnType(childClassName)
+                    .setBody("return this." + propName + ".stream().filter( e->e.getKey().equals(key) ).findFirst().orElse(null);");
 
             // Add a mutator method that takes a list of resources. Mutators are added to the containing class
             final MethodSource<JavaClassSource> listMutator = javaClass.addMethod();
@@ -458,7 +457,7 @@ public class ResourceFactory implements SourceFactory {
             configurator.setPublic()
                     .setName(singularName)
                     .setReturnType("T")
-                    .setBody(childClassName + "<? extends "+childClassName+"> child = new " + childClassName + "<>(childKey);\n if ( consumer != null ) { consumer.accept(child); }\n" + singularName + "(child);\nreturn (T) this;")
+                    .setBody(childClassName + "<? extends " + childClassName + "> child = new " + childClassName + "<>(childKey);\n if ( consumer != null ) { consumer.accept(child); }\n" + singularName + "(child);\nreturn (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             // Add a mutator method that factories a single resource and applies a supplied configurator. Mutators are added to the containing class
@@ -479,13 +478,13 @@ public class ResourceFactory implements SourceFactory {
 
             final MethodSource<JavaClassSource> supplier = javaClass.addMethod();
             supplier.getJavaDoc()
-                    .setText("Install a supplied " + childClassName + " object to the list of subresources" );
+                    .setText("Install a supplied " + childClassName + " object to the list of subresources");
             //supplier.addParameter(childClassName + "Supplier", "supplier");
-            supplier.addParameter(  childClassName + "Supplier", "supplier" );
+            supplier.addParameter(childClassName + "Supplier", "supplier");
             supplier.setPublic()
                     .setName(singularName)
                     .setReturnType("T")
-                    .setBody( singularName + "(supplier.get()); return (T) this;" )
+                    .setBody(singularName + "(supplier.get()); return (T) this;")
                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
             final AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
@@ -496,7 +495,6 @@ public class ResourceFactory implements SourceFactory {
 
         // initialize the collections
     }
-
 
 
     public static void createSingletonChildAccessors(ClassIndex index, ClassPlan plan, JavaClassSource javaClass) {
@@ -563,7 +561,7 @@ public class ResourceFactory implements SourceFactory {
                     .setName(propName)
                     .setReturnType("T")
                     .setBody(
-                            childClass.getClassName() + "<? extends "+childClass.getClassName()+"> child = new " + childClass.getClassName() + "<>();\n"
+                            childClass.getClassName() + "<? extends " + childClass.getClassName() + "> child = new " + childClass.getClassName() + "<>();\n"
                                     + "if ( consumer != null ) { consumer.accept(child); }\n"
                                     + "this.subresources." + propName + " = child;\n"
                                     + "return (T) this;"
@@ -579,7 +577,7 @@ public class ResourceFactory implements SourceFactory {
                     .setName(propName)
                     .setReturnType("T")
                     .setBody(
-                            childClass.getClassName() + "<? extends "+childClass.getClassName()+"> child = new " + childClass.getClassName() + "<>();\n"
+                            childClass.getClassName() + "<? extends " + childClass.getClassName() + "> child = new " + childClass.getClassName() + "<>();\n"
                                     + "this.subresources." + propName + " = child;\n"
                                     + "return (T) this;"
                     )
@@ -590,7 +588,7 @@ public class ResourceFactory implements SourceFactory {
             final MethodSource<JavaClassSource> supplier = javaClass.addMethod();
             supplier.getJavaDoc()
                     .setText(javaDoc);
-            supplier.addParameter( childClass.getClassName() + "Supplier", "supplier");
+            supplier.addParameter(childClass.getClassName() + "Supplier", "supplier");
             //supplier.addParameter(  childClass.getClassName() + "Supplier", "supplier" );
             supplier.setPublic()
                     .setName(propName)
@@ -604,7 +602,7 @@ public class ResourceFactory implements SourceFactory {
 
         JavaClassSource subresourceClass = plan.getSubresourceClass();
 
-        if ( subresourceClass != null ) {
+        if (subresourceClass != null) {
             return subresourceClass;
         }
 
@@ -631,7 +629,7 @@ public class ResourceFactory implements SourceFactory {
 
         javaClass.addImport("java.util.List");
         javaClass.addImport(Subresource.class);
-        plan.setSubresourceClass( subresourceClass );
+        plan.setSubresourceClass(subresourceClass);
         return subresourceClass;
     }
 
@@ -646,7 +644,7 @@ public class ResourceFactory implements SourceFactory {
                 .setName(enumName)
                 .setStatic(true)
                 .setPublic();
-                //.setPackage(packageName);
+        //.setPackage(packageName);
 
         // Create a field to indicate the value the model expects
         enumType.addProperty(String.class, "allowedValue")
@@ -685,7 +683,7 @@ public class ResourceFactory implements SourceFactory {
                 }
             }
             final EnumConstantSource constantSource = enumType.addEnumConstant(sb.toString());
-            constantSource.setConstructorArguments("\"" + value.asString() +"\"");
+            constantSource.setConstructorArguments("\"" + value.asString() + "\"");
         });
 
         return type.addNestedType(enumType);
