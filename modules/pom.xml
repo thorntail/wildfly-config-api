@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <scm>
+    <connection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</connection>
+    <developerConnection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</developerConnection>
+    <url>https://github.com/wildfly-swarm/wildfly-config-api</url>
+    <tag>HEAD</tag>
+  </scm>
+
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>config-api-modules</artifactId>
+  <packaging>jar</packaging>
+  <parent>
+    <groupId>org.wildfly.swarm</groupId>
+    <artifactId>config-api-parent</artifactId>
+    <version>0.3.19-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <dependencies>
+    <dependency>
+      <groupId>org.wildfly.swarm</groupId>
+      <artifactId>config-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
+</project>

@@ -1,7 +1,9 @@
 package org.wildfly.swarm.config.generator.generator;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -130,7 +132,7 @@ public class Generator {
                         SubsystemPlan plan = new SubsystemPlan(resourceMetaData);
                         subsystems.add(plan);
 
-                        for ( EnumPlan enumPlan : plan.getEnumPlans() ) {
+                        for (EnumPlan enumPlan : plan.getEnumPlans()) {
                             EnumFactory factory = new EnumFactory();
                             JavaType javaType = factory.create(plan, enumPlan);
                             write(javaType);
@@ -156,18 +158,37 @@ public class Generator {
                 }
         );
 
-        System.err.println("----------------- BEGIN module.xml paths -----------------------");
+        Path moduleXml = Paths.get("modules", "target", "classes", "modules", "org", "wildfly", "swarm", "configuration", "main", "module.xml");
+        try {
+            Files.createDirectories(moduleXml.getParent());
+            try (PrintWriter out = new PrintWriter(new FileOutputStream(moduleXml.toFile()))) {
+                out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "\n" +
+                        "<module xmlns=\"urn:jboss:module:1.3\" name=\"org.wildfly.swarm.configuration\">\n" +
+                        "  <dependencies>\n" +
+                        "    <!-- For when run with bonafide IDE classpath -->\n" +
+                        "    <system export=\"true\">\n" +
+                        "      <paths>");
 
-        subsystems.stream()
-                .flatMap((e) -> e.getClassPlans().stream())
-                .map((e) -> e.getPackageName())
-                .collect(Collectors.toSet())
-                .stream().sorted()
-                .forEach((e) -> {
-                    System.err.println("        <path name=\"" + e.replace('.', '/') + "\"/>");
-                });
+                subsystems.stream()
+                        .flatMap((e) -> e.getClassPlans().stream())
+                        .map((e) -> e.getPackageName())
+                        .collect(Collectors.toSet())
+                        .stream().sorted()
+                        .forEach((e) -> {
+                            out.println("        <path name=\"" + e.replace('.', '/') + "\"/>");
+                        });
 
-        System.err.println("----------------- END module.xml paths -------------------------");
+                out.println("      </paths>\n" +
+                        "    </system>\n" +
+                        "    <module name=\"org.wildfly.swarm.configuration\" slot=\"api\" export=\"true\" services=\"export\"/>\n" +
+                        "  </dependencies>\n" +
+                        "\n" +
+                        "</module>");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }

@@ -35,6 +35,7 @@
     <module>runtime</module>
     <module>generator</module>
     <module>api</module>
+    <module>modules</module>
   </modules>
 
   <repositories>
