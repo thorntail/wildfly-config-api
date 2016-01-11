@@ -24,6 +24,7 @@
       "/subsystem=logging",
       "/subsystem=mail",
       "/subsystem=messaging-activemq",
+      "/subsystem=naming",
       "/subsystem=remoting",
       "/subsystem=sar",
       "/subsystem=security",
