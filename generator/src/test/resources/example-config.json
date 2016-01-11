@@ -6,9 +6,6 @@
         "pass" : "passWord123"
     },
     "generatorTargets" : [
-        {
-            "sourceAddress": "/subsystem=datasources/data-source=*",
-            "targetPackage": "org.wildfly.swarm.config.datasources"
-        }
+        "/subsystem=datasources/data-source=*"
     ]
 }

@@ -2,6 +2,7 @@ package org.wildfly.swarm.config.generator.generator;
 
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import java.io.FileReader;
@@ -26,13 +27,8 @@ public class Config {
 
         List<GeneratorTarget> references = new ArrayList<>();
         json.get("generatorTargets").asArray().forEach(ref -> {
-            JsonObject atts = ref.asObject();
-            references.add(
-                    new GeneratorTarget(
-                            atts.get("sourceAddress").asString(),
-                            atts.get("targetPackage").asString()
-                    )
-            );
+            //JsonObject atts = ref.asObject();
+            references.add(new GeneratorTarget(ref.asString()));
         });
         return references;
     }
@@ -44,7 +40,7 @@ public class Config {
 
     public String getPass() {
         JsonObject server = json.get("server").asObject();
-                return server.get("pass").asString();
+        return server.get("pass").asString();
     }
 
     public int getPort() {

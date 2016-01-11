@@ -9,23 +9,17 @@ import org.wildfly.swarm.config.runtime.model.AddressTemplate;
 public class GeneratorTarget {
 
     private AddressTemplate sourceAddress;
-    private String targetPackage;
 
-    public GeneratorTarget(String address, String targetPackage) {
-        this(AddressTemplate.of(address), targetPackage);
+    public GeneratorTarget(String address) {
+        this(AddressTemplate.of(address) );
     }
 
-    public GeneratorTarget(AddressTemplate address, String targetPackage) {
+    public GeneratorTarget(AddressTemplate address) {
         this.sourceAddress = address;
-        this.targetPackage = targetPackage;
     }
 
     public AddressTemplate getSourceAddress() {
         return sourceAddress;
-    }
-
-    public String getTargetPackage() {
-        return targetPackage;
     }
 
     @Override

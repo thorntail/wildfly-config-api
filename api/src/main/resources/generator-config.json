@@ -6,109 +6,31 @@
     "pass": "passWord123"
   },
   "generatorTargets": [
-    {
-      "sourceAddress": "/core-service=management",
-      "targetPackage": "org.wildfly.swarm.config.management"
-    },
-    {
-      "sourceAddress": "/subsystem=batch-jberet",
-      "targetPackage": "org.wildfly.swarm.config.batch.jberet"
-    },
-    {
-      "sourceAddress": "/subsystem=bean-validation",
-      "targetPackage": "org.wildfly.swarm.config.bean.validation"
-    },
-    {
-      "sourceAddress": "/subsystem=datasources",
-      "targetPackage": "org.wildfly.swarm.config.datasources"
-    },
-    {
-      "sourceAddress": "/subsystem=ee",
-      "targetPackage": "org.wildfly.swarm.config.ee"
-    },
-    {
-      "sourceAddress": "/subsystem=ejb3",
-      "targetPackage": "org.wildfly.swarm.config.ejb3"
-    },
-    {
-      "sourceAddress": "/subsystem=infinispan",
-      "targetPackage": "org.wildfly.swarm.config.infinispan"
-    },
-    {
-      "sourceAddress": "/subsystem=iiop-openjdk",
-      "targetPackage": "org.wildfly.swarm.config.iiop.openjdk"
-    },
-    {
-      "sourceAddress": "/subsystem=io",
-      "targetPackage": "org.wildfly.swarm.config.io"
-    },
-    {
-      "sourceAddress": "/subsystem=jaxrs",
-      "targetPackage": "org.wildfly.swarm.config.jaxrs"
-    },
-    {
-      "sourceAddress": "/subsystem=jca",
-      "targetPackage": "org.wildfly.swarm.config.jca"
-    },
-    {
-      "sourceAddress": "/subsystem=jgroups",
-      "targetPackage": "org.wildfly.swarm.config.jgroups"
-    },
-    {
-      "sourceAddress": "/subsystem=jpa",
-      "targetPackage": "org.wildfly.swarm.config.jpa"
-    },
-    {
-      "sourceAddress": "/subsystem=jsf",
-      "targetPackage": "org.wildfly.swarm.config.jsf"
-    },
-    {
-      "sourceAddress": "/subsystem=logging",
-      "targetPackage": "org.wildfly.swarm.config.logging"
-    },
-    {
-      "sourceAddress": "/subsystem=mail",
-      "targetPackage": "org.wildfly.swarm.config.mail"
-    },
-    {
-      "sourceAddress": "/subsystem=messaging-activemq",
-      "targetPackage": "org.wildfly.swarm.config.messaging"
-    },
-    {
-      "sourceAddress": "/subsystem=naming",
-      "targetPackage": "org.wildfly.swarm.config.naming"
-    },
-    {
-      "sourceAddress": "/subsystem=remoting",
-      "targetPackage": "org.wildfly.swarm.config.remoting"
-    },
-    {
-      "sourceAddress": "/subsystem=sar",
-      "targetPackage": "org.wildfly.swarm.config.sar"
-    },
-    {
-      "sourceAddress": "/subsystem=security",
-      "targetPackage": "org.wildfly.swarm.config.security"
-    },
-    {
-      "sourceAddress": "/subsystem=security-manager",
-      "targetPackage": "org.wildfly.swarm.config.security.manager"
-    },
-    {
-      "sourceAddress": "/subsystem=transactions",
-      "targetPackage": "org.wildfly.swarm.config.transactions"
-    },
-    {
-      "sourceAddress": "/subsystem=undertow",
-      "targetPackage": "org.wildfly.swarm.config.undertow"
-    },
-    {
-      "sourceAddress": "/subsystem=webservices",
-      "targetPackage": "org.wildfly.swarm.config.webservices"
-    },
-    {
-      "sourceAddress": "/subsystem=weld",
-      "targetPackage": "org.wildfly.swarm.config.weld"
-    }
+      "/core-service=management",
+      "/subsystem=batch-jberet",
+      "/subsystem=bean-validation",
+      "/subsystem=datasources",
+      "/subsystem=ee",
+      "/subsystem=ejb3",
+      "/subsystem=infinispan",
+      "/subsystem=iiop-openjdk",
+      "/subsystem=io",
+      "/subsystem=jaxrs",
+      "/subsystem=jca",
+      "/subsystem=jgroups",
+      "/subsystem=jmx",
+      "/subsystem=jpa",
+      "/subsystem=jsf",
+      "/subsystem=logging",
+      "/subsystem=mail",
+      "/subsystem=messaging-activemq",
+      "/subsystem=remoting",
+      "/subsystem=sar",
+      "/subsystem=security",
+      "/subsystem=security-manager",
+      "/subsystem=transactions",
+      "/subsystem=undertow",
+      "/subsystem=webservices",
+      "/subsystem=weld"
   ]
 }

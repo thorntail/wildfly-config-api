@@ -125,7 +125,6 @@ public class Generator {
                     try {
                         // load resource entry point recursively
                         ResourceMetaData resourceMetaData = loadResourceMetaData(target);
-                        resourceMetaData.set(ResourceMetaData.PKG, target.getTargetPackage());
 
                         // generate classes
 

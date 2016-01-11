@@ -21,7 +21,7 @@
   </scm>
 
   <properties>
-    <version.wildfly>10.0.0.CR4</version.wildfly>
+    <version.wildfly>10.0.0.CR5</version.wildfly>
     <version.org.wildfly.plugins.maven>1.0.2.Final</version.org.wildfly.plugins.maven>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>

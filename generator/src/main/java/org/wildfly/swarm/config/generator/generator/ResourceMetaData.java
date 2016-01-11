@@ -12,8 +12,6 @@ import java.util.Map;
  */
 public class ResourceMetaData implements Comparable<ResourceMetaData> {
 
-    public static String PKG = "package";
-
     private AddressTemplate address;
     private ResourceDescription desc;
 
