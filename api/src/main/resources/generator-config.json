@@ -30,6 +30,7 @@
       "/subsystem=naming",
       "/subsystem=pojo",
       "/subsystem=remoting",
+      "/subsystem=resource-adapters",
       "/subsystem=sar",
       "/subsystem=security",
       "/subsystem=security-manager",

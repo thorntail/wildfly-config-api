@@ -8,6 +8,7 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYP
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -46,6 +47,8 @@ public class ResourceFactory implements SourceFactory {
 
     private static final Logger log = Logger.getLogger(ResourceFactory.class.getName());
 
+    private final Set<String> names = new HashSet<>();
+
     /**
      * Base template for a resource representation.
      * Covers the resource attributes
@@ -55,6 +58,7 @@ public class ResourceFactory implements SourceFactory {
      * @return
      */
     public JavaClassSource create(ClassIndex index, ClassPlan plan) {
+        this.names.clear();
 
         // base class
         JavaClassSource type = Roaster.parse(
@@ -72,7 +76,6 @@ public class ResourceFactory implements SourceFactory {
         addConstructor(type, plan);
         addResourceTypeAnnotation(type, plan);
         addPropertyChangeSupport(type, plan);
-        addAttribtues(index, type, plan);
 
         addChildResources(index, type, plan);
         addSingletonResources(index, type, plan);
@@ -88,6 +91,7 @@ public class ResourceFactory implements SourceFactory {
             type.addNestedType(enumType);
         }
 
+        addAttribtues(index, type, plan);
 
         return type;
     }
@@ -201,6 +205,11 @@ public class ResourceFactory implements SourceFactory {
 
         desc.getAttributes().forEach(
                 att -> {
+                    if (this.names.contains(att.getName())) {
+                        System.err.println("WARNING: skipping attribute: " + att.getName() + ": conflicts with sub-resource");
+                        return;
+                    }
+
                     ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
                     Optional<String> resolvedType = Types.resolveJavaTypeName(modelType, att.getValue());
 
@@ -225,35 +234,6 @@ public class ResourceFactory implements SourceFactory {
                                 if (standaloneEnum) {
                                     type.addImport(enumPlan.getFullyQualifiedClassName());
                                 }
-                                // TODO For now add a deprecated String setter, but this should be removed at some point
-                                final MethodSource<JavaClassSource> stringMutator = type.addMethod()
-                                        .setName(name)
-                                        .setPublic()
-                                        .setReturnType("T");
-                                stringMutator.addParameter(String.class, name).setFinal(true);
-                                stringMutator.addAnnotation(Deprecated.class);
-                                stringMutator.addAnnotation("SuppressWarnings").setStringValue("unchecked");
-                                // Loop through the enum values and return set the first value found
-                                final StringBuilder body = new StringBuilder();
-                                body.append("if (").append(name).append(" == null) {");
-                                body.append("    this.").append(name).append(" = null;");
-                                body.append("} else {");
-                                body.append("    boolean found = false;");
-                                body.append("    for (").append(attributeType).append(" e : ").append(enumName).append(".values()) {");
-                                body.append("        if (e.toString().equals(").append(name).append(")) {");
-                                body.append("            ").append(name).append("(e);");
-                                body.append("            found=true;");
-                                body.append("            break;");
-                                body.append("         }");
-                                body.append("    }");
-                                body.append("    if (!found) throw new RuntimeException(String.format(\"Value '%s' not valid. Valid values are: %s\", ")
-                                        .append(name)
-                                        .append(", Arrays.asList(")
-                                        .append(enumName).append(".values())")
-                                        .append("));");
-                                body.append("}");
-                                body.append("return (T) this;");
-                                stringMutator.setBody(body.toString());
                             } else {
                                 attributeType = resolvedType.get();
                             }
@@ -357,7 +337,7 @@ public class ResourceFactory implements SourceFactory {
      * @param plan
      * @param javaClass
      */
-    public static void createChildAccessors(ClassIndex index, ClassPlan plan, JavaClassSource javaClass) {
+    public void createChildAccessors(ClassIndex index, ClassPlan plan, JavaClassSource javaClass) {
 
         Inflector inflector = new Inflector();
 
@@ -369,6 +349,7 @@ public class ResourceFactory implements SourceFactory {
         final ResourceDescription resourceMetaDataDescription = resourceMetaData.getDescription();
         final Set<String> childrenNames = resourceMetaDataDescription.getChildrenTypes();
         for (String childName : childrenNames) {
+            this.names.add(childName);
 
             final AddressTemplate childAddress = resourceMetaData.getAddress().append(childName + "=*");
             final ClassPlan childClass = index.lookup(childAddress);
@@ -497,7 +478,7 @@ public class ResourceFactory implements SourceFactory {
     }
 
 
-    public static void createSingletonChildAccessors(ClassIndex index, ClassPlan plan, JavaClassSource javaClass) {
+    public void createSingletonChildAccessors(ClassIndex index, ClassPlan plan, JavaClassSource javaClass) {
 
         ResourceMetaData resourceMetaData = plan.getMetaData();
 
@@ -598,7 +579,7 @@ public class ResourceFactory implements SourceFactory {
         }
     }
 
-    private static JavaClassSource getOrCreateSubresourceClass(ClassPlan plan, JavaClassSource javaClass) {
+    private JavaClassSource getOrCreateSubresourceClass(ClassPlan plan, JavaClassSource javaClass) {
 
         JavaClassSource subresourceClass = plan.getSubresourceClass();
 
@@ -637,55 +618,5 @@ public class ResourceFactory implements SourceFactory {
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, Keywords.escape(dmr.replace("-", "_")));
     }
 
-    private static JavaEnumSource createEnum(final String enumName, final JavaClassSource type, final List<ModelNode> allowedValues) {
-
-
-        final JavaEnumSource enumType = Roaster.create(JavaEnumSource.class)
-                .setName(enumName)
-                .setStatic(true)
-                .setPublic();
-        //.setPackage(packageName);
-
-        // Create a field to indicate the value the model expects
-        enumType.addProperty(String.class, "allowedValue")
-                .getAccessor()
-                .getJavaDoc()
-                .setText("Returns the allowed value for the management model.")
-                .addTagValue("@return", "the allowed model value");
-
-        final MethodSource<JavaEnumSource> constructor = enumType.addMethod()
-                .setConstructor(true);
-        constructor.addParameter(String.class, "allowedValue");
-        constructor.setBody("this.allowedValue = allowedValue;");
-
-        // Override the toString() to return the allowedValue so it can be used to determine the correct enum to use
-        enumType.addMethod()
-                .setName("toString")
-                .setReturnType(String.class)
-                .setPublic()
-                .setBody("return allowedValue;")
-                .addAnnotation(Override.class);
-
-        // For each allowed value add an enum constant
-        allowedValues.forEach(value -> {
-            final String v = value.asString();
-            // Replace - and . with _ and uppercase each character
-            final StringBuilder sb = new StringBuilder();
-            for (char c : v.toCharArray()) {
-                switch (c) {
-                    case '-':
-                    case '.': {
-                        sb.append('_');
-                        break;
-                    }
-                    default:
-                        sb.append(Character.toUpperCase(c));
-                }
-            }
-            final EnumConstantSource constantSource = enumType.addEnumConstant(sb.toString());
-            constantSource.setConstructorArguments("\"" + value.asString() + "\"");
-        });
-
-        return type.addNestedType(enumType);
-    }
 }
+
