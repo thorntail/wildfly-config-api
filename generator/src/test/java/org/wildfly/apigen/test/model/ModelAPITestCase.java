@@ -27,6 +27,6 @@ public class ModelAPITestCase extends AbstractTestCase {
         ResourceDescription description = ResourceDescription.from(response);
 
         Assert.assertNotNull(description.getText());
-        Assert.assertEquals(58, description.getAttributes().size());
+        Assert.assertEquals(59, description.getAttributes().size());
     }
 }
