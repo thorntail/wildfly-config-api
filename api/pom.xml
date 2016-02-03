@@ -30,14 +30,15 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.wildfly.swarm</groupId>
-      <artifactId>config-api-generator</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${version.junit}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.wildfly.swarm</groupId>
+      <artifactId>config-api-generator</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -47,6 +48,13 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>1.4.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>config-api-generator</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
             <phase>generate-sources</phase>
@@ -55,6 +63,8 @@
             </goals>
             <configuration>
               <mainClass>org.wildfly.swarm.config.generator.generator.Generator</mainClass>
+              <includePluginDependencies>true</includePluginDependencies>
+              <includeProjectDependencies>true</includeProjectDependencies>
               <arguments>
                 <argument>
                 ${project.basedir}/src/main/resources/generator-config.json</argument>
