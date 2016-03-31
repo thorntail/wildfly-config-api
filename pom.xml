@@ -63,21 +63,7 @@
       </snapshots>
     </repository>
   </repositories>
-
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <autoVersionSubmodules>true</autoVersionSubmodules>
-          <tagNameFormat>@{project.version}</tagNameFormat>
-          <pushChanges>false</pushChanges>
-          <preparationGoals>install</preparationGoals>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
+  
   <dependencyManagement>
     <dependencies>
       <dependency>
