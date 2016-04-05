@@ -29,6 +29,7 @@
       "/subsystem=modcluster",
       "/subsystem=naming",
       "/subsystem=pojo",
+      "/subsystem=request-controller",
       "/subsystem=remoting",
       "/subsystem=resource-adapters",
       "/subsystem=sar",
