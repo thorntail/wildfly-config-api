@@ -75,6 +75,21 @@ EntityAdapter<DataSource> entityAdapter = new EntityAdapter<>(DataSource.class);
 DataSource dataSource = entityAdapter.fromDMR(payload);
 ```
 
+**Expressions**
+
+Expression replace actual values in the configuration model and will be resolved at runtime.
+To set an expression for an attribute through the java API, you'd simply `put` and expression for a given java property name:
+
+```
+ DataSource dataSource = ...;
+
+ dataSource.put("userName", "${database.user.name:defaultName}");
+ dataSource.password("...");
+
+```
+
+This will resolve the `database.user.name` property at runtime and fallback to the value "defaultName" if the expression cannot be resolved.
+
 **Changesets**
 
 Modification to the java objects can be captured in changesets.

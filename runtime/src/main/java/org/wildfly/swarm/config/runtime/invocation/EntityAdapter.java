@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
+import org.jboss.dmr.ValueExpression;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
@@ -147,19 +148,15 @@ public class EntityAdapter<T> {
 
 
                 // EXPRESSIONS
-                /*if(propBinding.doesSupportExpression())
-                {
-                    if(propValue.isDefined()
-                            && propValue.getType() == ModelType.EXPRESSION)
-                    {
-                        String exprValue = actualPayload.resolve(propBinding.getDetypedName()).asString();
+                if(ModelType.EXPRESSION == dmrPayload.getType()) {
 
-                        ExpressionAdapter.setExpressionValue(entity, propBinding.getJavaName(), exprValue);
+                    ValueExpression expression = dmrPayload.asExpression();
 
-                        continue; // expression have precedence over real values
+                    ((Map)entity).put(method.name(), expression.getExpressionString());
 
-                    }
-                }*/
+                    continue; // expression have precedence over real values
+
+                }
 
 
                 // VALUES
@@ -318,6 +315,19 @@ public class EntityAdapter<T> {
                     org.jboss.jandex.AnnotationValue annValue = ann.value("detypedName");
                     String detypedName = annValue.asString();
 
+
+                    // EXPRESSIONS
+                    if(entity instanceof Map) {
+                        Map<String,String> expr = (Map<String,String>) entity;
+                        if (!expr.isEmpty()) {
+
+                            if(expr.keySet().contains(method.name())) {
+                                modelNode.get(detypedName).setExpression(expr.get(method.name()));
+                                continue; // expressions have precedence over values
+                            }
+                        }
+                    }
+
                     // VALUES
                     if (propertyValue != null) {
                         try {
@@ -351,5 +361,6 @@ public class EntityAdapter<T> {
 
         return modelNode;
     }
+
 }
 

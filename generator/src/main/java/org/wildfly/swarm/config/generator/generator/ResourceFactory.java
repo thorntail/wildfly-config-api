@@ -1,26 +1,18 @@
 package org.wildfly.swarm.config.generator.generator;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ALLOWED;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPRECATED;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.common.base.CaseFormat;
-import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
-import org.jboss.forge.roaster.model.source.EnumConstantSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaDocSource;
@@ -36,6 +28,11 @@ import org.wildfly.swarm.config.runtime.ResourceType;
 import org.wildfly.swarm.config.runtime.Subresource;
 import org.wildfly.swarm.config.runtime.invocation.Types;
 import org.wildfly.swarm.config.runtime.model.AddressTemplate;
+
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ALLOWED;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPRECATED;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
 
 /**
  * Encapsulates the templates for generating source files from resource descriptions
@@ -98,6 +95,8 @@ public class ResourceFactory implements SourceFactory {
 
     protected void addConstructor(JavaClassSource type, ClassPlan plan) {
 
+        type.extendSuperType(HashMap.class);
+
         // resource name
         type.addField()
                 .setName("key")
@@ -110,14 +109,14 @@ public class ResourceFactory implements SourceFactory {
             type.addMethod()
                     .setConstructor(true)
                     .setPublic()
-                    .setBody("this.key = \"" + plan.getSingletonName() + "\";\n"
-                            + "this.pcs = new PropertyChangeSupport(this);");
+                    .setBody("super();\nthis.key = \"" + plan.getSingletonName() + "\";\n"
+                                     + "this.pcs = new PropertyChangeSupport(this);");
         } else {
             // regular resources need to provide a key
             type.addMethod()
                     .setConstructor(true)
                     .setPublic()
-                    .setBody("this.key = key;")
+                    .setBody("super();\nthis.key = key;")
                     .addParameter(String.class, "key");
 
         }
@@ -187,7 +186,7 @@ public class ResourceFactory implements SourceFactory {
                 .setName("addPropertyChangeListener")
                 .addParameter(PropertyChangeListener.class, "listener");
         listenerAdd.setBody("if(null==this.pcs) this.pcs = new PropertyChangeSupport(this);\n" +
-                "this.pcs.addPropertyChangeListener(listener);");
+                                    "this.pcs.addPropertyChangeListener(listener);");
 
         final MethodSource<JavaClassSource> listenerRemove = type.addMethod();
         listenerRemove.getJavaDoc().setText("Removes a property change listener");
@@ -260,9 +259,9 @@ public class ResourceFactory implements SourceFactory {
                                     .setName(name)
                                     .setReturnType("T")
                                     .setBody("Object oldValue = this." + name + ";\n" +
-                                            "this." + name + " = value;\n" +
-                                            "if(this.pcs!=null) this.pcs.firePropertyChange(\"" + name + "\", oldValue, value);\n" +
-                                            "return (T) this;")
+                                                     "this." + name + " = value;\n" +
+                                                     "if(this.pcs!=null) this.pcs.firePropertyChange(\"" + name + "\", oldValue, value);\n" +
+                                                     "return (T) this;")
                                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
                             AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();

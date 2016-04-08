@@ -1,19 +1,21 @@
 package org.wildfly.apigen.test.invocation.mail.subsystem.mailSession;
 
-import org.wildfly.swarm.config.runtime.Address;
-import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 import java.util.List;
-import org.wildfly.swarm.config.runtime.Subresource;
-import org.wildfly.swarm.config.runtime.ModelNodeSubresources;
+
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.custom.Custom;
+import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Imap;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Pop3;
 import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Smtp;
-import org.wildfly.apigen.test.invocation.mail.subsystem.mailSession.server.Imap;
+import org.wildfly.swarm.config.runtime.Address;
+import org.wildfly.swarm.config.runtime.ModelNodeBinding;
+import org.wildfly.swarm.config.runtime.ModelNodeSubresources;
+import org.wildfly.swarm.config.runtime.Subresource;
+
 /**
  * Mail session definition
  */
 @Address("/subsystem=mail/mail-session=*")
-public class MailSession<T extends MailSession> {
+public class MailSession<T extends MailSession> extends java.util.HashMap<String,String>  {
 
 	private String key;
 	private Boolean debug;
@@ -25,6 +27,7 @@ public class MailSession<T extends MailSession> {
 	private Imap imap;
 
 	public MailSession(String key) {
+		super();
 		this.key = key;
 	}
 
