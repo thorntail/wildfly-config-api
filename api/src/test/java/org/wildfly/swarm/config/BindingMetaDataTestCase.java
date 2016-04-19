@@ -39,7 +39,7 @@ public class BindingMetaDataTestCase {
     }
 
     private final static String[] BLACKLIST = {
-            "<init>", "getKey", "subresources"
+            "<init>", "getKey", "subresources", "getExpressionSupport", "usesExpressions"
     };
 
     /**

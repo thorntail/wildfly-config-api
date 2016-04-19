@@ -1,6 +1,8 @@
 package org.wildfly.apigen.test.invocation;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
+import org.jboss.dmr.ValueExpression;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +32,26 @@ public class EntityAdapterTestCase extends AbstractTestCase {
         mailSession.from("john@doe.com");
         mailSession.jndiName("java:/mail/Test");
         mail.mailSession(mailSession);
+    }
+
+    @Test
+    public void testExpressions() throws Exception {
+        mailSession.put("from", "${mail.smtp.from:mary@doe.com}");
+        EntityAdapter<MailSession> entityAdapter = new EntityAdapter<>(MailSession.class);
+        ModelNode modelNode = entityAdapter.fromEntity(mailSession);
+
+        System.out.println(modelNode);
+
+        Assert.assertEquals(ModelType.EXPRESSION, modelNode.get("from").getType());
+
+
+        // the other way around
+        ModelNode payload = new ModelNode();
+        payload.get("jndi-name").set(new ValueExpression("${mail.jndi.name}"));
+
+        MailSession entity = entityAdapter.fromDMR("TestMail", payload);
+        Assert.assertTrue("Expression for 'jndiName' has not been resolved", entity.keySet().contains("jndiName"));
+
     }
 
     @Test
