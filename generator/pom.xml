@@ -72,7 +72,7 @@
         <version>${version.org.wildfly.plugins.maven}</version>
         <executions>
           <execution>
-            <id>start-a</id>
+            <id>start</id>
             <goals>
               <goal>start</goal>
             </goals>
@@ -83,40 +83,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>fix-aio</id>
-            <goals>
-              <goal>execute-commands</goal>
-            </goals>
-            <phase>validate</phase>
-            <configuration>
-              <execute-commands>
-                <commands>
-                  <command>/subsystem=messaging-activemq/server=default:write-attribute(name=journal-type, value=NIO)</command>
-                </commands>
-              </execute-commands>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-a</id>
-            <goals>
-              <goal>shutdown</goal>
-            </goals>
-            <phase>validate</phase>
-          </execution>
-          <execution>
-            <id>start-b</id>
-            <goals>
-              <goal>start</goal>
-            </goals>
-            <phase>validate</phase>
-            <configuration>
-              <version>${version.wildfly}</version>
-              <server-config>standalone-full-ha.xml</server-config>
-              <jbossHome>${project.build.directory}/wildfly-run/wildfly-${version.wildfly}</jbossHome>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-b</id>
+            <id>stop</id>
             <goals>
               <goal>shutdown</goal>
             </goals>
