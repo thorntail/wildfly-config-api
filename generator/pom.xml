@@ -79,7 +79,7 @@
             <phase>validate</phase>
             <configuration>
               <version>${version.wildfly}</version>
-              <server-config>standalone-full-ha.xml</server-config>
+              <server-config>../../../../../standalone-full-ha.xml</server-config>
             </configuration>
           </execution>
           <execution>
