@@ -53,16 +53,17 @@ class SubresourceFilter {
         return methods;
     }
 
-    private class LoggingComparator implements Comparator<Method> {
+    static class LoggingComparator implements Comparator<Method> {
         @Override
         public int compare(Method o1, Method o2) {
             if (o1.getName().contains("Formatter") ) return -1;
+            if (o2.getName().contains("Formatter") ) return 1;
             if ( o1.getName().equals( "loggers" ) || o1.getName().equals( "rootLogger" )) return 1;
             return -1;
         }
     }
 
-    private class DefaultComparator implements Comparator<Method> {
+    private static class DefaultComparator implements Comparator<Method> {
 
         @Override
         public int compare(Method o1, Method o2) {
