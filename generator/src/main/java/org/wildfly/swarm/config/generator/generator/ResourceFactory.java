@@ -497,6 +497,8 @@ public class ResourceFactory implements SourceFactory {
 
             String propName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, childClass.getOriginalClassName());
 
+            propName = NameFixer.fixPropertyName( propName );
+
             subresourceClass.addField()
                     .setName(propName)
                     .setType(childClass.getFullyQualifiedClassName())

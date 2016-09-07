@@ -8,6 +8,20 @@ import java.util.List;
  */
 public class NameFixer {
 
+    public static String fixPropertyName(String name) {
+        int numChars = name.length();
+        for ( int i = 1 ; i < numChars ; ++i ) {
+            // starting with the 2nd character, if it's only upper and numbers
+            char c = name.charAt( i );
+            if ( ! Character.isUpperCase( c ) && ! Character.isDigit( c ) ) {
+                break;
+            }
+            // then re-uppercase the first
+            name = name.substring(0,1).toUpperCase() + name.substring(1);
+        }
+        return name;
+    }
+
     public interface Fix {
         String fix(String input);
     }
