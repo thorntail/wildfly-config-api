@@ -14,12 +14,12 @@ public class NameFixer {
             // starting with the 2nd character, if it's only upper and numbers
             char c = name.charAt( i );
             if ( ! Character.isUpperCase( c ) && ! Character.isDigit( c ) ) {
-                break;
+                // if it's not, stop. just stop.
+                return name;
             }
-            // then re-uppercase the first
-            name = name.substring(0,1).toUpperCase() + name.substring(1);
         }
-        return name;
+        // then re-uppercase the first
+        return name.substring(0,1).toUpperCase() + name.substring(1);
     }
 
     public interface Fix {
