@@ -5,7 +5,7 @@
     <connection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</connection>
     <developerConnection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</developerConnection>
     <url>https://github.com/wildfly-swarm/wildfly-config-api</url>
-    <tag>HEAD</tag>
+    <tag>0.4.8</tag>
   </scm>
 
 
@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.wildfly.swarm</groupId>
     <artifactId>config-api-parent</artifactId>
-    <version>0.4.8-SNAPSHOT</version>
+    <version>0.4.8</version>
     <relativePath>../</relativePath>
   </parent>
   <dependencies>
