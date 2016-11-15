@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface Subresource {
+@Target({ElementType.FIELD})
+public @interface SubresourceInfo {
+    String value();
 }

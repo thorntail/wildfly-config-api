@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.google.common.base.CaseFormat;
@@ -18,14 +19,17 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaDocSource;
 import org.jboss.forge.roaster.model.source.JavaEnumSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import org.jboss.forge.roaster.model.source.ParameterSource;
 import org.jboss.logmanager.Level;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
 import org.wildfly.swarm.config.runtime.Address;
 import org.wildfly.swarm.config.runtime.Addresses;
 import org.wildfly.swarm.config.runtime.Implicit;
+import org.wildfly.swarm.config.runtime.Keyed;
 import org.wildfly.swarm.config.runtime.ModelNodeBinding;
 import org.wildfly.swarm.config.runtime.ResourceType;
 import org.wildfly.swarm.config.runtime.Subresource;
+import org.wildfly.swarm.config.runtime.SubresourceInfo;
 import org.wildfly.swarm.config.runtime.invocation.Types;
 import org.wildfly.swarm.config.runtime.model.AddressTemplate;
 
@@ -60,8 +64,9 @@ public class ResourceFactory implements SourceFactory {
         // base class
         JavaClassSource type = Roaster.parse(
                 JavaClassSource.class,
-                "public class " + plan.getClassName() + "<T extends " + plan.getClassName() + "<T>> {}"
+                "public class " + plan.getClassName() + "<T extends " + plan.getClassName() + "<T>> implements " + Keyed.class.getName() + "{}"
         );
+
 
         type.setPackage(plan.getPackageName());
 
@@ -110,7 +115,7 @@ public class ResourceFactory implements SourceFactory {
                     .setConstructor(true)
                     .setPublic()
                     .setBody("super();\nthis.key = \"" + plan.getSingletonName() + "\";\n"
-                                     + "this.pcs = new PropertyChangeSupport(this);");
+                            + "this.pcs = new PropertyChangeSupport(this);");
         } else {
             // regular resources need to provide a key
             type.addMethod()
@@ -186,7 +191,7 @@ public class ResourceFactory implements SourceFactory {
                 .setName("addPropertyChangeListener")
                 .addParameter(PropertyChangeListener.class, "listener");
         listenerAdd.setBody("if(null==this.pcs) this.pcs = new PropertyChangeSupport(this);\n" +
-                                    "this.pcs.addPropertyChangeListener(listener);");
+                "this.pcs.addPropertyChangeListener(listener);");
 
         final MethodSource<JavaClassSource> listenerRemove = type.addMethod();
         listenerRemove.getJavaDoc().setText("Removes a property change listener");
@@ -259,9 +264,9 @@ public class ResourceFactory implements SourceFactory {
                                     .setName(name)
                                     .setReturnType("T")
                                     .setBody("Object oldValue = this." + name + ";\n" +
-                                                     "this." + name + " = value;\n" +
-                                                     "if(this.pcs!=null) this.pcs.firePropertyChange(\"" + name + "\", oldValue, value);\n" +
-                                                     "return (T) this;")
+                                            "this." + name + " = value;\n" +
+                                            "if(this.pcs!=null) this.pcs.firePropertyChange(\"" + name + "\", oldValue, value);\n" +
+                                            "return (T) this;")
                                     .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
                             AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
@@ -372,14 +377,20 @@ public class ResourceFactory implements SourceFactory {
                 propName = pluralName;
             }
 
+
+            javaClass.addImport(SubresourceInfo.class);
+
             // Add a property and an initializer for this subresource to the class
             final String resourceText = resourceMetaDataDescription.getChildDescription(childName).getText();
-            subresourceClass.addField()
-                    .setName(propName)
+            FieldSource<JavaClassSource> field = subresourceClass.addField();
+
+            field.setName(propName)
                     .setType(propType)
                     .setPrivate()
                     .setLiteralInitializer("new java.util.ArrayList<>();")
                     .getJavaDoc().setText(resourceText);
+
+            field.addAnnotation(SubresourceInfo.class).setStringValue( singularName );
 
             // Add an accessor method
             final MethodSource<JavaClassSource> accessor = subresourceClass.addMethod();
@@ -497,7 +508,7 @@ public class ResourceFactory implements SourceFactory {
 
             String propName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, childClass.getOriginalClassName());
 
-            propName = NameFixer.fixPropertyName( propName );
+            propName = NameFixer.fixPropertyName(propName);
 
             subresourceClass.addField()
                     .setName(propName)
