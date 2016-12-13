@@ -178,6 +178,8 @@ public class Generator {
                             out.println("        <path name=\"" + e.replace('.', '/') + "\"/>");
                         });
 
+                out.println("        <path name=\"org/wildfly/swarm/config/runtime\"/>");
+
                 out.println("      </paths>\n" +
                         "    </system>\n" +
                         "    <module name=\"org.wildfly.swarm.configuration\" slot=\"api\" export=\"true\" services=\"export\"/>\n" +
