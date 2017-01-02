@@ -1,4 +1,5 @@
 {
+  "module": "org.wildfly.swarm.configuration",
   "server": {
     "host": "localhost",
     "port": 9990,
