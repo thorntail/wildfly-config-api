@@ -43,14 +43,17 @@ public class Generator {
 
     private DefaultStatementContext statementContext;
 
-    private final String targetDir;
+    private final Path targetDir;
 
     private final Config config;
 
-    public Generator(String targetDir, Config config) {
+    private final String artifact;
+
+    public Generator(String targetDir, Config config, String artifact) {
         this.statementContext = new DefaultStatementContext();
-        this.targetDir = targetDir;
+        this.targetDir = Paths.get( targetDir );
         this.config = config;
+        this.artifact = artifact;
 
         try {
             client = ClientFactory.createClient(config);
@@ -63,9 +66,10 @@ public class Generator {
     public static void main(String[] args) throws Exception {
         log.info("Config: " + args[0]);
         log.info("Output: " + args[1]);
+        log.info("Artifact: " + args[2]);
 
         Config config = Config.fromJson(args[0]);
-        Generator generator = new Generator(args[1], config);
+        Generator generator = new Generator(args[1], config, args[2]);
         try {
             generator.processGeneratorTargets();
         } finally {
@@ -73,8 +77,7 @@ public class Generator {
         }
     }
 
-    public void deleteDir(String dir) throws Exception {
-        Path directory = Paths.get(dir);
+    public void deleteDir(Path directory) throws Exception {
         Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -103,7 +106,7 @@ public class Generator {
     public void processGeneratorTargets() {
 
 
-        if (Files.exists(Paths.get(targetDir))) {
+        if (Files.exists(targetDir)) {
             System.out.println("Delete output dir: " + targetDir);
             try {
                 deleteDir(targetDir);
@@ -157,13 +160,24 @@ public class Generator {
                 }
         );
 
-        Path moduleXml = Paths.get("modules", "target", "classes", "modules", "org", "wildfly", "swarm", "configuration", "main", "module.xml");
+        System.err.println("TARGET DIR: " + this.targetDir);
+
+        generateMainModuleXml( subsystems );
+        generateApiModuleXml();
+        generateMarker();
+    }
+
+    private void generateMainModuleXml(List<SubsystemPlan> subsystems) {
+        String moduleName = this.config.getModuleName();
+
+        Path moduleXml = this.targetDir.resolve(Paths.get( "..", "classes", "modules" ) ).resolve(this.config.getModulePath( "main" )).toAbsolutePath();
+        System.err.println("** GENERATE MAIN MODULE.XML: " + moduleXml);
         try {
             Files.createDirectories(moduleXml.getParent());
             try (PrintWriter out = new PrintWriter(new FileOutputStream(moduleXml.toFile()))) {
                 out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "\n" +
-                        "<module xmlns=\"urn:jboss:module:1.3\" name=\"org.wildfly.swarm.configuration\">\n" +
+                        "<module xmlns=\"urn:jboss:module:1.3\" name=\"" + moduleName + "\">\n" +
                         "  <dependencies>\n" +
                         "    <!-- For when run with bonafide IDE classpath -->\n" +
                         "    <system export=\"true\">\n" +
@@ -178,11 +192,36 @@ public class Generator {
                             out.println("        <path name=\"" + e.replace('.', '/') + "\"/>");
                         });
 
-                out.println("        <path name=\"org/wildfly/swarm/config/runtime\"/>");
-
                 out.println("      </paths>\n" +
                         "    </system>\n" +
-                        "    <module name=\"org.wildfly.swarm.configuration\" slot=\"api\" export=\"true\" services=\"export\"/>\n" +
+                        "    <module name=\"" + moduleName + "\" slot=\"api\" export=\"true\" services=\"export\"/>\n" +
+                        "    <module name=\"org.wildfly.swarm.configuration.runtime\" export=\"true\"/>\n" +
+                        "  </dependencies>\n" +
+                        "\n" +
+                        "</module>");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void generateApiModuleXml() {
+        String moduleName = this.config.getModuleName();
+
+        Path moduleXml = this.targetDir.resolve(Paths.get( "..", "classes", "modules" ) ).resolve(this.config.getModulePath( "api" )).toAbsolutePath();
+        System.err.println("** GENERATE API MODULE.XML: " + moduleXml);
+
+        try {
+            Files.createDirectories(moduleXml.getParent());
+            try (PrintWriter out = new PrintWriter(new FileOutputStream(moduleXml.toFile()))) {
+                out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "\n" +
+                        "<module xmlns=\"urn:jboss:module:1.3\" name=\"" + moduleName + "\" slot=\"api\">\n" +
+                        "  <resources>\n" +
+                        "    <artifact name=\"" + this.artifact + "\"/>\n" +
+                        "  </resources>\n" +
+                        "  <dependencies>\n" +
+                        "    <module name=\"org.wildfly.swarm.configuration.runtime\" export=\"true\"/>\n" +
                         "  </dependencies>\n" +
                         "\n" +
                         "</module>");
@@ -191,7 +230,19 @@ public class Generator {
             e.printStackTrace();
         }
 
+    }
 
+    private void generateMarker() {
+        Path confPath = this.targetDir.resolve(Paths.get( "..", "classes", "wildfly-swarm-modules.conf" ));
+
+        try {
+            Files.createDirectories(confPath.getParent());
+            try (PrintWriter out = new PrintWriter(new FileOutputStream(confPath.toFile()))) {
+                out.println();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void write(JavaType javaClass) {
