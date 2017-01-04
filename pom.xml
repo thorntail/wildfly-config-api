@@ -26,7 +26,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
-    <version.roaster>2.19.0.Final</version.roaster>
+    <version.roaster>2.19.4.Final</version.roaster>
     <version.guava>18.0</version.guava>
     <version.junit>4.12</version.junit>
   </properties>
