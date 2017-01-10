@@ -10,7 +10,7 @@
 
   <groupId>org.wildfly.swarm</groupId>
   <artifactId>config-api-parent</artifactId>
-  <version>0.5.4-SNAPSHOT</version>
+  <version>1.0.0.Final-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <scm>
