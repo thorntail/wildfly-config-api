@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
@@ -279,6 +280,7 @@ public class ResourceFactory implements SourceFactory {
                                 // initialize the field to an array list
                                 //attributeField.setLiteralInitializer("new java.util.ArrayList<>()");
                                 type.addImport(Arrays.class);
+                                type.addImport(Collectors.class);
                                 final MethodSource<JavaClassSource> appender = type.addMethod();
                                 appender.getJavaDoc().setText(attributeDescription);
                                 appender.addParameter(Types.resolveValueType(att.getValue()), "value");
@@ -296,7 +298,7 @@ public class ResourceFactory implements SourceFactory {
                                 varargs.setPublic()
                                         .setName(name)
                                         .setReturnType("T")
-                                        .setBody(name + "(Arrays.asList( args )); return (T) this;")
+                                        .setBody(name + "(Arrays.stream(args).collect(Collectors.toList())); return (T) this;")
                                         .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
                             } else if (modelType == ModelType.OBJECT) {
