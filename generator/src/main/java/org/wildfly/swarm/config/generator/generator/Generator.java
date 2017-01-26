@@ -51,7 +51,7 @@ public class Generator {
 
     public Generator(String targetDir, Config config, String artifact) {
         this.statementContext = new DefaultStatementContext();
-        this.targetDir = Paths.get( targetDir );
+        this.targetDir = Paths.get(targetDir);
         this.config = config;
         this.artifact = artifact;
 
@@ -162,7 +162,7 @@ public class Generator {
 
         System.err.println("TARGET DIR: " + this.targetDir);
 
-        generateMainModuleXml( subsystems );
+        generateMainModuleXml(subsystems);
         generateApiModuleXml();
         generateMarker();
     }
@@ -170,7 +170,7 @@ public class Generator {
     private void generateMainModuleXml(List<SubsystemPlan> subsystems) {
         String moduleName = this.config.getModuleName();
 
-        Path moduleXml = this.targetDir.resolve(Paths.get( "..", "classes", "modules" ) ).resolve(this.config.getModulePath( "main" )).toAbsolutePath();
+        Path moduleXml = this.targetDir.resolve(Paths.get("..", "classes", "modules")).resolve(this.config.getModulePath("main")).toAbsolutePath();
         System.err.println("** GENERATE MAIN MODULE.XML: " + moduleXml);
         try {
             Files.createDirectories(moduleXml.getParent());
@@ -208,7 +208,7 @@ public class Generator {
     private void generateApiModuleXml() {
         String moduleName = this.config.getModuleName();
 
-        Path moduleXml = this.targetDir.resolve(Paths.get( "..", "classes", "modules" ) ).resolve(this.config.getModulePath( "api" )).toAbsolutePath();
+        Path moduleXml = this.targetDir.resolve(Paths.get("..", "classes", "modules")).resolve(this.config.getModulePath("api")).toAbsolutePath();
         System.err.println("** GENERATE API MODULE.XML: " + moduleXml);
 
         try {
@@ -233,7 +233,7 @@ public class Generator {
     }
 
     private void generateMarker() {
-        Path confPath = this.targetDir.resolve(Paths.get( "..", "classes", "wildfly-swarm-modules.conf" ));
+        Path confPath = this.targetDir.resolve(Paths.get("..", "classes", "wildfly-swarm-modules.conf"));
 
         try {
             Files.createDirectories(confPath.getParent());
