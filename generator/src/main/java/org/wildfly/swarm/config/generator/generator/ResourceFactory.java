@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -20,15 +19,17 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaDocSource;
 import org.jboss.forge.roaster.model.source.JavaEnumSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.jboss.forge.roaster.model.source.ParameterSource;
 import org.jboss.logmanager.Level;
 import org.wildfly.swarm.config.generator.model.ResourceDescription;
 import org.wildfly.swarm.config.runtime.Address;
 import org.wildfly.swarm.config.runtime.Addresses;
+import org.wildfly.swarm.config.runtime.AttributeDocumentation;
 import org.wildfly.swarm.config.runtime.Implicit;
 import org.wildfly.swarm.config.runtime.Keyed;
 import org.wildfly.swarm.config.runtime.ModelNodeBinding;
+import org.wildfly.swarm.config.runtime.ResourceDocumentation;
 import org.wildfly.swarm.config.runtime.ResourceType;
+import org.wildfly.swarm.config.runtime.SingletonResource;
 import org.wildfly.swarm.config.runtime.Subresource;
 import org.wildfly.swarm.config.runtime.SubresourceInfo;
 import org.wildfly.swarm.config.runtime.invocation.Types;
@@ -70,6 +71,10 @@ public class ResourceFactory implements SourceFactory {
 
 
         type.setPackage(plan.getPackageName());
+
+        type.addImport(AttributeDocumentation.class);
+        type.addImport(ResourceDocumentation.class);
+        type.addImport(SingletonResource.class);
 
         JavaDocSource javaDoc = type.getJavaDoc();
         ResourceDescription desc = plan.getDescription();
@@ -157,11 +162,6 @@ public class ResourceFactory implements SourceFactory {
     }
 
 
-    // javadoc
-
-    // imports
-    //type.addImport(PropertyChangeListener.class);
-    //type.addImport(PropertyChangeSupport.class);
 
 
     protected void addResourceTypeAnnotation(JavaClassSource type, ClassPlan plan) {
@@ -249,6 +249,10 @@ public class ResourceFactory implements SourceFactory {
                                     .setName(name)
                                     .setType(attributeType)
                                     .setPrivate();
+
+                            AnnotationSource attributeAnnotation = attributeField.addAnnotation();
+                            attributeAnnotation.setName(AttributeDocumentation.class.getSimpleName());
+                            attributeAnnotation.setStringValue(attributeDescription);
 
                             final MethodSource<JavaClassSource> accessor = type.addMethod();
                             accessor.getJavaDoc().setText(attributeDescription);
@@ -392,7 +396,11 @@ public class ResourceFactory implements SourceFactory {
                     .setLiteralInitializer("new java.util.ArrayList<>();")
                     .getJavaDoc().setText(resourceText);
 
-            field.addAnnotation(SubresourceInfo.class).setStringValue( singularName );
+            AnnotationSource attributeAnnotation = field.addAnnotation();
+            attributeAnnotation.setName(ResourceDocumentation.class.getSimpleName());
+            attributeAnnotation.setStringValue(resourceText);
+
+            field.addAnnotation(SubresourceInfo.class).setStringValue(singularName);
 
             // Add an accessor method
             final MethodSource<JavaClassSource> accessor = subresourceClass.addMethod();
@@ -512,10 +520,14 @@ public class ResourceFactory implements SourceFactory {
 
             propName = NameFixer.fixPropertyName(propName);
 
-            subresourceClass.addField()
+            FieldSource<JavaClassSource> field = subresourceClass.addField()
                     .setName(propName)
                     .setType(childClass.getFullyQualifiedClassName())
                     .setPrivate();
+
+            AnnotationSource<JavaClassSource> singletonAnno = field.addAnnotation();
+            singletonAnno.setName(SingletonResource.class.getSimpleName());
+
 
             // Add an accessor method
             final MethodSource<JavaClassSource> accessor = subresourceClass.addMethod();
@@ -526,6 +538,10 @@ public class ResourceFactory implements SourceFactory {
                     .setName(propName)
                     .setReturnType(childClass.getFullyQualifiedClassName())
                     .setBody("return this." + propName + ";");
+
+            AnnotationSource<JavaClassSource> docAnno = field.addAnnotation();
+            docAnno.setName(ResourceDocumentation.class.getSimpleName());
+            docAnno.setStringValue(javaDoc);
 
             AnnotationSource<JavaClassSource> subresourceMeta = accessor.addAnnotation();
             subresourceMeta.setName("Subresource");
