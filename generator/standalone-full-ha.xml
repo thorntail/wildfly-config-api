@@ -404,18 +404,18 @@
                 </security-domain>
                 <security-domain name="jboss-web-policy" cache-type="default">
                     <authorization>
-                        <policy-module code="Delegating" flag="required" module="jboss-moodule-name"/>
+                        <policy-module code="Delegating" flag="required" module="jboss-module-name"/>
                     </authorization>
                 </security-domain>
                 <security-domain name="jboss-ejb-policy" cache-type="default">
                     <authorization>
-                        <policy-module code="Delegating" flag="required" module="jboss-moodule-name"/>
+                        <policy-module code="Delegating" flag="required" module="jboss-module-name"/>
                     </authorization>
                 </security-domain>
                 <security-domain name="jaspitest" cache-type="default">
                     <authentication-jaspi>
                         <login-module-stack name="dummy">
-                            <login-module code="Dummy" flag="optional" module="jboss-moodule-name"/>
+                            <login-module code="Dummy" flag="optional" module="jboss-module-name"/>
                         </login-module-stack>
                         <auth-module code="Dummy" module="jboss-module-name"/>
                     </authentication-jaspi>
