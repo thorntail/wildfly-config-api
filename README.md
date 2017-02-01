@@ -1,4 +1,4 @@
-# WildFly Configuration API, Version X
+# WildFly Configuration API, Version X2
 
 This projects breaks down into three parts:
 
