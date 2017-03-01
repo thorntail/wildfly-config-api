@@ -148,6 +148,8 @@
             </goals>
             <phase>validate</phase>
             <configuration>
+              <groupId>org.wildfly</groupId>
+              <artifactId>wildfly-dist</artifactId>
               <version>${version.wildfly}</version>
               <server-config>standalone-full-ha.xml</server-config>
             </configuration>
