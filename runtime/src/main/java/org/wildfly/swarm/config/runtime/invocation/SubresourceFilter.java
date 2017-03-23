@@ -27,6 +27,8 @@ class SubresourceFilter {
         String name = this.parentClass.getName();
         if ( name.startsWith( "org.wildfly.swarm.config.Logging" ) || name.startsWith( "org.wildfly.swarm.config.logging" ) ) {
             this.comparator = new LoggingComparator();
+        } else if ( name.startsWith( "org.wildfly.swarm.config.Management" ) || name.startsWith( "org.wildfly.swarm.config.management" )) {
+            this.comparator = new AuditComparator();
         } else {
             this.comparator = new DefaultComparator();
         }
@@ -60,6 +62,14 @@ class SubresourceFilter {
             if (o2.getName().contains("Formatter") ) return 1;
             if ( o1.getName().equals( "loggers" ) || o1.getName().equals( "rootLogger" )) return 1;
             return -1;
+        }
+    }
+
+    static class AuditComparator implements Comparator<Method> {
+        public int compare(Method o1, Method o2) {
+            if ( o1.getName().contains("Formatter" ) ) return -1;
+            if ( o2.getName().contains("Formatter" ) ) return 1;
+            return o1.getName().compareTo(o2.getName());
         }
     }
 
