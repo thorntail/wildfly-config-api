@@ -37,12 +37,12 @@ public class SubsystemPlan implements ClassIndex {
 
     @Override
     public ClassPlan lookup(AddressTemplate address) {
-        return this.index.get( address );
+        return this.index.get(address);
     }
 
     @Override
     public EnumPlan lookup(ClassPlan requester, Property attr) {
-        return this.enumPlans.stream().filter( e->e.matches( requester, attr ) ).findFirst().orElse(null);
+        return this.enumPlans.stream().filter(e -> e.matches(requester, attr)).findFirst().orElse(null);
     }
 
     List<ClassPlan> getClassPlans() {
@@ -65,9 +65,21 @@ public class SubsystemPlan implements ClassIndex {
             ModelNode attrs = each.getDescription().get(ATTRIBUTES);
             List<Property> props = attrs.asPropertyList();
             for (Property prop : props) {
+                ModelNode accessType = prop.getValue().get(ACCESS_TYPE);
+                if ( ! accessType.asString().contains( "write" ) ) {
+                    continue;
+                }
+
                 ModelNode deprecated = prop.getValue().get(DEPRECATED);
                 if (deprecated.isDefined()) {
-                    attrs.remove(prop.getName());
+                    String since = deprecated.get(SINCE).asString();
+                    if (since.startsWith("5.") || since.startsWith("4.")) {
+                        //System.err.println( "keeping: " + prop.getName() + " from " + each.getAddress() + " since " + deprecated.asString() );
+                        // keep it
+                    } else {
+                        //System.err.println( "discarding: " + prop.getName() + " from " + each.getAddress() + " for " + deprecated.asString() );
+                        attrs.remove(prop.getName());
+                    }
                 }
             }
         }
@@ -126,16 +138,16 @@ public class SubsystemPlan implements ClassIndex {
 
         // determine all potential enums
         List<EnumRequirement> enumRequirements = new ArrayList<>();
-        for ( ClassPlan each : classPlans ) {
-            enumRequirements.addAll( each.getEnumRequirements() );
+        for (ClassPlan each : classPlans) {
+            enumRequirements.addAll(each.getEnumRequirements());
         }
 
         List<List<EnumRequirement>> enumPartitions = partitionEnumRequirements(enumRequirements);
 
         for (List<EnumRequirement> enumPartition : enumPartitions) {
-            if ( enumPartition.size() == 1 ) {
+            if (enumPartition.size() == 1) {
                 EnumRequirement requirement = enumPartition.get(0);
-                requirement.getOriginatingClassPlan().addEnumPlan( new EnumPlan(null, enumPartition ) );
+                requirement.getOriginatingClassPlan().addEnumPlan(new EnumPlan(null, enumPartition));
 
             } else {
                 this.enumPlans.add(new EnumPlan(subsystemPackage(subsystemClass), enumPartition));
@@ -154,9 +166,9 @@ public class SubsystemPlan implements ClassIndex {
                 } else {
                     if (!dupeEnums.isEmpty()) {
                         //deduplicate(dupes);
-                        System.err.println( "A ****** NEED TO DEDUPE ENUM: " + dupeEnums );
+                        System.err.println("A ****** NEED TO DEDUPE ENUM: " + dupeEnums);
                         for (EnumPlan eachPlan : dupeEnums) {
-                            System.err.println( " - " + eachPlan.getOriginatingClassPlans() );
+                            System.err.println(" - " + eachPlan.getOriginatingClassPlans());
                         }
                         dupeEnums.clear();
                     }
@@ -167,9 +179,9 @@ public class SubsystemPlan implements ClassIndex {
 
         if (!dupeEnums.isEmpty()) {
             //deduplicate(dupes);
-            System.err.println( "B ****** NEED TO DEDUPE ENUM: " + dupeEnums );
+            System.err.println("B ****** NEED TO DEDUPE ENUM: " + dupeEnums);
             for (EnumPlan each : dupeEnums) {
-                System.err.println( " - " + each.getOriginatingClassPlans() );
+                System.err.println(" - " + each.getOriginatingClassPlans());
             }
 
             dupeEnums.clear();
@@ -178,7 +190,7 @@ public class SubsystemPlan implements ClassIndex {
     }
 
     static String subsystemPackage(ClassPlan subsystemClass) {
-        return subsystemClass.getPackageName() + "." + CaseFormat.UPPER_CAMEL.to( CaseFormat.LOWER_HYPHEN, subsystemClass.getOriginalClassName() ).replace('-', '.' );
+        return subsystemClass.getPackageName() + "." + CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, subsystemClass.getOriginalClassName()).replace('-', '.');
     }
 
     static boolean deduplicate(Set<ClassPlan> dupes) {
@@ -231,7 +243,6 @@ public class SubsystemPlan implements ClassIndex {
 
         return partitions;
     }
-
 
 
     static List<ResourceMetaData> findPartition(List<List<ResourceMetaData>> partitions, ResourceMetaData prime) {
@@ -288,13 +299,13 @@ public class SubsystemPlan implements ClassIndex {
     static List<List<EnumRequirement>> partitionEnumRequirements(List<EnumRequirement> list) {
         List<List<EnumRequirement>> partitions = new ArrayList<>();
 
-        for ( EnumRequirement prime : list ) {
+        for (EnumRequirement prime : list) {
             List<EnumRequirement> matched = findEnumRequirementPartition(partitions, prime);
-            if ( matched == null ) {
+            if (matched == null) {
                 matched = new ArrayList<>();
-                partitions.add( matched );
+                partitions.add(matched);
             }
-            matched.add( prime );
+            matched.add(prime);
         }
 
         return partitions;
@@ -303,12 +314,12 @@ public class SubsystemPlan implements ClassIndex {
     static List<EnumRequirement> findEnumRequirementPartition(List<List<EnumRequirement>> partitions, EnumRequirement prime) {
 
         for (List<EnumRequirement> partition : partitions) {
-            if ( partition.isEmpty() ) {
+            if (partition.isEmpty()) {
                 continue;
             }
 
             EnumRequirement comp = partition.get(0);
-            if ( prime.getName().equals( comp.getName() ) && prime.getAllowedValues().equals( comp.getAllowedValues() ) ) {
+            if (prime.getName().equals(comp.getName()) && prime.getAllowedValues().equals(comp.getAllowedValues())) {
                 return partition;
             }
         }

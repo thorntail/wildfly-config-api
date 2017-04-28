@@ -3,7 +3,7 @@
   "server": {
     "host": "localhost",
     "port": 9990,
-    "user": "admin",
+    "user": "$local",
     "pass": "passWord123"
   },
   "generatorTargets": [
@@ -13,6 +13,7 @@
       "/subsystem=datasources",
       "/subsystem=ee",
       "/subsystem=ejb3",
+      "/subsystem=elytron",
       "/subsystem=infinispan",
       "/subsystem=iiop-openjdk",
       "/subsystem=io",
