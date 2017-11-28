@@ -106,7 +106,7 @@ public class ResourceFactory implements SourceFactory {
 
     protected void addConstructor(JavaClassSource type, ClassPlan plan) {
 
-        type.extendSuperType(HashMap.class);
+        //type.extendSuperType(HashMap.class);
 
         // resource name
         type.addField()
@@ -218,7 +218,7 @@ public class ResourceFactory implements SourceFactory {
                     ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
                     Optional<String> resolvedType = Types.resolveJavaTypeName(modelType, att.getValue());
 
-                    if (resolvedType.isPresent() && !att.getValue().get(DEPRECATED).isDefined()) {
+                    if (resolvedType.isPresent()) {// && !att.getValue().get(DEPRECATED).isDefined()) {
                         // attributes
                         try {
                             final String name = javaAttributeName(att.getName());
@@ -233,11 +233,15 @@ public class ResourceFactory implements SourceFactory {
                                     standaloneEnum = true;
                                     enumPlan = index.lookup(plan, att);
                                 }
-                                final String enumName = Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
-                                attributeType = enumPlan.getClassName();
-                                type.addImport(Arrays.class);
-                                if (standaloneEnum) {
-                                    type.addImport(enumPlan.getFullyQualifiedClassName());
+                                if ( enumPlan == null ) {
+                                    attributeType = resolvedType.get();
+                                } else {
+                                    final String enumName = Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
+                                    attributeType = enumPlan.getClassName();
+                                    type.addImport(Arrays.class);
+                                    if (standaloneEnum) {
+                                        type.addImport(enumPlan.getFullyQualifiedClassName());
+                                    }
                                 }
                             } else {
                                 attributeType = resolvedType.get();
