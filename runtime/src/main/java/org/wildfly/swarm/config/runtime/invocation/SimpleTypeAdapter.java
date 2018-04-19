@@ -14,12 +14,7 @@ import org.jboss.dmr.ValueExpression;
  */
 public class SimpleTypeAdapter {
 
-    public void toDmr(ModelNode target, String detypedName, ModelType dmrType, Object value)
-    {
-        setDmrValueOn(target.get(detypedName), dmrType, value);
-    }
-
-    private ModelNode setDmrValueOn(ModelNode target, ModelType type, Object propValue)
+    public void toDmr(ModelNode target, ModelType type, Object propValue)
     {
         if(type.equals(ModelType.STRING))
         {
@@ -46,20 +41,10 @@ public class SimpleTypeAdapter {
         else if (type.equals(ModelType.BIG_DECIMAL ) ) {
             target.set((BigDecimal) propValue);
         }
-        else if(type.equals(ModelType.LIST))
-        {
-            target.setEmptyList();
-            List list = (List)propValue;
-
-            for(Object item : list)
-                target.add(String.valueOf(item));
-        }
         else
         {
             throw new RuntimeException("Unsupported DMR type: "+type);
         }
-
-        return target;
     }
 
     public void fromDmr(Object entity, String javaName, ModelType dmrType, Class<?> propertyType, ModelNode dmrPayload) throws Exception {
