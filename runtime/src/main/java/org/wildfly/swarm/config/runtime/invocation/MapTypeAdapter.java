@@ -17,12 +17,23 @@ import static java.util.Collections.*;
  */
 public class MapTypeAdapter {
 
-    public void toDmr(ModelNode modelMode, String detypedName, Map<String,String> map) {
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            modelMode.get(detypedName).get(entry.getKey()).set(entry.getValue());
+    public void toDmr(ModelNode target, Map<String, Object> map) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            ModelNode node = target.get(entry.getKey());
+            Object value = entry.getValue();
+
+            if (value instanceof List) {
+                new ListTypeAdapter().toDmr(node, (List) value);
+            } else if (value instanceof Map) {
+                new MapTypeAdapter().toDmr(node, (Map) value);
+            } else {
+                ModelType type = Types.resolveModelType(value.getClass());
+                new SimpleTypeAdapter().toDmr(node, type, value);
+            }
         }
     }
 
+    // TODO handle composite values
     public void fromDmr(Object entity, String javaName, ModelType dmrType, Class<?> propertyType, ModelNode dmrPayload) throws Exception {
 
         Method target = entity.getClass().getMethod(javaName, propertyType);

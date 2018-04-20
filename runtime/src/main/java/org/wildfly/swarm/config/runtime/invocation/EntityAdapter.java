@@ -235,14 +235,13 @@ public class EntityAdapter<T> {
                         ModelType dmrType = Types.resolveModelType(propertyType);
 
                         if (dmrType == ModelType.LIST) {
-                            new ListTypeAdapter().toDmr(modelNode, detypedName, (List) value);
+                            new ListTypeAdapter().toDmr(modelNode.get(detypedName), (List) value);
 
                         } else if (dmrType == ModelType.OBJECT) {
-                            // only Map<String,String> supported
-                            new MapTypeAdapter().toDmr(modelNode, detypedName, (Map) value);
+                            new MapTypeAdapter().toDmr(modelNode.get(detypedName), (Map) value);
 
                         } else {
-                            new SimpleTypeAdapter().toDmr(modelNode, detypedName, dmrType, value);
+                            new SimpleTypeAdapter().toDmr(modelNode.get(detypedName), dmrType, value);
                         }
                     } catch (RuntimeException e) {
                         throw new RuntimeException("Failed to adopt value " + propertyType.getName(), e);
@@ -334,14 +333,14 @@ public class EntityAdapter<T> {
                             ModelType dmrType = Types.resolveModelType(propertyType);
 
                             if (dmrType == ModelType.LIST) {
-                                new ListTypeAdapter().toDmr(modelNode, detypedName, (List) propertyValue);
+                                new ListTypeAdapter().toDmr(modelNode.get(detypedName), (List) propertyValue);
 
                             } else if (dmrType == ModelType.OBJECT) {
                                 // only Map<String,String> supported
-                                new MapTypeAdapter().toDmr(modelNode, detypedName, (Map) propertyValue);
+                                new MapTypeAdapter().toDmr(modelNode.get(detypedName), (Map) propertyValue);
 
                             } else {
-                                new SimpleTypeAdapter().toDmr(modelNode, detypedName, dmrType, propertyValue);
+                                new SimpleTypeAdapter().toDmr(modelNode.get(detypedName), dmrType, propertyValue);
                             }
                         } catch (RuntimeException e) {
                             throw new RuntimeException("Failed to adopt value " + propertyType.getName(), e);

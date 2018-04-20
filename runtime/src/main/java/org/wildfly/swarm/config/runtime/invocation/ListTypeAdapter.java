@@ -16,65 +16,28 @@ import java.util.Map;
 public class ListTypeAdapter {
 
     @SuppressWarnings("unchecked")
-    public void toDmr(ModelNode modelMode, String detypedName, List value) {
+    public void toDmr(ModelNode target, List list) {
 
-        if(value.isEmpty()) {
-            modelMode.get(detypedName).setEmptyList();
+        if(list.isEmpty()) {
+            target.setEmptyList();
         }
         else {
-            value.forEach(
-                    v -> {
-                        // model type  is derived from list item java type
-                        ModelType listValueType = Types.resolveModelType(v.getClass());
-                        addDmrValueTo(modelMode.get(detypedName), listValueType, v);
-                    }
-            );
-        }
-
-    }
-
-    private void addDmrValueTo(ModelNode target, ModelType type, Object propValue)
-    {
-        if(type.equals(ModelType.STRING))
-        {
-            target.add((String) propValue);
-        }
-        else if(type.equals(ModelType.INT))
-        {
-            target.add((Integer) propValue);
-        }
-        else if(type.equals(ModelType.DOUBLE))
-        {
-            target.add((Double) propValue);
-        }
-        else if(type.equals(ModelType.LONG))
-        {
-            target.add((Long) propValue);
-        }
-        else if(type.equals(ModelType.BOOLEAN))
-        {
-            target.add((Boolean) propValue);
-        }
-        else if (type.equals(ModelType.OBJECT)) {
-            ModelNode val = target.addEmptyObject();
-            Map<String,?> map = (Map) propValue;
-
-            for (String key : map.keySet()) {
-                Object value = map.get(key);
-                if ( value instanceof String ) {
-                    val.get( key ).set( (String) value );
-                } else if ( value instanceof Boolean ) {
-                    val.get( key ).set( (Boolean) value );
+            for (Object value : list) {
+                ModelNode node = target.add();
+                if (value instanceof List) {
+                    new ListTypeAdapter().toDmr(node, (List) value);
+                } else if (value instanceof Map) {
+                    new MapTypeAdapter().toDmr(node, (Map) value);
+                } else {
+                    ModelType type = Types.resolveModelType(value.getClass());
+                    new SimpleTypeAdapter().toDmr(node, type, value);
                 }
             }
         }
-        else
-        {
-            throw new RuntimeException("Unsupported DMR type: "+type);
-        }
+
     }
 
-
+    // TODO handle composite values
     @SuppressWarnings("unchecked")
     public void fromDmr(Object entity, String javaName, ModelType dmrType, Class<?> propertyType, ModelNode dmrPayload) throws Exception {
 
