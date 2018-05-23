@@ -13,14 +13,14 @@
   <artifactId>config-api</artifactId>
   <packaging>jar</packaging>
   <parent>
-    <groupId>org.wildfly.swarm</groupId>
+    <groupId>io.thorntail</groupId>
     <artifactId>config-api-parent</artifactId>
     <version>1.3.2-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <dependencies>
     <dependency>
-      <groupId>org.wildfly.swarm</groupId>
+      <groupId>io.thorntail</groupId>
       <artifactId>config-api-runtime</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -36,7 +36,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.wildfly.swarm</groupId>
+      <groupId>io.thorntail</groupId>
       <artifactId>config-api-generator</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -61,7 +61,7 @@
         <version>1.4.0</version>
         <dependencies>
           <dependency>
-            <groupId>org.wildfly.swarm</groupId>
+            <groupId>io.thorntail</groupId>
             <artifactId>config-api-generator</artifactId>
             <version>${project.version}</version>
           </dependency>
