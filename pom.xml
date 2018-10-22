@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>config-api-parent</artifactId>
-  <version>1.4.1-SNAPSHOT</version>
+  <version>1.5.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <scm>
@@ -20,8 +20,8 @@
   </scm>
 
   <properties>
-    <version.wildfly>11.0.0.Final</version.wildfly>
-    <version.org.wildfly.plugins.maven>1.0.2.Final</version.org.wildfly.plugins.maven>
+    <version.wildfly>14.0.1.Final</version.wildfly>
+    <version.org.wildfly.plugins.maven>1.2.2.Final</version.org.wildfly.plugins.maven>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
