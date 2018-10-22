@@ -122,7 +122,7 @@ public class Types<T> {
             result = Optional.of("java.util.Map");
         }
         else if (ModelType.LIST == modelType) {
-            result = Optional.of("java.util.List<" + resolveValueType(value) +">");
+        	result = Optional.of("java.util.List<" + resolveListValueType(value) + ">");
         }
         else
         {
@@ -131,6 +131,14 @@ public class Types<T> {
 
         return result;
     }
+    
+    public static String resolveListValueType(ModelNode value) {
+	    String resolveValueType = resolveValueType(value);
+		if (resolveValueType.equals("?")) {
+			resolveValueType = "String";
+		}
+		return resolveValueType;
+	}
 
     public static String resolveValueType(ModelNode value) {
         String templatedType = "?";
