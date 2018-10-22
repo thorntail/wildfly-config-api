@@ -15,7 +15,7 @@
   <parent>
     <groupId>io.thorntail</groupId>
     <artifactId>config-api-parent</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <dependencies>
@@ -29,6 +29,10 @@
       <artifactId>wildfly-controller</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.wildfly.common</groupId>
+      <artifactId>wildfly-common</artifactId>
+    </dependency>   
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
