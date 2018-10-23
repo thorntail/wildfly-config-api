@@ -133,12 +133,9 @@ public class Types<T> {
     }
     
     public static String resolveListValueType(ModelNode value) {
-	    String resolveValueType = resolveValueType(value);
-		if (resolveValueType.equals("?")) {
-			resolveValueType = "String";
-		}
-		return resolveValueType;
-	}
+        String resolveValueType = resolveValueType(value);
+        return resolveValueType.equals("?") ? "String" : resolveValueType;
+    }
 
     public static String resolveValueType(ModelNode value) {
         String templatedType = "?";
