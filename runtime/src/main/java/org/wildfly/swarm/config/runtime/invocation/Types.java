@@ -134,7 +134,7 @@ public class Types<T> {
     
     public static String resolveListValueType(ModelNode value) {
         String resolveValueType = resolveValueType(value);
-        return resolveValueType.equals("?") ? "String" : resolveValueType;
+        return resolveValueType.equals("?") ? "Object" : resolveValueType;
     }
 
     public static String resolveValueType(ModelNode value) {
