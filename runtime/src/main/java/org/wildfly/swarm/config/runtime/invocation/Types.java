@@ -131,7 +131,7 @@ public class Types<T> {
 
         return result;
     }
-    
+
     public static String resolveValueType(ModelNode value) {
         String templatedType = "Object";
         final ModelNode valueTypeNode = value.get("value-type");
