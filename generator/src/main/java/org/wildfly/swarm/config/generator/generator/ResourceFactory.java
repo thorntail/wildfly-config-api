@@ -291,7 +291,7 @@ public class ResourceFactory implements SourceFactory {
                                 type.addImport(Collectors.class);
                                 final MethodSource<JavaClassSource> appender = type.addMethod();
                                 appender.getJavaDoc().setText(attributeDescription);
-                                appender.addParameter(Types.resolveListValueType(att.getValue()), "value");
+                                appender.addParameter(Types.resolveValueType(att.getValue()), "value");
                                 appender.setPublic()
                                         .setName(singularName) // non-trivial to singularize the method name here
                                         .setReturnType("T")
@@ -302,7 +302,7 @@ public class ResourceFactory implements SourceFactory {
 
                                 final MethodSource<JavaClassSource> varargs = type.addMethod();
                                 varargs.getJavaDoc().setText(attributeDescription);
-                                varargs.addParameter(Types.resolveListValueType(att.getValue()), "...args");
+                                varargs.addParameter(Types.resolveValueType(att.getValue()), "...args");
                                 varargs.setPublic()
                                         .setName(name)
                                         .setReturnType("T")
