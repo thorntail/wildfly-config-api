@@ -12,6 +12,7 @@
       "/subsystem=bean-validation",
       "/subsystem=datasources",
       "/subsystem=ee",
+      "/subsystem=ee-security",
       "/subsystem=ejb3",
       "/subsystem=elytron",
       "/subsystem=infinispan",
