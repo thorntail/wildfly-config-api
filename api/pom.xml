@@ -5,7 +5,7 @@
     <connection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</connection>
     <developerConnection>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</developerConnection>
     <url>https://github.com/wildfly-swarm/wildfly-config-api</url>
-    <tag>1.7.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <modelVersion>4.0.0</modelVersion>
@@ -15,7 +15,7 @@
   <parent>
     <groupId>io.thorntail</groupId>
     <artifactId>config-api-parent</artifactId>
-    <version>1.7.0</version>
+    <version>1.7.1-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
