@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.thorntail</groupId>
     <artifactId>parent</artifactId>
-    <version>10</version>
+    <version>11</version>
   </parent>
 
   <artifactId>config-api-parent</artifactId>
