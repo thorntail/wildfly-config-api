@@ -11,6 +11,7 @@
       "/subsystem=batch-jberet",
       "/subsystem=bean-validation",
       "/subsystem=datasources",
+      "/subsystem=deployment-scanner",
       "/subsystem=ee",
       "/subsystem=ee-security",
       "/subsystem=ejb3",
