@@ -55,7 +55,7 @@ public class MarshallerTestCase extends AbstractTestCase {
         rootHandlers.add("root-handler-two");
 
         // Simple support for ModelType.OBJECT
-        final HashMap<String, String> file = new HashMap();
+        final HashMap<String, String> file = new HashMap<>();
         file.put("path", "/path/to/some/log");
         file.put("relative-to", "jboss.server.log.dir");
 

@@ -1,7 +1,5 @@
 package org.wildfly.swarm.config.generator.generator;
 
-import java.io.IOException;
-
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
@@ -14,20 +12,22 @@ import javax.security.sasl.RealmCallback;
  * @since 29/07/15
  */
 public class AuthCallback implements CallbackHandler{
-    String[] args;
+    private final String name;
+    private final String password;
 
-    public AuthCallback(String[] args) {
-        this.args = args;
+    public AuthCallback(String name, String password) {
+        this.name = name;
+        this.password = password;
     }
 
-    public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+    public void handle(Callback[] callbacks) throws UnsupportedCallbackException {
         for (Callback current : callbacks) {
             if (current instanceof NameCallback) {
                 NameCallback ncb = (NameCallback) current;
-                ncb.setName(args[0]);
+                ncb.setName(name);
             } else if (current instanceof PasswordCallback) {
                 PasswordCallback pcb = (PasswordCallback) current;
-                pcb.setPassword(args[1].toCharArray());
+                pcb.setPassword(password.toCharArray());
             } else if (current instanceof RealmCallback) {
                 RealmCallback rcb = (RealmCallback) current;
                 rcb.setText(rcb.getDefaultText());

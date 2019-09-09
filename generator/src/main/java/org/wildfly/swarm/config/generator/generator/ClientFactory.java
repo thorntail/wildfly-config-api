@@ -9,13 +9,7 @@ import org.jboss.as.controller.client.ModelControllerClient;
 public class ClientFactory {
 
     public static ModelControllerClient createClient(Config config) throws Exception {
-        ModelControllerClient client = ModelControllerClient.Factory.create(
-                config.getHost(), config.getPort(),
-                new AuthCallback(new String[] {
-                        config.getUser(), config.getPass()
-                })
-        );
-        return client;
-
+        return ModelControllerClient.Factory.create(config.getHost(), config.getPort(),
+                new AuthCallback(config.getUser(), config.getPass()));
     }
 }

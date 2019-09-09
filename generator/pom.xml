@@ -89,10 +89,10 @@
         <executions>
           <execution>
             <id>start</id>
+            <phase>validate</phase>
             <goals>
               <goal>start</goal>
             </goals>
-            <phase>validate</phase>
             <configuration>
               <groupId>org.wildfly</groupId>
               <artifactId>wildfly-dist</artifactId>
@@ -102,10 +102,10 @@
           </execution>
           <execution>
             <id>stop</id>
+            <phase>package</phase>
             <goals>
               <goal>shutdown</goal>
             </goals>
-            <phase>package</phase>
           </execution>
         </executions>
       </plugin>

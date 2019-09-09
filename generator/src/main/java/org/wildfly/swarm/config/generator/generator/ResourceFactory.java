@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.CaseFormat;
 import org.jboss.dmr.ModelType;
+import org.jboss.dmr.Property;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -208,127 +209,125 @@ public class ResourceFactory implements SourceFactory {
 
         type.addImport(ModelNodeBinding.class);
 
-        desc.getAttributes().forEach(
-                att -> {
-                    if (this.names.contains(att.getName())) {
-                        System.err.println("WARNING: skipping attribute: " + att.getName() + ": conflicts with sub-resource");
-                        return;
+        for (Property att : desc.getAttributes()) {
+            if (this.names.contains(att.getName())) {
+                log.warning("WARNING: skipping attribute: " + att.getName() + ": conflicts with sub-resource");
+                continue;
+            }
+
+            ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
+            Optional<String> resolvedType = Types.resolveJavaTypeName(modelType, att.getValue());
+
+            if (resolvedType.isPresent()) {// && !att.getValue().get(DEPRECATED).isDefined()) {
+                // attributes
+                try {
+                    final String name = javaAttributeName(att.getName());
+                    final String attributeType;
+
+                    // Determine if we should create an enum for strings that specify values
+                    if (modelType == ModelType.STRING && att.getValue().hasDefined(ALLOWED)) {
+                        // Create the enum name and enum source
+                        boolean standaloneEnum = false;
+                        EnumPlan enumPlan = plan.lookup(att);
+                        if (enumPlan == null) {
+                            standaloneEnum = true;
+                            enumPlan = index.lookup(plan, att);
+                        }
+                        if (enumPlan == null) {
+                            attributeType = resolvedType.get();
+                        } else {
+                            final String enumName = Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
+                            attributeType = enumPlan.getClassName();
+                            type.addImport(Arrays.class);
+                            if (standaloneEnum) {
+                                type.addImport(enumPlan.getFullyQualifiedClassName());
+                            }
+                        }
+                    } else {
+                        attributeType = resolvedType.get();
                     }
 
-                    ModelType modelType = ModelType.valueOf(att.getValue().get(TYPE).asString());
-                    Optional<String> resolvedType = Types.resolveJavaTypeName(modelType, att.getValue());
+                    String attributeDescription = att.getValue().get(DESCRIPTION).asString();
 
-                    if (resolvedType.isPresent()) {// && !att.getValue().get(DEPRECATED).isDefined()) {
-                        // attributes
-                        try {
-                            final String name = javaAttributeName(att.getName());
-                            final String attributeType;
+                    FieldSource attributeField = type.addField()
+                            .setName(name)
+                            .setType(attributeType)
+                            .setPrivate();
 
-                            // Determine if we should create an enum for strings that specify values
-                            if (modelType == ModelType.STRING && att.getValue().hasDefined(ALLOWED)) {
-                                // Create the enum name and enum source
-                                boolean standaloneEnum = false;
-                                EnumPlan enumPlan = plan.lookup(att);
-                                if (enumPlan == null) {
-                                    standaloneEnum = true;
-                                    enumPlan = index.lookup(plan, att);
-                                }
-                                if ( enumPlan == null ) {
-                                    attributeType = resolvedType.get();
-                                } else {
-                                    final String enumName = Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
-                                    attributeType = enumPlan.getClassName();
-                                    type.addImport(Arrays.class);
-                                    if (standaloneEnum) {
-                                        type.addImport(enumPlan.getFullyQualifiedClassName());
-                                    }
-                                }
-                            } else {
-                                attributeType = resolvedType.get();
-                            }
+                    AnnotationSource attributeAnnotation = attributeField.addAnnotation();
+                    attributeAnnotation.setName(AttributeDocumentation.class.getSimpleName());
+                    attributeAnnotation.setStringValue(attributeDescription);
 
-                            String attributeDescription = att.getValue().get(DESCRIPTION).asString();
-
-                            FieldSource attributeField = type.addField()
-                                    .setName(name)
-                                    .setType(attributeType)
-                                    .setPrivate();
-
-                            AnnotationSource attributeAnnotation = attributeField.addAnnotation();
-                            attributeAnnotation.setName(AttributeDocumentation.class.getSimpleName());
-                            attributeAnnotation.setStringValue(attributeDescription);
-
-                            final MethodSource<JavaClassSource> accessor = type.addMethod();
-                            accessor.getJavaDoc().setText(attributeDescription);
-                            accessor.setPublic()
-                                    .setName(name)
-                                    .setReturnType(attributeType)
-                                    .setBody("return this." + name + ";");
+                    final MethodSource<JavaClassSource> accessor = type.addMethod();
+                    accessor.getJavaDoc().setText(attributeDescription);
+                    accessor.setPublic()
+                            .setName(name)
+                            .setReturnType(attributeType)
+                            .setBody("return this." + name + ";");
 
 
-                            final MethodSource<JavaClassSource> mutator = type.addMethod();
-                            mutator.getJavaDoc().setText(attributeDescription);
-                            mutator.addParameter(attributeType, "value");
-                            mutator.setPublic()
-                                    .setName(name)
-                                    .setReturnType("T")
-                                    .setBody("Object oldValue = this." + name + ";\n" +
-                                            "this." + name + " = value;\n" +
-                                            "if(this.pcs!=null) this.pcs.firePropertyChange(\"" + name + "\", oldValue, value);\n" +
-                                            "return (T) this;")
-                                    .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+                    final MethodSource<JavaClassSource> mutator = type.addMethod();
+                    mutator.getJavaDoc().setText(attributeDescription);
+                    mutator.addParameter(attributeType, "value");
+                    mutator.setPublic()
+                            .setName(name)
+                            .setReturnType("T")
+                            .setBody("Object oldValue = this." + name + ";\n" +
+                                    "this." + name + " = value;\n" +
+                                    "if(this.pcs!=null) this.pcs.firePropertyChange(\"" + name + "\", oldValue, value);\n" +
+                                    "return (T) this;")
+                            .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
-                            AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
-                            bindingMeta.setName(ModelNodeBinding.class.getSimpleName());
-                            bindingMeta.setStringValue("detypedName", att.getName());
+                    AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
+                    bindingMeta.setName(ModelNodeBinding.class.getSimpleName());
+                    bindingMeta.setStringValue("detypedName", att.getName());
 
-                            // If the model type is LIST, then also add an appending mutator
-                            if (modelType == ModelType.LIST) {
-                                String singularName = inflector.singularize(name);
-                                // initialize the field to an array list
-                                //attributeField.setLiteralInitializer("new java.util.ArrayList<>()");
-                                type.addImport(Arrays.class);
-                                type.addImport(Collectors.class);
-                                final MethodSource<JavaClassSource> appender = type.addMethod();
-                                appender.getJavaDoc().setText(attributeDescription);
-                                appender.addParameter(Types.resolveValueType(att.getValue()), "value");
-                                appender.setPublic()
-                                        .setName(singularName) // non-trivial to singularize the method name here
-                                        .setReturnType("T")
-                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (T) this;")
-                                        .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+                    // If the model type is LIST, then also add an appending mutator
+                    if (modelType == ModelType.LIST) {
+                        String singularName = inflector.singularize(name);
+                        // initialize the field to an array list
+                        //attributeField.setLiteralInitializer("new java.util.ArrayList<>()");
+                        type.addImport(Arrays.class);
+                        type.addImport(Collectors.class);
+                        final MethodSource<JavaClassSource> appender = type.addMethod();
+                        appender.getJavaDoc().setText(attributeDescription);
+                        appender.addParameter(Types.resolveValueType(att.getValue()), "value");
+                        appender.setPublic()
+                                .setName(singularName) // non-trivial to singularize the method name here
+                                .setReturnType("T")
+                                .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (T) this;")
+                                .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
-                                // also produce a var-args version
+                        // also produce a var-args version
 
-                                final MethodSource<JavaClassSource> varargs = type.addMethod();
-                                varargs.getJavaDoc().setText(attributeDescription);
-                                varargs.addParameter(Types.resolveValueType(att.getValue()), "...args");
-                                varargs.setPublic()
-                                        .setName(name)
-                                        .setReturnType("T")
-                                        .setBody(name + "(Arrays.stream(args).collect(Collectors.toList())); return (T) this;")
-                                        .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+                        final MethodSource<JavaClassSource> varargs = type.addMethod();
+                        varargs.getJavaDoc().setText(attributeDescription);
+                        varargs.addParameter(Types.resolveValueType(att.getValue()), "...args");
+                        varargs.setPublic()
+                                .setName(name)
+                                .setReturnType("T")
+                                .setBody(name + "(Arrays.stream(args).collect(Collectors.toList())); return (T) this;")
+                                .addAnnotation("SuppressWarnings").setStringValue("unchecked");
 
-                            } else if (modelType == ModelType.OBJECT) {
-                                // initialize the field to a HashMap
-                                //attributeField.setLiteralInitializer("new java.util.HashMap<String, Object>()");
-                                String singularName = inflector.singularize(name);
-                                final MethodSource<JavaClassSource> appender = type.addMethod();
-                                appender.getJavaDoc().setText(attributeDescription);
-                                appender.addParameter(String.class, "key");
-                                appender.addParameter(Object.class, "value");
-                                appender.setPublic()
-                                        .setName(singularName)
-                                        .setReturnType("T")
-                                        .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.HashMap<>(); }\nthis." + name + ".put(key, value);\nreturn (T) this;")
-                                        .addAnnotation("SuppressWarnings").setStringValue("unchecked");
-                            }
-                        } catch (Exception e) {
-                            log.log(Level.ERROR, "Failed to process " + plan.getFullyQualifiedClassName() + ", attribute " + att.getName(), e);
-                        }
-                    } //else System.err.println(att.getValue());
+                    } else if (modelType == ModelType.OBJECT) {
+                        // initialize the field to a HashMap
+                        //attributeField.setLiteralInitializer("new java.util.HashMap<String, Object>()");
+                        String singularName = inflector.singularize(name);
+                        final MethodSource<JavaClassSource> appender = type.addMethod();
+                        appender.getJavaDoc().setText(attributeDescription);
+                        appender.addParameter(String.class, "key");
+                        appender.addParameter(Object.class, "value");
+                        appender.setPublic()
+                                .setName(singularName)
+                                .setReturnType("T")
+                                .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.HashMap<>(); }\nthis." + name + ".put(key, value);\nreturn (T) this;")
+                                .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+                    }
+                } catch (Exception e) {
+                    log.log(Level.ERROR, "Failed to process " + plan.getFullyQualifiedClassName() + ", attribute " + att.getName(), e);
                 }
-        );
+            }
+        }
     }
 
 
