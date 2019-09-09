@@ -11,9 +11,9 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
@@ -39,9 +39,9 @@ public class Generator {
 
     private static final Logger log = Logger.getLogger(Generator.class.getName());
 
-    private static ModelControllerClient client;
+    private final ModelControllerClient client;
 
-    private DefaultStatementContext statementContext;
+    private final DefaultStatementContext statementContext;
 
     private final Path targetDir;
 
@@ -49,18 +49,12 @@ public class Generator {
 
     private final String artifact;
 
-    public Generator(String targetDir, Config config, String artifact) {
+    public Generator(String targetDir, Config config, String artifact) throws Exception {
+        this.client = ClientFactory.createClient(config);
         this.statementContext = new DefaultStatementContext();
         this.targetDir = Paths.get(targetDir);
         this.config = config;
         this.artifact = artifact;
-
-        try {
-            client = ClientFactory.createClient(config);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create model controller client", e);
-        }
-
     }
 
     public static void main(String[] args) throws Exception {
@@ -94,7 +88,6 @@ public class Generator {
         });
     }
 
-
     public void shutdown() {
         try {
             client.close();
@@ -103,169 +96,134 @@ public class Generator {
         }
     }
 
-    public void processGeneratorTargets() {
-
-
+    public void processGeneratorTargets() throws Exception {
         if (Files.exists(targetDir)) {
-            System.out.println("Delete output dir: " + targetDir);
-            try {
-                deleteDir(targetDir);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            log.info("Delete output dir: " + targetDir);
+            deleteDir(targetDir);
         }
 
         List<SubsystemPlan> subsystems = new ArrayList<>();
 
-        ArrayList<SourceFactory> factories = new ArrayList<SourceFactory>() {{
-            add(new ResourceFactory());
-            add(new ConsumerFactory());
-            add(new SupplierFactory());
-        }};
-
-        config.getGeneratorTargets().forEach(
-                target -> {
-                    try {
-                        // load resource entry point recursively
-                        ResourceMetaData resourceMetaData = loadResourceMetaData(target);
-
-                        // generate classes
-
-                        SubsystemPlan plan = new SubsystemPlan(resourceMetaData);
-                        subsystems.add(plan);
-
-                        for (EnumPlan enumPlan : plan.getEnumPlans()) {
-                            EnumFactory factory = new EnumFactory();
-                            JavaType javaType = factory.create(plan, enumPlan);
-                            write(javaType);
-                        }
-
-                        List<ClassPlan> classPlans = plan.getClassPlans();
-                        for (ClassPlan classPlan : classPlans) {
-                            for (SourceFactory factory : factories) {
-                                classPlan.addSource(factory.create(plan, classPlan));
-                            }
-                        }
-
-                        for (ClassPlan classPlan : classPlans) {
-                            for (JavaType javaType : classPlan.getSources()) {
-                                write(javaType);
-                            }
-                        }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        log.log(Level.ERROR, "Failed to process targets", e);
-                    }
-                }
+        List<SourceFactory> factories = Arrays.asList(
+            new ResourceFactory(),
+            new ConsumerFactory(),
+            new SupplierFactory()
         );
 
-        System.err.println("TARGET DIR: " + this.targetDir);
+        for (GeneratorTarget target : config.getGeneratorTargets()) {
+            // load resource entry point recursively
+            ResourceMetaData resourceMetaData = loadResourceMetaData(target);
+
+            // generate classes
+
+            SubsystemPlan plan = new SubsystemPlan(resourceMetaData);
+            subsystems.add(plan);
+
+            for (EnumPlan enumPlan : plan.getEnumPlans()) {
+                EnumFactory factory = new EnumFactory();
+                JavaType javaType = factory.create(plan, enumPlan);
+                write(javaType);
+            }
+
+            List<ClassPlan> classPlans = plan.getClassPlans();
+            for (ClassPlan classPlan : classPlans) {
+                for (SourceFactory factory : factories) {
+                    classPlan.addSource(factory.create(plan, classPlan));
+                }
+            }
+
+            for (ClassPlan classPlan : classPlans) {
+                for (JavaType javaType : classPlan.getSources()) {
+                    write(javaType);
+                }
+            }
+        }
+
+        log.info("TARGET DIR: " + this.targetDir);
 
         generateMainModuleXml(subsystems);
         generateApiModuleXml();
         generateMarker();
     }
 
-    private void generateMainModuleXml(List<SubsystemPlan> subsystems) {
+    private void generateMainModuleXml(List<SubsystemPlan> subsystems) throws IOException {
         String moduleName = this.config.getModuleName();
 
         Path moduleXml = this.targetDir.resolve(Paths.get("..", "classes", "modules")).resolve(this.config.getModulePath("main")).toAbsolutePath();
-        System.err.println("** GENERATE MAIN MODULE.XML: " + moduleXml);
-        try {
-            Files.createDirectories(moduleXml.getParent());
-            try (PrintWriter out = new PrintWriter(new FileOutputStream(moduleXml.toFile()))) {
-                out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "\n" +
-                        "<module xmlns=\"urn:jboss:module:1.3\" name=\"" + moduleName + "\">\n" +
-                        "  <dependencies>\n" +
-                        "    <!-- For when run with bonafide IDE classpath -->\n" +
-                        "    <system export=\"true\">\n" +
-                        "      <paths>");
+        log.info("** GENERATE MAIN MODULE.XML: " + moduleXml);
+        Files.createDirectories(moduleXml.getParent());
+        try (PrintWriter out = new PrintWriter(new FileOutputStream(moduleXml.toFile()))) {
+            out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "\n" +
+                    "<module xmlns=\"urn:jboss:module:1.3\" name=\"" + moduleName + "\">\n" +
+                    "  <dependencies>\n" +
+                    "    <!-- For when run with bonafide IDE classpath -->\n" +
+                    "    <system export=\"true\">\n" +
+                    "      <paths>");
 
-                subsystems.stream()
-                        .flatMap((e) -> e.getClassPlans().stream())
-                        .map((e) -> e.getPackageName())
-                        .collect(Collectors.toSet())
-                        .stream().sorted()
-                        .forEach((e) -> {
-                            out.println("        <path name=\"" + e.replace('.', '/') + "\"/>");
-                        });
+            subsystems.stream()
+                    .flatMap(e -> e.getClassPlans().stream())
+                    .map(ClassPlan::getPackageName)
+                    .distinct()
+                    .sorted()
+                    .forEach(e -> {
+                        out.println("        <path name=\"" + e.replace('.', '/') + "\"/>");
+                    });
 
-                out.println("      </paths>\n" +
-                        "    </system>\n" +
-                        "    <module name=\"" + moduleName + "\" slot=\"api\" export=\"true\" services=\"export\"/>\n" +
-                        "    <module name=\"org.wildfly.swarm.configuration.runtime\" export=\"true\"/>\n" +
-                        "  </dependencies>\n" +
-                        "\n" +
-                        "</module>");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            out.println("      </paths>\n" +
+                    "    </system>\n" +
+                    "    <module name=\"" + moduleName + "\" slot=\"api\" export=\"true\" services=\"export\"/>\n" +
+                    "    <module name=\"org.wildfly.swarm.configuration.runtime\" export=\"true\"/>\n" +
+                    "  </dependencies>\n" +
+                    "\n" +
+                    "</module>");
         }
     }
 
-    private void generateApiModuleXml() {
+    private void generateApiModuleXml() throws IOException {
         String moduleName = this.config.getModuleName();
 
         Path moduleXml = this.targetDir.resolve(Paths.get("..", "classes", "modules")).resolve(this.config.getModulePath("api")).toAbsolutePath();
-        System.err.println("** GENERATE API MODULE.XML: " + moduleXml);
+        log.info("** GENERATE API MODULE.XML: " + moduleXml);
 
-        try {
-            Files.createDirectories(moduleXml.getParent());
-            try (PrintWriter out = new PrintWriter(new FileOutputStream(moduleXml.toFile()))) {
-                out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "\n" +
-                        "<module xmlns=\"urn:jboss:module:1.3\" name=\"" + moduleName + "\" slot=\"api\">\n" +
-                        "  <resources>\n" +
-                        "    <artifact name=\"" + this.artifact + "\"/>\n" +
-                        "  </resources>\n" +
-                        "  <dependencies>\n" +
-                        "    <module name=\"org.wildfly.swarm.configuration.runtime\" export=\"true\"/>\n" +
-                        "  </dependencies>\n" +
-                        "\n" +
-                        "</module>");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        Files.createDirectories(moduleXml.getParent());
+        try (PrintWriter out = new PrintWriter(new FileOutputStream(moduleXml.toFile()))) {
+            out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "\n" +
+                    "<module xmlns=\"urn:jboss:module:1.3\" name=\"" + moduleName + "\" slot=\"api\">\n" +
+                    "  <resources>\n" +
+                    "    <artifact name=\"" + this.artifact + "\"/>\n" +
+                    "  </resources>\n" +
+                    "  <dependencies>\n" +
+                    "    <module name=\"org.wildfly.swarm.configuration.runtime\" export=\"true\"/>\n" +
+                    "  </dependencies>\n" +
+                    "\n" +
+                    "</module>");
         }
-
     }
 
-    private void generateMarker() {
+    private void generateMarker() throws IOException {
         Path confPath = this.targetDir.resolve(Paths.get("..", "classes", "wildfly-swarm-modules.conf"));
 
-        try {
-            Files.createDirectories(confPath.getParent());
-            try (PrintWriter out = new PrintWriter(new FileOutputStream(confPath.toFile()))) {
-                out.println();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        Files.createDirectories(confPath.getParent());
+        try (PrintWriter out = new PrintWriter(new FileOutputStream(confPath.toFile()))) {
+            out.println();
         }
     }
 
-    private void write(JavaType javaClass) {
+    private void write(JavaType javaClass) throws IOException {
+        String dir = this.targetDir + File.separator + javaClass.getPackage().replace(".", File.separator);
+        Files.createDirectories(Paths.get(dir));
 
-        try {
-            String dir = this.targetDir + File.separator + javaClass.getPackage().replace(".", File.separator);
-            Files.createDirectories(Paths.get(dir));
-
-            Path fileName = Paths.get(dir + File.separator + javaClass.getName() + ".java");
-            if (Files.exists(fileName)) {
-                System.err.println("File already exists, will be replaced: " + fileName);
-            }
-
-            Files.write(fileName, javaClass.toString().getBytes());
-
-        } catch (IOException e) {
-            log.log(Level.ERROR, "Failed to persist class", e);
+        Path fileName = Paths.get(dir + File.separator + javaClass.getName() + ".java");
+        if (Files.exists(fileName)) {
+            log.warning("File already exists, will be replaced: " + fileName);
         }
 
+        Files.write(fileName, javaClass.toString().getBytes());
     }
 
     private ResourceMetaData loadResourceMetaData(GeneratorTarget generatorTarget) throws Exception {
-
         AddressTemplate address = generatorTarget.getSourceAddress();
 
         ModelNode composite = new ModelNode();

@@ -21,12 +21,9 @@ public class ReadDescription implements AddressTemplateSupport {
 
     @Override
     public ModelNode resolve(StatementContext ctx) {
-
         ResourceAddress address = this.address.resolve(ctx);
-        Operation op = new Operation.Builder(READ_RESOURCE_DESCRIPTION_OPERATION, address)
+        return new Operation.Builder(READ_RESOURCE_DESCRIPTION_OPERATION, address)
                 .param(RECURSIVE, true)
                 .build();
-
-        return op;
     }
 }

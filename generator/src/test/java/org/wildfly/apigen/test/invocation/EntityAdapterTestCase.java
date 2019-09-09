@@ -58,16 +58,14 @@ public class EntityAdapterTestCase extends AbstractTestCase {
     public void testSimpleResourceMarshalling() throws Exception {
         EntityAdapter<MailSession> entityAdapter = new EntityAdapter<>(MailSession.class);
         ModelNode modelNode = entityAdapter.fromEntity(mailSession);
-        Assert.assertTrue(modelNode.get("debug").asBoolean() == true);
-        Assert.assertTrue(modelNode.get("from").asString().equals("john@doe.com"));
-        Assert.assertTrue(modelNode.get("jndi-name").asString().equals("java:/mail/Test"));
+        Assert.assertTrue(modelNode.get("debug").asBoolean());
+        Assert.assertEquals("john@doe.com", modelNode.get("from").asString());
+        Assert.assertEquals("java:/mail/Test", modelNode.get("jndi-name").asString());
 
         MailSession session = entityAdapter.fromDMR("key", modelNode);
-        Assert.assertTrue(session.debug() == true);
-        Assert.assertTrue(session.from().equals("john@doe.com"));
-        Assert.assertTrue(session.jndiName().equals("java:/mail/Test"));
-
-//        System.out.println(modelNode);
+        Assert.assertTrue(session.debug());
+        Assert.assertEquals("john@doe.com", session.from());
+        Assert.assertEquals("java:/mail/Test", session.jndiName());
     }
 
     @Test
