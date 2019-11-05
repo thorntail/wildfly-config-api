@@ -60,30 +60,6 @@ public class SubsystemPlan implements ClassIndex {
         List<ResourceMetaData> list = new ArrayList<>();
         collect(this.meta, list);
 
-        // exclude deprecated attributes
-        for (ResourceMetaData each : list) {
-            ModelNode attrs = each.getDescription().get(ATTRIBUTES);
-            List<Property> props = attrs.asPropertyList();
-            for (Property prop : props) {
-                ModelNode accessType = prop.getValue().get(ACCESS_TYPE);
-                if ( ! accessType.asString().contains( "write" ) ) {
-                    continue;
-                }
-
-                ModelNode deprecated = prop.getValue().get(DEPRECATED);
-                if (deprecated.isDefined()) {
-                    String since = deprecated.get(SINCE).asString();
-                    if (since.startsWith("5.") || since.startsWith("4.")) {
-                        //System.err.println( "keeping: " + prop.getName() + " from " + each.getAddress() + " since " + deprecated.asString() );
-                        // keep it
-                    } else {
-                        //System.err.println( "discarding: " + prop.getName() + " from " + each.getAddress() + " for " + deprecated.asString() );
-                        attrs.remove(prop.getName());
-                    }
-                }
-            }
-        }
-
         // group by last tuple
         Map<AddressTemplate, List<ResourceMetaData>> grouped = list.stream().collect(Collectors.groupingBy((e) -> {
             AddressTemplate address = e.getAddress();

@@ -209,9 +209,26 @@ public class ResourceFactory implements SourceFactory {
 
         type.addImport(ModelNodeBinding.class);
 
+        Set<String> allJavaAttributeNames = desc.getAttributes()
+                .stream()
+                .map(Property::getName)
+                .map(ResourceFactory::javaAttributeName)
+                .collect(Collectors.toSet());
+
         for (Property att : desc.getAttributes()) {
             if (this.names.contains(att.getName())) {
-                log.warning("WARNING: skipping attribute: " + att.getName() + ": conflicts with sub-resource");
+                log.warning("attribute '" + att.getName() + "' conflicts with subresource at " + plan.getAddresses());
+                continue;
+            }
+
+            boolean deprecated = att.getValue().get(DEPRECATED).isDefined();
+            String deprecationMessage = null;
+            if (deprecated) {
+                deprecationMessage = att.getValue().get(DEPRECATED, "reason").asString();
+            }
+
+            if (deprecated && isAttributeReplacedBySubresource(att.getName(), inflector)) {
+                log.warning("attribute '" + att.getName() + "' is deprecated and replaced by a subresource at " + plan.getAddresses());
                 continue;
             }
 
@@ -264,6 +281,10 @@ public class ResourceFactory implements SourceFactory {
                             .setName(name)
                             .setReturnType(attributeType)
                             .setBody("return this." + name + ";");
+                    if (deprecated) {
+                        accessor.addAnnotation("Deprecated");
+                        accessor.getJavaDoc().addTagValue("@deprecated", deprecationMessage);
+                    }
 
 
                     final MethodSource<JavaClassSource> mutator = type.addMethod();
@@ -277,6 +298,10 @@ public class ResourceFactory implements SourceFactory {
                                     "if(this.pcs!=null) this.pcs.firePropertyChange(\"" + name + "\", oldValue, value);\n" +
                                     "return (T) this;")
                             .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+                    if (deprecated) {
+                        mutator.addAnnotation("Deprecated");
+                        mutator.getJavaDoc().addTagValue("@deprecated", deprecationMessage);
+                    }
 
                     AnnotationSource<JavaClassSource> bindingMeta = accessor.addAnnotation();
                     bindingMeta.setName(ModelNodeBinding.class.getSimpleName());
@@ -285,6 +310,11 @@ public class ResourceFactory implements SourceFactory {
                     // If the model type is LIST, then also add an appending mutator
                     if (modelType == ModelType.LIST) {
                         String singularName = inflector.singularize(name);
+                        if (!singularName.equals(name) && allJavaAttributeNames.contains(singularName)) {
+                            log.warning("appending mutator for plural attribute '" + name + "' conflicts with singular attribute '"
+                                    + singularName + "' at " + plan.getAddresses());
+                            singularName += "Append";
+                        }
                         // initialize the field to an array list
                         //attributeField.setLiteralInitializer("new java.util.ArrayList<>()");
                         type.addImport(Arrays.class);
@@ -297,6 +327,10 @@ public class ResourceFactory implements SourceFactory {
                                 .setReturnType("T")
                                 .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.ArrayList<>(); }\nthis." + name + ".add(value);\nreturn (T) this;")
                                 .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+                        if (deprecated) {
+                            appender.addAnnotation("Deprecated");
+                            appender.getJavaDoc().addTagValue("@deprecated", deprecationMessage);
+                        }
 
                         // also produce a var-args version
 
@@ -308,6 +342,10 @@ public class ResourceFactory implements SourceFactory {
                                 .setReturnType("T")
                                 .setBody(name + "(Arrays.stream(args).collect(Collectors.toList())); return (T) this;")
                                 .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+                        if (deprecated) {
+                            varargs.addAnnotation("Deprecated");
+                            varargs.getJavaDoc().addTagValue("@deprecated", deprecationMessage);
+                        }
 
                     } else if (modelType == ModelType.OBJECT) {
                         // initialize the field to a HashMap
@@ -322,6 +360,10 @@ public class ResourceFactory implements SourceFactory {
                                 .setReturnType("T")
                                 .setBody(" if ( this." + name + " == null ) { this." + name + " = new java.util.HashMap<>(); }\nthis." + name + ".put(key, value);\nreturn (T) this;")
                                 .addAnnotation("SuppressWarnings").setStringValue("unchecked");
+                        if (deprecated) {
+                            appender.addAnnotation("Deprecated");
+                            appender.getJavaDoc().addTagValue("@deprecated", deprecationMessage);
+                        }
                     }
                 } catch (Exception e) {
                     log.log(Level.ERROR, "Failed to process " + plan.getFullyQualifiedClassName() + ", attribute " + att.getName(), e);
@@ -330,6 +372,26 @@ public class ResourceFactory implements SourceFactory {
         }
     }
 
+    // this is purely a heuristic based on the few occurences present in WildFly 18
+    // it expects that this.names has already been populated with names of all the subresources
+    private boolean isAttributeReplacedBySubresource(String attr, Inflector inflector) {
+        if (this.names.contains(inflector.singularize(attr))) {
+            return true;
+        }
+
+        for (String subresource : this.names) {
+            if (subresource.contains("=")) {
+                // singleton subresources
+                String[] parts = subresource.split("=", 2);
+                String candidate = parts[1] + "-" + parts[0];
+                if (candidate.equals(attr)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     protected void addChildResources(ClassIndex index, JavaClassSource type, ClassPlan plan) {
         if (!plan.getDescription().getChildrenTypes().isEmpty()) {
@@ -511,6 +573,7 @@ public class ResourceFactory implements SourceFactory {
         final Set<String> singletonNames = description.getSingletonChildrenTypes();
         javaClass.addImport(Subresource.class);
         for (String singletonName : singletonNames) {
+            this.names.add(singletonName);
 
             String[] split = singletonName.split("=");
             String type = split[0];
