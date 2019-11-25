@@ -20,14 +20,18 @@
   </scm>
 
   <properties>
-    <version.wildfly>15.0.1.Final</version.wildfly>
-    <version.org.wildfly.plugins.maven>2.0.0.Final</version.org.wildfly.plugins.maven>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
-    <version.roaster>2.19.4.Final</version.roaster>
+
     <version.guava>18.0</version.guava>
+    <version.jandex>2.1.1.Final</version.jandex>
     <version.junit>4.12</version.junit>
+    <version.minimal-json>0.9.4</version.minimal-json>
+    <version.roaster>2.19.4.Final</version.roaster>
+    <version.wildfly>18.0.1.Final</version.wildfly>
+    <version.wildfly-maven-plugin>2.0.1.Final</version.wildfly-maven-plugin>
+    <version.xnio>3.7.3.Final</version.xnio>
   </properties>
 
   <modules>

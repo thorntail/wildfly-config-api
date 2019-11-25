@@ -48,17 +48,6 @@
     </dependency>
   </dependencies>
   <build>
-<!--
-    <resources>
-      <resource>
-        <directory>target/generated-sources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.xml</include>
-        </includes>
-      </resource>
-    </resources>
--->
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -138,7 +127,7 @@
       <plugin>
         <groupId>org.wildfly.plugins</groupId>
         <artifactId>wildfly-maven-plugin</artifactId>
-        <version>${version.org.wildfly.plugins.maven}</version>
+        <version>${version.wildfly-maven-plugin}</version>
         <executions>
           <execution>
             <id>start</id>

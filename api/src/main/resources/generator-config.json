@@ -12,6 +12,7 @@
       "/subsystem=bean-validation",
       "/subsystem=datasources",
       "/subsystem=deployment-scanner",
+      "/subsystem=discovery",
       "/subsystem=ee",
       "/subsystem=ee-security",
       "/subsystem=ejb3",
