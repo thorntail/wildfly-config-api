@@ -8,7 +8,7 @@
   <parent>
     <groupId>io.thorntail</groupId>
     <artifactId>config-api-parent</artifactId>
-    <version>1.8.1-SNAPSHOT</version>
+    <version>1.8.1</version>
     <relativePath>../</relativePath>
   </parent>
 
