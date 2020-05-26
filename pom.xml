@@ -9,14 +9,14 @@
   </parent>
 
   <artifactId>config-api-parent</artifactId>
-  <version>2.7.0</version>
+  <version>2.7.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <scm>
     <connection>scm:git:git@github.com:thorntail/wildfly-config-api.git</connection>
     <developerConnection>scm:git:git@github.com:thorntail/wildfly-config-api.git</developerConnection>
     <url>https://github.com/thorntail/wildfly-config-api</url>
-    <tag>2.7.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
